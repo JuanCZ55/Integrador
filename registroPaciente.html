@@ -55,21 +55,20 @@
     <div class="container-md border border-2 border-dark rounded-3 d-flex justify-content-center align-items-center mt-5 "
         style=" backdrop-filter: blur(5px); background-color: rgba(25, 9, 240, 0.301); width: 380px;">
         <form class="p-4">
-            <h2 class="text-center">Admision</h2>
-            <div class="input-group mb-3">
-                <label for=""></label>
-                <input type="text" class="form-control" placeholder="DNI" aria-label="Recipient's username"
-                    aria-describedby="button-addon2">
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2">Verificar</button>
-            </div>
+            <h2 class="text-center">Registro Paciente</h2>
             <div class="mb-3">
-                <label for="name" class="form-label">Nombre</label>
-                <input type="email" placeholder="DNI" class="form-control" id="exampleInputEmail1"
+                <label for="name" class="form-label">Nombre Completo</label>
+                <input type="email" placeholder="Juan Jose Perez Sosa" class="form-control" id="exampleInputEmail1"
                     aria-describedby="emailHelp">
             </div>
             <div class="mb-3">
-                <label for="exampleInputPassword1" class="form-label text-white">Contraseña</label>
-                <input type="password" class="form-control" id="exampleInputPassword1">
+                <label for="dni" class="form-label">DNI</label>
+                <input type="email" placeholder="44555798" class="form-control" id="exampleInputEmail1"
+                    aria-describedby="emailHelp">
+            </div>
+            <div class="mb-3">
+                <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
+                <input type="date" class="form-control">
             </div>
             <div class="mb-3">
                 <label class="form-label">Obra Social</label>
@@ -91,7 +90,8 @@
                     <option value="15">Osetya</option>
                     <option value="16">Opdea</option>
                 </select>
-            </div><div class="mb-3">
+            </div>
+            <div class="mb-3">
                 <label class="form-label">Tipo de Ingreso</label>
                 <select class="form-select">
                     <option value="1">Programado</option>
