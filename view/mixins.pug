@@ -1,0 +1,25 @@
+mixin header()
+  header
+    nav.navbar.navbar-expand-lg
+      .container.d-flex.justify-content-between.align-items-center
+        a.navbar-brand.rounded(href="home")
+          img(src="../images/home.PNG", alt="logo", width="200")
+        button.navbar-toggler(type="button", data-bs-toggle="collapse", data-bs-target="#navbarNav", aria-controls="navbarNav", aria-expanded="false", aria-label="Toggle navigation")
+          span.navbar-toggler-icon
+        #navbarNav.collapse.navbar-collapse
+          ul.nav.nav-underline.fs-4.ms-auto
+            li.nav-item
+              a.nav-link.text-primary-emphasis(href="#") Inicio
+            li.nav-item
+              a.nav-link.text-primary-emphasis(href="#") Servicios
+            li.nav-item
+              a.nav-link.text-primary-emphasis(href="#") Nosotros
+            li.nav-item
+              a.nav-link.text-primary-emphasis(href="#") Contacto
+
+mixin footer()
+  footer
+    .container.d-flex.justify-content-between.align-items-center
+      a(href="home")
+        img(src="../images/home.PNG", alt="logo", width="200")
+      p.mb-0.text-primary-emphasis © 2025 Medicus Corp. Todos los derechos reservados.
