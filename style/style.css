@@ -28,8 +28,8 @@ body {
   background-repeat: repeat;
   background-size: auto 250px;
 }
-form-box {
+.form-box {
   backdrop-filter: blur(5px);
   background-color: rgba(25, 9, 240, 0.301);
-  width: 380px;
+  width: 380px !important;
 }
