@@ -1,14 +1,84 @@
+
+-let navbar = 1;
 doctype html
 html(lang="es")
   head
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
     title Medicus Corp
-    link(rel="stylesheet", href="./../style/headerfooter.css")
+    link(rel="stylesheet", href="../../style/style.css")
     link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.4/dist/css/bootstrap.min.css", integrity="sha384-DQvkBjpPgn7RC31MCQoOeC9TI2kdqa4+BSgNMNj8v77fdC77Kj5zpWFTJaaAoMbC", crossorigin="anonymous")
     script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.4/dist/js/bootstrap.bundle.min.js", integrity="sha384-YUe2LzesAfftltw+PEaao2tjU/QATaW/rOitAq67e0CT0Zi2VVRL0oC4+gAaeBKu", crossorigin="anonymous")
   body
-    +header()
+    - let rol = 0; 
+    header
+      nav.navbar.navbar-expand-lg
+        .container.d-flex.justify-content-between.align-items-center
+          a.navbar-brand.rounded(href="home")
+            img(src="../images/home.PNG", alt="logo", width="200")
+          button.navbar-toggler(type="button", data-bs-toggle="collapse", data-bs-target="#navbarNav", aria-controls="navbarNav", aria-expanded="false", aria-label="Toggle navigation")
+            span.navbar-toggler-icon
+          #navbarNav.collapse.navbar-collapse
+            if rol== 1 
+              ul.nav.nav-underline.fs-4.ms-auto
+                li.nav-item
+                  a.nav-link.text-primary-emphasis(href="#") Inicio
+                li.nav-item
+                  a.nav-link.text-primary-emphasis(href="#") Servicios
+                li.nav-item
+                  a.nav-link.text-primary-emphasis(href="#") Nosotros
+                li.nav-item
+                  a.nav-link.text-primary-emphasis(href="#") Contacto
+            else if rol== 2 
+              ul.nav.nav-underline.fs-4.ms-auto
+                li.nav-item
+                  a.nav-link.text-primary-emphasis(href="#") Inicio
+                li.nav-item
+                  a.nav-link.text-primary-emphasis(href="#") Servicios
+                li.nav-item
+                  a.nav-link.text-primary-emphasis(href="#") Nosotros
+                li.nav-item
+                  a.nav-link.text-primary-emphasis(href="#") Contacto
+            else if rol== 3
+              ul.nav.nav-underline.fs-4.ms-auto
+                li.nav-item
+                  a.nav-link.text-primary-emphasis(href="#") Inicio
+                li.nav-item
+                  a.nav-link.text-primary-emphasis(href="#") Servicios
+                li.nav-item
+                  a.nav-link.text-primary-emphasis(href="#") Nosotros
+                li.nav-item
+                  a.nav-link.text-primary-emphasis(href="#") Contacto
+            else
+              ul.nav.nav-underline.fs-4.ms-auto 
+                li.nav-item
+                  a.nav-link.text-primary-emphasis(href="#") Inicio
+                li.nav-item.dropdown
+                  a.nav-link.dropdown-toggle.text-primary-emphasis(href="#", role="button", data-bs-toggle="dropdown", aria-expanded="false") Pacientes
+                  ul.dropdown-menu
+                    li
+                      a.dropdown-item(href="#") Nuevo 
+                    li
+                      a.dropdown-item(href="#") Busqueda 
+                    li
+                      a.dropdown-item(href="#") Gestion
+                li.nav-item.dropdown
+                  a.nav-link.dropdown-toggle.text-primary-emphasis(href="#", role="button", data-bs-toggle="dropdown", aria-expanded="false") Admision
+                  ul.dropdown-menu
+                    li
+                      a.dropdown-item(href="#") Registro  
+                    li
+                      a.dropdown-item(href="#") Cancelacion 
+                li.nav-item.dropdown
+                  a.nav-link.dropdown-toggle.text-primary-emphasis(href="#", role="button", data-bs-toggle="dropdown", aria-expanded="false") Habitacion
+                  ul.dropdown-menu
+                    li
+                      a.dropdown-item(href="#") Disponibles 
     main.flex-main
-      block content
-    +footer()
+      block main
+
+    footer
+      .container.d-flex.justify-content-between.align-items-center
+        a(href="home")
+          img(src="../images/home.PNG", alt="logo", width="200")
+        p.mb-0.text-primary-emphasis © 2025 Medicus Corp12. Todos los derechos reservados.
