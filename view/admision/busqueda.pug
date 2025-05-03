@@ -1,0 +1,38 @@
+extends ../layout.pug
+  
+//- Simulamos el arreglo "pacientes" para pruebas
+block main
+  - let pacientes = []
+  
+  div.container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center
+    
+    table(class="table table-striped")
+      thead
+        tr
+          th(scope="col") #
+          th(scope="col") Nombre
+          th(scope="col") Apellido
+          th(scope="col") Fecha Nacimiento
+          th(scope="col") Sexo
+          th(scope="col") Telefono
+          th(scope="col") Telefono Contacto
+          th(scope="col") Email
+          th(scope="col") Obra Social
+          th(scope="col") Detalle
+      tbody
+        if pacientes.length === 0
+          tr
+            td(scope="col-8") No hay pacientes disponibles
+        else
+          each paciente, index in pacientes
+            tr
+              th(scope="row")= index + 1
+              td= paciente.nombre
+              td= paciente.apellido
+              td= paciente.fecha_nacimiento
+              td= paciente.sexo
+              td= paciente.telefono
+              td= paciente.telefono_contacto
+              td= paciente.email
+              td= paciente.obra_social
+              td= paciente.detalle
