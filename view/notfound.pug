@@ -1,0 +1,26 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Medicus Corp
+    //- subi mi css a github para que no de problemas de ruta
+    link(rel='stylesheet', href="./css/style.css")
+    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.4/dist/css/bootstrap.min.css", integrity="sha384-DQvkBjpPgn7RC31MCQoOeC9TI2kdqa4+BSgNMNj8v77fdC77Kj5zpWFTJaaAoMbC", crossorigin="anonymous")
+    script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.4/dist/js/bootstrap.bundle.min.js", integrity="sha384-YUe2LzesAfftltw+PEaao2tjU/QATaW/rOitAq67e0CT0Zi2VVRL0oC4+gAaeBKu", crossorigin="anonymous")
+  body
+    header
+      nav.navbar.navbar-expand-lg
+        .container.d-flex.justify-content-between.align-items-center
+          a.navbar-brand.rounded(href="home")
+            img(src="../images/home.PNG", alt="logo", width="200")
+         
+    
+      
+    main.notfound
+      .container.bg-light.content-center.m-5.border.border-2.border-dark.rounded
+        h1 404  
+        h2 Página no encontrada
+        p Lo sentimos, la página que buscas no existe.
+        a(href="/") Volver al inicio
+      
