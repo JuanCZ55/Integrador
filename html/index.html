@@ -33,7 +33,7 @@
       style="background-color:#00FFC6; font-weight: 400; border-bottom: 2px solid #07568e;">
       <div class="container d-flex justify-content-between align-items-center">
         <a class="navbar-brand rounded" href="home">
-          <img src="home.PNG" alt="logo" width="200" height="auto">
+          <img src="../images/home.PNG" alt="logo" width="200" height="auto">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
           aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"
@@ -53,13 +53,32 @@
   </header>
 
   <main>
-    {{contenido}}
+    <div class="container mt-3 p-3 bg-body-secondary rounded-5">
+
+      <h1>Bienvenido al inicio</h1>
+      <p>Encontraras 3 secciones: Pacientes, Admision y Habitaciones</p>
+      <dl>
+        <dt>Pacientes:</dt>
+        <dd>Nuevo: Permite registrar un nuevo paciente en el sistema.
+        </dd>
+        <dd>Busqueda: Permite buscar un paciente registrado en el sistema.</dd>
+        <dd>Gestion: Permite gestionar los datos de un paciente registrado en el sistema.</dd>
+        <dt>Admision</dt>
+        <dd>Turno:Crear un nuevo turno</dd>
+        <dd>Registro: Se piden los datos del turno para la admision</dd>
+        <dd>Cancelacion: Si se desea hacer la cancelacion del turno</dd>
+        <dt>Habitacion:</dt>
+        <dd>Disponibilidad: Ver estado de las habitaciones de las camas</dd>
+        <dd></dd>
+      </dl>
+    </div>
+
   </main>
 
   <footer class="py-2" style="background-color:#00FFC6; font-weight: 400; border-top: 2px solid #07568e;">
     <div class="container d-flex justify-content-between align-items-center">
       <a href="home">
-        <img src="home.PNG" alt="logo" width="150" height="auto">
+        <img src="../images/home.PNG" alt="logo" width="150" height="auto">
       </a>
       <p class="mb-0 text-primary-emphasis">© 2025 Medicus Corp. Todos los derechos reservados.</p>
     </div>
