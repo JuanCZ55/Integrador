@@ -1,0 +1,18 @@
+extends ../layout.pug
+
+block main 
+  div.container.mt-3.p-3.bg-body-secondary.rounded-5
+    h1 Bienvenido al inicio
+    p Encontraras 3 secciones: Pacientes, Admision y Habitaciones
+    dl
+      dt Pacientes:
+      dd Nuevo: Permite registrar un nuevo paciente en el sistema.
+      dd Busqueda: Permite buscar un paciente registrado en el sistema.
+      dd Gestion: Permite gestionar los datos de un paciente registrado en el sistema.
+      dt Admision
+      dd Turno: Crear un nuevo turno
+      dd Registro: Se piden los datos del turno para la admision
+      dd Cancelacion: Si se desea hacer la cancelacion del turno
+      dt Habitacion:
+      dd Disponibilidad: Ver estado de las habitaciones de las camas
+      dd Gestion: Gestionar los datos de las habitaciones y camas
