@@ -1,37 +1,27 @@
 const express = require('express');
-const path = require('path');
-
 const app = express();
-const PORT = 3000;
-const urlencode = express.urlencoded({ extended: true });
-
+const path = require('path');
+//routes
 const admision = require('./routes/admisionRoutes');
+const enfer = require('./routes/enfermeriaRoutes');
+const medico = require('./routes/medicoRoutes');
+const admin = require('./routes/administradorRoutes');
 
-// Configuracion del motor de vistas
 app.set('view engine', 'pug');
-app.set('views', './view');
+app.set('views', path.join(__dirname, './view'));
 
-// Servir archivos estaticos desde ./style
 app.use(express.static(path.join(__dirname, 'public')));
-
-// Middlewares
-app.use(express.json());
-app.use(urlencode);
-
-// Ruta raiz
-app.get('/', (req, res) => {
-  res.render('admision/inicio');
-});
-
-// Rutas principales
+app.use(express.urlencoded({ extended: true }));
+//rutas para los 4 roles
 app.use('/admision', admision);
-
-// 404
-app.use((req, res) => {
+app.use('/enfermeria', enfer);
+app.use('/medico', medico);
+app.use('/administrador', admin);
+//ruta para 404
+app.use((req, res, next) => {
   res.status(404).render('notfound');
 });
-
-// Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`Servidor escuchando en el puerto ${PORT}`);
+//Inicio del servidor
+app.listen(3000, () => {
+  console.log('Server corre en el puerto 3000');
 });
