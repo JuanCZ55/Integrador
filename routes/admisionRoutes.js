@@ -1,10 +1,12 @@
 const express = require('express');
-const admisionController = require('../controller/admisionController');
-
 const router = express.Router();
-
-router.get('/crearPaciente', res.render(''));
-
+const admisionController = require('../controller/admisionController');
+//form para crear un paciente
+router.get('/crearPaciente', admisionController.crearPaciente);
+// controla el paciente
+router.post('/crearPaciente', admisionController.controlPaciente);
+//da el dni y devuelve el paciente
+router.get('/verficar/:dni', admisionController.verificarPaciente);
 
 // // Ruta para eliminar una admisión
 // router.delete('/:id', admisionController.deleteAdmision);
