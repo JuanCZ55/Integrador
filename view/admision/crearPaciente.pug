@@ -4,72 +4,82 @@ block scripts
 
 block main
   -let claseboton=claseB || "btn-outline-light"
-  - let flagAlert = mensajeAlert ? true : false
+  -let flagAlert = mensajeAlert ? true : false
+  - var paciente = typeof paciente !== "undefined" ? paciente : {}
+
   if flagAlert
     script. 
       alert("#{mensajeAlert}") 
   div.container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box
     form.p-4(novalidate, action="/admision/crearPaciente", method="POST")
 
-      h2.text-center Admision
+      h2.text-center Admision1
       br
-      .input-group.mb-3
-        input.form-control(type="number", placeholder="DNI", value=paciente.dni || "", name="dni", id="dni")
-          button.btn.#{claseboton}(type="button", id="button-verificar", onclick="verificarDni(document.getElementById('dni').value)") Verificar
+      .row
+        .col
+          label.form-label(for="dni") DNI*
+          .input-group.mb-3
+            input.form-control(type="number", placeholder="48455713", value=paciente.dni || "", name="dni", id="dni")
+            button.btn(type="button", class=claseboton, id="button-verificar", onclick="verificarDni(document.getElementById('dni').value)") Verificar
 
-      .mb-3
-        label.form-label(for="name") Nombre
-        input.form-control(type="text", id="nombre", placeholder="Juan Carlos", value=paciente.nombre || "", name="nombre")
 
-      .mb-3
-        label.form-label(for="lastname") Apellido
-        input.form-control(type="text", id="apellido", placeholder="Sosa Perez", value=paciente.apellido || "", name="apellido")
-        
-      .mb-3
-        label.form-label(for="telefono") Telefono
-        input.form-control(type="tel", id="telefono", placeholder="2665451236", value=paciente.telefono || "", name="telefono")
+          .mb-3
+            label.form-label(for="name") Nombre*
+            input.form-control(type="text", id="nombre", placeholder="Juan Carlos", value=paciente.nombre || "", name="nombre")
 
-      .mb-3
-        label.form-label(for="telefono_contacto") Telefono Contacto
-        input.form-control(type="tel", id="telefono_contacto", placeholder="2665451236", value=paciente.telefono_contacto || "", name="telefono_contacto")
+          .mb-3
+            label.form-label(for="lastname") Apellido*
+            input.form-control(type="text", id="apellido", placeholder="Sosa Perez", value=paciente.apellido || "", name="apellido")
+            
+          .mb-3
+            label.form-label(for="fecha_nacimiento") Fecha de Nacimiento*
+            input.form-control(type="date", id="fecha_nacimiento",value=paciente.fecha_nacimiento || "", name="fecha_nacimiento")
 
-      .mb-3
-        label.form-label(for="email") Email
-        input.form-control(type="email", id="email", placeholder="usuario@mail.com", value=paciente.email || "", name="email")
+          .mb-3
+            label.form-label Sexo*
+            select.form-select(name="sexo")
+              option(value="F", selected=paciente.sexo === "F") Masculino
+              option(value="M", selected=paciente.sexo === "M") Femenino
+              option(value="O", selected=paciente.sexo === "O") Otro
+        .col      
+          .mb-3
+            label.form-label(for="telefono") Telefono*
+            input.form-control(type="tel", id="telefono", placeholder="2665451236", value=paciente.telefono || "", name="telefono")
 
-      .mb-3
-        label.form-label(for="fecha_nacimiento") Fecha de Nacimiento
-        input.form-control(type="date", id="fecha_nacimiento",value=paciente.fecha_nacimiento || "", name="fecha_nacimiento")
+          .mb-3
+            label.form-label(for="telefono_contacto") Telefono Contacto
+            input.form-control(type="tel", id="telefono_contacto", placeholder="2665451236", value=paciente.telefono_contacto || "", name="telefono_contacto")
 
-      .mb-3
-        label.form-label Sexo
-        select.form-select(name="sexo")
-          option(value="F", selected=paciente.sexo === "F") Masculino
-          option(value="M", selected=paciente.sexo === "M") Femenino
-          option(value="O", selected=paciente.sexo === "O") Otro
+          .mb-3
+            label.form-label(for="email") Email*
+            input.form-control(type="email", id="email", placeholder="usuario@mail.com", value=paciente.email || "", name="email")
 
-      .mb-3
-        label.form-label Obra Social
-        select.form-select(name="obra_social", id="obra_social")
-          option(value="Dosep", selected=paciente.obra_social === "Dosep") Dosep
-          option(value="Dospu", selected=paciente.obra_social === "Dospu") Dospu
-          option(value="Pami", selected=paciente.obra_social === "Pami") Pami
-          option(value="Osde", selected=paciente.obra_social === "Osde") Osde
-          option(value="Swiss Medical", selected=paciente.obra_social === "Swiss Medical") Swiss Medical
-          option(value="Medife", selected=paciente.obra_social === "Medife") Medife
-          option(value="Federada Salud", selected=paciente.obra_social === "Federada Salud") Federada Salud
-          option(value="Galeno Argentina", selected=paciente.obra_social === "Galeno Argentina") Galeno Argentina
-          option(value="Jerárquicos Salud", selected=paciente.obra_social === "Jerárquicos Salud") Jerárquicos Salud
-          option(value="Medicus", selected=paciente.obra_social === "Medicus") Medicus
-          option(value="Omint", selected=paciente.obra_social === "Omint") Omint
-          option(value="Luz y Fuerza", selected=paciente.obra_social === "Luz y Fuerza") Luz y Fuerza
-          option(value="Osmata", selected=paciente.obra_social === "Osmata") Osmata
-          option(value="Osfatun", selected=paciente.obra_social === "Osfatun") Osfatun
-          option(value="Osetya", selected=paciente.obra_social === "Osetya") Osetya
-          option(value="Opdea", selected=paciente.obra_social === "Opdea") Opdea
-       
-      .mb-3
-        label.form-label Detalle
-        textarea.form-control(id="detalle", rows="3", placeholder="Escriba un mensaje", name="detalle")= paciente.detalle || ""
-      br
-      button.btn.btn-primary(type="submit") Enviar
+
+          .mb-3
+            label.form-label Obra Social*
+            select.form-select(name="obra_social", id="obra_social")
+              option(value="Dosep", selected=paciente.obra_social === "Dosep") Dosep
+              option(value="Dospu", selected=paciente.obra_social === "Dospu") Dospu
+              option(value="Pami", selected=paciente.obra_social === "Pami") Pami
+              option(value="Osde", selected=paciente.obra_social === "Osde") Osde
+              option(value="Swiss Medical", selected=paciente.obra_social === "Swiss Medical") Swiss Medical
+              option(value="Medife", selected=paciente.obra_social === "Medife") Medife
+              option(value="Federada Salud", selected=paciente.obra_social === "Federada Salud") Federada Salud
+              option(value="Galeno Argentina", selected=paciente.obra_social === "Galeno Argentina") Galeno Argentina
+              option(value="Jerárquicos Salud", selected=paciente.obra_social === "Jerárquicos Salud") Jerárquicos Salud
+              option(value="Medicus", selected=paciente.obra_social === "Medicus") Medicus
+              option(value="Omint", selected=paciente.obra_social === "Omint") Omint
+              option(value="Luz y Fuerza", selected=paciente.obra_social === "Luz y Fuerza") Luz y Fuerza
+              option(value="Osmata", selected=paciente.obra_social === "Osmata") Osmata
+              option(value="Osfatun", selected=paciente.obra_social === "Osfatun") Osfatun
+              option(value="Osetya", selected=paciente.obra_social === "Osetya") Osetya
+              option(value="Opdea", selected=paciente.obra_social === "Opdea") Opdea
+          
+          .mb-3
+            label.form-label Detalle
+            textarea.form-control(id="detalle", rows="3", placeholder="Escriba un mensaje", name="detalle")= paciente.detalle || ""
+        br
+      .d-flex.justify-content-between
+        button.btn.btn-primary(type="submit") Crear Paciente
+        button.btn.btn-primary(type="submit") Modificar Paciente
+

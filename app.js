@@ -18,10 +18,10 @@ app.use('/enfermeria', enfer);
 app.use('/medico', medico);
 app.use('/administrador', admin);
 //ruta para 404
+app.
 app.use((req, res, next) => {
   res.status(404).render('notfound');
 });
 //Inicio del servidor
 app.listen(3000, () => {
   console.log('Server corre en el puerto 3000');
-});
