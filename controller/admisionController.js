@@ -88,3 +88,47 @@ exports.verificarPaciente = async (req, res) => {
   }
   return res.render("crearPaciente", { paciente, claseB });
 };
+//checkea si el paciente existe, si no existe lo crea
+// si existe rederiza la vista corresponidente del navbar seleccionado
+exports.checkPaciente = async (req, res) => {
+  const { dni, navbar } = req.body;
+  const paciente = await vP.buscarDni(dni);
+  if (!paciente) {
+    navbar = "crearPaciente";
+    return res.render("crearPaciente", { dni, navbar });
+  }
+  else {
+    switch (navbar) {
+      case "gestionPaciente":
+        return res.render("crearPaciente", { paciente, dni, navbar });
+
+      case "buscarPacientes":
+        return res.render("buscarPacientes", { dni, navbar });
+
+      case "crearAdmision":
+        return res.render("crearAdmision", { dni, navbar });
+
+      case "modificarAdmision":
+        return res.render("modificarAdmision", { dni, navbar });
+
+      case "crearTurno":
+        return res.render("crearTurno", { dni, navbar });
+
+      case "modificarTurno":
+        return res.render("modificarTurno", { dni, navbar });
+
+      case "verTurnos":
+        return res.render("verTurnos", { dni, navbar });
+
+      default:
+        console.log("Error en la redirección de checkPaciente");
+        return res.redirect("/");
+    }
+
+  }
+};
+exports.gcheckPaciente = async (req, res) => {
+  res.render("verficardni", {
+    navbar: req.query.navbar,
+  });
+};
