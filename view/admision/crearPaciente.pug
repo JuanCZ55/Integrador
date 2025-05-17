@@ -17,18 +17,16 @@ block main
       br
       .row
         .col
-          label.form-label(for="dni") DNI*
-          .input-group.mb-3
-            input.form-control(type="number", placeholder="48455713", value=paciente.dni || "", name="dni", id="dni")
-            button.btn(type="button", class=claseboton, id="button-verificar", onclick="verificarDni(document.getElementById('dni').value)") Verificar
-
+          .mb-3
+            label.form-label(for="dni") DNI*
+            input.form-control(type="number", id="dni", placeholder="48455713", value=paciente.dni || "", name="dni")
 
           .mb-3
-            label.form-label(for="name") Nombre*
+            label.form-label(for="nombre") Nombre*
             input.form-control(type="text", id="nombre", placeholder="Juan Carlos", value=paciente.nombre || "", name="nombre")
 
           .mb-3
-            label.form-label(for="lastname") Apellido*
+            label.form-label(for="apellido") Apellido*
             input.form-control(type="text", id="apellido", placeholder="Sosa Perez", value=paciente.apellido || "", name="apellido")
             
           .mb-3
@@ -41,6 +39,9 @@ block main
               option(value="F", selected=paciente.sexo === "F") Masculino
               option(value="M", selected=paciente.sexo === "M") Femenino
               option(value="O", selected=paciente.sexo === "O") Otro
+          .mb-3
+            label.form-label(for="direccion") Direccion*
+            input.form-control(type="text", id="direccion", placeholder="Av. San Martin 1234", value=paciente.direccion || "", name="direccion")
         .col      
           .mb-3
             label.form-label(for="telefono") Telefono*
@@ -58,6 +59,7 @@ block main
           .mb-3
             label.form-label Obra Social*
             select.form-select(name="obra_social", id="obra_social")
+              option(value="Ninguna", selected=paciente.obra_social === "Ninguna") Ninguna
               option(value="Dosep", selected=paciente.obra_social === "Dosep") Dosep
               option(value="Dospu", selected=paciente.obra_social === "Dospu") Dospu
               option(value="Pami", selected=paciente.obra_social === "Pami") Pami
@@ -74,7 +76,10 @@ block main
               option(value="Osfatun", selected=paciente.obra_social === "Osfatun") Osfatun
               option(value="Osetya", selected=paciente.obra_social === "Osetya") Osetya
               option(value="Opdea", selected=paciente.obra_social === "Opdea") Opdea
-          
+          .mb-3
+            label.form-label(for="cod_os") Numero Obra Social*
+            input.form-control(type="text", id="cod_os", placeholder="OS1234", value=paciente.cod_os || "", name="cod_os")
+
           .mb-3
             label.form-label Detalle
             textarea.form-control(id="detalle", rows="3", placeholder="Escriba un mensaje", name="detalle")= paciente.detalle || ""

@@ -1,0 +1,10 @@
+extends ../layout.pug
+block main  
+  .container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.checkdni
+    form.p-4(method="POST",action='/paciente/check')
+      input(type="hidden", name="navbar", value=navbar)
+      h1.form-label(for="dni") Verificar DNI para #{navbar}
+      br
+      input.form-control(type="number", placeholder="48789651", name="dni")
+      br      
+      button.btn.btn-primary(type="submit") Verificar
