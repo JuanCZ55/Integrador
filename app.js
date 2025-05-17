@@ -12,16 +12,22 @@ app.set('views', path.join(__dirname, './view'));
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
+
+app.use((req, res, next) => {
+  res.locals.path = req.path;
+  next();
+});
+
 //rutas para los 4 roles
 app.use('/admision', admision);
 app.use('/enfermeria', enfer);
 app.use('/medico', medico);
 app.use('/administrador', admin);
 //ruta para 404
-app.
 app.use((req, res, next) => {
   res.status(404).render('notfound');
 });
 //Inicio del servidor
 app.listen(3000, () => {
-  console.log('Server corre en el puerto 3000');
+  console.log('Server corre en el puerto 3000')
+});

@@ -1,3 +1,4 @@
 {
-  "livePreview.defaultPreviewPath": "/compiladoPug/admision/registrar.html"
+  "livePreview.defaultPreviewPath": "/compiladoPug/notfound.html",
+  "liveServer.settings.multiRootWorkspaceName": "Integrador"
 }
