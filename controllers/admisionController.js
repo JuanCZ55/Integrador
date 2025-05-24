@@ -1,10 +1,21 @@
-import e from "express";
-
-const Paciente = require("../models/Paciente");
-const vP = require("../model/pacientesValidacion");
-
-export function controlPaciente(req, res) {
-  const paciente = { ...req.body };
+const { Paciente, ObraSocial, Persona } = require("../models/init-models");
+const sequelize = require("../models/db");
+const { Op } = require("sequelize");
+async function crearPaciente(req, res) {
+  const {
+    dni,
+    nombre,
+    apellido,
+    fecha_nacimiento,
+    genero,
+    telefono,
+    mail,
+    contacto,
+    direccion,
+    id_obra_social,
+    cod_os,
+    detalle,
+  } = { ...req.body };
 
   let mensajeAlert = [];
   const regexName = /^[a-zA-Z\s]+$/;
@@ -14,71 +25,134 @@ export function controlPaciente(req, res) {
 
   // Validar campos obligatorios
   if (
-    !paciente.nombre ||
-    !paciente.apellido ||
-    !paciente.dni ||
-    !paciente.fecha_nacimiento ||
-    !paciente.telefono ||
-    !paciente.sexo ||
-    !paciente.obra_social ||
-    !paciente.email
+    !dni ||
+    !nombre ||
+    !apellido ||
+    !fecha_nacimiento ||
+    !genero ||
+    !direccion ||
+    !obra_social
   ) {
-    return res.render("crearPaciente", { errores: "Por favor llene todos los campos obligatorios(*)" });
+    return res.render("crearPaciente", {
+      mensajeAlert: "Por favor llene todos los campos obligatorios(*)",
+    });
   }
 
   // Validaciones especificas
-  if (paciente.nombre.length < 3) {
-    mensajeAlert.push("El nombre debe tener al menos 3 caracteres");
-  }
-  if (paciente.apellido.length < 3) {
-    mensajeAlert.push("El apellido debe tener al menos 3 caracteres");
-  }
-  if (!regexName.test(paciente.nombre)) {
-    mensajeAlert.push("El nombre solo puede contener letras y espacios");
-  }
-  if (!regexName.test(paciente.apellido)) {
-    mensajeAlert.push("El apellido solo puede contener letras y espacios");
-  }
-  if (!regexDni.test(paciente.dni)) {
+  //dni
+  if (!regexDni.test(dni)) {
     mensajeAlert.push("El DNI debe tener entre 7 y 8 dígitos");
   }
-  if (!regexTelefono.test(paciente.telefono)) {
+  //nombre
+  if (nombre.length < 3 || !regexName.test(nombre)) {
+    mensajeAlert.push(
+      "El nombre debe tener al menos 3 caracteres y solo puede contener letras y espacios"
+    );
+  }
+  //apellido
+  if (apellido.length < 3 || !regexName.test(apellido)) {
+    mensajeAlert.push(
+      "El apellido debe tener al menos 3 caracteres y solo puede contener letras y espacios"
+    );
+  }
+  //fecha_nacimiento
+  if (fecha_nacimiento >= new Date()) {
+    mensajeAlert.push("La fecha de nacimiento no puede ser mayor a la actual");
+  }
+  //genero
+  if (genero !== "fememino" && genero !== "masculino" && genero !== "otro") {
+    mensajeAlert.push("El género debe ser 'femenino', 'masculino' u 'otro'");
+  }
+  //telefono
+  if (telefono && !regexTelefono.test(telefono)) {
     mensajeAlert.push("El teléfono debe tener 10 dígitos");
   }
-  if (paciente.telefono_contacto && !regexTelefono.test(paciente.telefono_contacto)) {
+  //telefono_contacto
+  if (contacto && !regexTelefono.test(contacto)) {
     mensajeAlert.push("El teléfono de contacto debe tener 10 dígitos");
   }
-  if (!regexEmail.test(paciente.email)) {
+  //mail
+  if (mail && !regexEmail.test(email)) {
     mensajeAlert.push("El email debe ser válido");
   }
-  if (mensajeAlert.length > 0) {
-    return res.render("crearPaciente", { mensajeAlert, paciente });
+  //obra_social
+  const obraSocialBuscada = await ObraSocial.findByPk(id_obra_social);
+  if (!obraSocialBuscada) {
+    mensajeAlert.push(
+      "La obra social no existe, por favor seleccione una de la lista"
+    );
   }
-
-  // Crear un nuevo paciente
-  const nuevoPaciente = new Paciente(
-    paciente.dni,
-    paciente.nombre,
-    paciente.apellido,
-    paciente.fecha_nacimiento,
-    paciente.sexo,
-    paciente.telefono,
-    paciente.telefono_contacto,
-    paciente.obra_social,
-    paciente.detalle
-  );
-
-  // Guardar el paciente con model
-  console.log("Paciente guardado:", nuevoPaciente);
-  mensajeAlert.push("Paciente creado exitosamente");
-  return res.render("crearPaciente", mensajeAlert);
+  //cod_os
+  if (cod_os && cod_os.length < 3) {
+    mensajeAlert.push(
+      "El código de la obra social debe tener al menos 3 caracteres"
+    );
+  }
+}
+//detalle
+if (detalle && detalle.length > 255) {
+  mensajeAlert.push("El detalle no puede tener más de 255 caracteres");
+}
+//renderiza la vista con los errores
+if (mensajeAlert.length > 0) {
+  return res.status(400).render("crearPaciente", {
+    mensajeAlert,
+    paciente: req.body,
+  });
 }
 
-exports.crearPaciente = (req, res) => {
-  res.render("crearPaciente");
-};
+// Crear un nuevo paciente
+try {
+  // 1. Buscar persona por DNI
+  const persona = await Persona.findOne({ where: { dni } });
 
-exports.verificarPaciente = async (req, res) => {
+  let idPersona;
+  if (persona) {
+    // 2. Si existe persona, buscar paciente
+    idPersona = persona.id_persona;
+    const pacienteExistente = await Paciente.findOne({
+      where: { id_persona: idPersona },
+    });
+    if (pacienteExistente) {
+      mensajeAlert.push("Ya hay un paciente con ese DNI");
+      return res.render("crearPaciente", { mensajeAlert, paciente: req.body });
+    }
+  } else {
+    // 3. Si no existe persona, crearla
+    const nuevaPersona = await Persona.create({
+      dni,
+      nombre,
+      apellido,
+      f_nacimiento: fecha_nacimiento,
+      genero,
+      telefono,
+      mail,
+    });
+    idPersona = nuevaPersona.id_persona;
+  }
+
+  // 4. Crear paciente con la FK de persona
+  await Paciente.create({
+    id_persona: idPersona,
+    contacto,
+    direccion,
+    id_obra_social,
+    cod_os,
+    detalle,
+  });
+
+  mensajeAlert.push("Paciente creado exitosamente");
+  return res.render("crearPaciente", { mensajeAlert });
+} catch (error) {
+  mensajeAlert.push("Error al crear el paciente");
+  return res.render("crearPaciente", { mensajeAlert, paciente: req.body });
+}
+
+async function crearPaciente(req, res) {
+  res.render("crearPaciente");
+}
+
+async function verificarPaciente(req, res) {
   const paciente = await vP.buscarDni(req.params.dni);
   let claseB;
   if (!paciente) {
@@ -87,17 +161,16 @@ exports.verificarPaciente = async (req, res) => {
     claseB = "btn-outline-success";
   }
   return res.render("crearPaciente", { paciente, claseB });
-};
+}
 //checkea si el paciente existe, si no existe lo crea
 // si existe rederiza la vista corresponidente del navbar seleccionado
-exports.checkPaciente = async (req, res) => {
+async function checkPaciente(req, res) {
   const { dni, navbar } = req.body;
   const paciente = await vP.buscarDni(dni);
   if (!paciente) {
     navbar = "crearPaciente";
     return res.render("crearPaciente", { dni, navbar });
-  }
-  else {
+  } else {
     switch (navbar) {
       case "gestionPaciente":
         return res.render("crearPaciente", { paciente, dni, navbar });
@@ -124,11 +197,17 @@ exports.checkPaciente = async (req, res) => {
         console.log("Error en la redirección de checkPaciente");
         return res.redirect("/");
     }
-
   }
-};
-exports.gcheckPaciente = async (req, res) => {
+}
+async function gcheckPaciente(req, res) {
   res.render("verficardni", {
     navbar: req.query.navbar,
   });
+}
+module.exports = {
+  controlPaciente,
+  crearPaciente,
+  verificarPaciente,
+  checkPaciente,
+  gcheckPaciente,
 };
