@@ -1,7 +1,7 @@
-const { Model, DataTypes } = require('sequelize');
-const sequelize = require('./db');
+const { Model, DataTypes } = require("sequelize");
+const sequelize = require("./db");
 
-class Persona extends Model { }
+class Persona extends Model {}
 
 Persona.init(
   {
@@ -9,62 +9,58 @@ Persona.init(
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
     },
     dni: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      unique: "dni"
+      unique: "dni",
     },
     nombre: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: false,
     },
     apellido: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: false,
     },
     f_nacimiento: {
       type: DataTypes.DATEONLY,
-      allowNull: false
+      allowNull: false,
     },
     genero: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      comment: "f=femenino\r\nm=masculino\r\n0_otro\r\n"
+      comment: "f=femenino\r\nm=masculino\r\n0_otro\r\n",
     },
     telefono: {
       type: DataTypes.BIGINT,
-      allowNull: true
+      allowNull: true,
     },
     mail: {
       type: DataTypes.STRING(255),
-      allowNull: true
-    }
+      allowNull: true,
+    },
   },
   {
     sequelize,
-    modelName: 'Persona',
-    tableName: 'personas',
+    modelName: "Persona",
+    tableName: "personas",
     timestamps: true,
     indexes: [
       {
         name: "PRIMARY",
         unique: true,
         using: "BTREE",
-        fields: [
-          { name: "id_persona" },
-        ]
+        fields: [{ name: "id_persona" }],
       },
       {
         name: "dni",
         unique: true,
         using: "BTREE",
-        fields: [
-          { name: "dni" },
-        ]
+        fields: [{ name: "dni" }],
       },
-    ]
+    ],
   }
 );
 

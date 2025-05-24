@@ -26,7 +26,7 @@ Paciente.init(
     },
     direccion: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: false
     },
     id_obra_social: {
       type: DataTypes.INTEGER,
