@@ -1,6 +1,10 @@
-const Sequelize = require('sequelize');
-module.exports = function (sequelize, DataTypes) {
-  return sequelize.define('obra_sociales', {
+const { Model, DataTypes } = require('sequelize');
+const sequelize = require('./db');
+
+class ObraSocial extends Model { }
+
+ObraSocial.init(
+  {
     id_obra_social: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
@@ -21,8 +25,10 @@ module.exports = function (sequelize, DataTypes) {
       defaultValue: 1,
       comment: "1:activo\r\n2:inactivo"
     }
-  }, {
+  },
+  {
     sequelize,
+    modelName: 'ObraSocial',
     tableName: 'obra_sociales',
     timestamps: true,
     indexes: [
@@ -35,5 +41,7 @@ module.exports = function (sequelize, DataTypes) {
         ]
       },
     ]
-  });
-};
+  }
+);
+
+module.exports = ObraSocial;

@@ -1,6 +1,10 @@
-const Sequelize = require('sequelize');
-module.exports = function (sequelize, DataTypes) {
-  return sequelize.define('pacientes', {
+const { Model, DataTypes } = require('sequelize');
+const sequelize = require('./db');
+
+class Paciente extends Model { }
+
+Paciente.init(
+  {
     id_paciente: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
@@ -47,8 +51,10 @@ module.exports = function (sequelize, DataTypes) {
       defaultValue: 1,
       comment: "1:activo\r\n2:no activo"
     }
-  }, {
+  },
+  {
     sequelize,
+    modelName: 'Paciente',
     tableName: 'pacientes',
     timestamps: true,
     indexes: [
@@ -84,5 +90,7 @@ module.exports = function (sequelize, DataTypes) {
         ]
       },
     ]
-  });
-};
+  }
+);
+
+module.exports = Paciente;

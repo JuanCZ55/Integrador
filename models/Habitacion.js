@@ -1,6 +1,10 @@
-const Sequelize = require('sequelize');
-module.exports = function (sequelize, DataTypes) {
-  return sequelize.define('habitaciones', {
+const { Model, DataTypes } = require('sequelize');
+const sequelize = require('./db');
+
+class Habitacion extends Model { }
+
+Habitacion.init(
+  {
     id_habitacion: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
@@ -24,8 +28,10 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false,
       comment: "cantidad max de camas\r\n"
     }
-  }, {
+  },
+  {
     sequelize,
+    modelName: 'Habitacion',
     tableName: 'habitaciones',
     timestamps: true,
     indexes: [
@@ -45,5 +51,7 @@ module.exports = function (sequelize, DataTypes) {
         ]
       },
     ]
-  });
-};
+  }
+);
+
+module.exports = Habitacion;

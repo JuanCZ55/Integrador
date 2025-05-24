@@ -1,6 +1,10 @@
-const Sequelize = require('sequelize');
-module.exports = function (sequelize, DataTypes) {
-  return sequelize.define('admisiones', {
+const { Model, DataTypes } = require('sequelize');
+const sequelize = require('./db');
+
+class Admision extends Model { }
+
+Admision.init(
+  {
     id_admision: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
@@ -39,10 +43,12 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 1,
-      comment: "1:activa\r\n2:cancelada\r\n3:finalizada"
+      comment: "1:activa 2:cancelada 3:finalizada"
     }
-  }, {
+  },
+  {
     sequelize,
+    modelName: 'Admision',
     tableName: 'admisiones',
     timestamps: true,
     indexes: [
@@ -69,5 +75,7 @@ module.exports = function (sequelize, DataTypes) {
         ]
       },
     ]
-  });
-};
+  }
+);
+
+module.exports = Admision;

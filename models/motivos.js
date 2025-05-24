@@ -1,6 +1,10 @@
-const Sequelize = require('sequelize');
-module.exports = function (sequelize, DataTypes) {
-  return sequelize.define('motivos', {
+const { Model, DataTypes } = require('sequelize');
+const sequelize = require('./db');
+
+class Motivos extends Model { }
+
+Motivos.init(
+  {
     id_motivo: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
@@ -16,8 +20,10 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false,
       defaultValue: 1
     }
-  }, {
+  },
+  {
     sequelize,
+    modelName: 'Motivos',
     tableName: 'motivos',
     timestamps: true,
     indexes: [
@@ -30,5 +36,7 @@ module.exports = function (sequelize, DataTypes) {
         ]
       },
     ]
-  });
-};
+  }
+);
+
+module.exports = Motivos;

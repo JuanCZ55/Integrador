@@ -1,6 +1,10 @@
-const Sequelize = require('sequelize');
-module.exports = function (sequelize, DataTypes) {
-  return sequelize.define('horarios', {
+const { Model, DataTypes } = require('sequelize');
+const sequelize = require('./db');
+
+class Horario extends Model { }
+
+Horario.init(
+  {
     id_horarios: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
@@ -27,8 +31,10 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.TIME,
       allowNull: false
     }
-  }, {
+  },
+  {
     sequelize,
+    modelName: 'Horario',
     tableName: 'horarios',
     timestamps: true,
     indexes: [
@@ -48,5 +54,7 @@ module.exports = function (sequelize, DataTypes) {
         ]
       },
     ]
-  });
-};
+  }
+);
+
+module.exports = Horario;

@@ -1,6 +1,10 @@
-const Sequelize = require('sequelize');
-module.exports = function (sequelize, DataTypes) {
-  return sequelize.define('personas', {
+const { Model, DataTypes } = require('sequelize');
+const sequelize = require('./db');
+
+class Persona extends Model { }
+
+Persona.init(
+  {
     id_persona: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
@@ -37,8 +41,10 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING(255),
       allowNull: true
     }
-  }, {
+  },
+  {
     sequelize,
+    modelName: 'Persona',
     tableName: 'personas',
     timestamps: true,
     indexes: [
@@ -59,5 +65,7 @@ module.exports = function (sequelize, DataTypes) {
         ]
       },
     ]
-  });
-};
+  }
+);
+
+module.exports = Persona;
