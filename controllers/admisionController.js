@@ -1,6 +1,6 @@
 import e from "express";
 
-const Paciente = require("../models/paciente");
+const Paciente = require("../models/Paciente");
 const vP = require("../model/pacientesValidacion");
 
 export function controlPaciente(req, res) {
