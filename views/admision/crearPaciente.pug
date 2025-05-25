@@ -1,9 +1,9 @@
 extends ../layout.pug
 block scripts 
   script(src="./script/verificarDni.js") 
-
+block navbar
+  include ../mixins/navbarAdmision.pug
 block main
-  -let claseboton=claseB || "btn-outline-light"
   -let flagAlert = mensajeAlert ? true : false
   - var paciente = typeof paciente !== "undefined" ? paciente : {}
 

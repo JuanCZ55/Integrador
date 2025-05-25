@@ -1,0 +1,42 @@
+ul.nav.nav-underline.fs-4.ms-auto 
+  li.nav-item
+    a.nav-link.text-primary-emphasis(href="/admision/inicio") Inicio
+  li.nav-item.dropdown
+    a.nav-link.dropdown-toggle.text-primary-emphasis(href="#", role="button", data-bs-toggle="dropdown", aria-expanded="false") Pacientes
+    ul.dropdown-menu
+      li
+        a.dropdown-item(href="/paciente/check?navbar=crearPaciente") Gestion 
+      li
+        a.dropdown-item(href="#") Busqueda 
+      li
+        a.dropdown-item(href="#") Lista
+  li.nav-item.dropdown
+    a.nav-link.dropdown-toggle.text-primary-emphasis(href="#", role="button", data-bs-toggle="dropdown", aria-expanded="false") Admision
+    ul.dropdown-menu
+      li
+        a.dropdown-item(href="/paciente/check?navbar=admision") Admision  
+      li
+        a.dropdown-item(href="#") Modificacion 
+      li
+        a.dropdown-item(href="#") Lista 
+  li.nav-item.dropdown
+    a.nav-link.dropdown-toggle.text-primary-emphasis(href="#", role="button", data-bs-toggle="dropdown", aria-expanded="false") Habitacion
+    ul.dropdown-menu
+      li
+        a.dropdown-item(href="#") Ver Habitaciones
+      li
+        a.dropdown-item(href="#") Buscar Camas   
+      li  
+        a.dropdown-item(href="#") Gestion Habitaciones 
+      li
+        a.dropdown-item(href="#") Gestion Camas                 
+  li.nav-item.dropdown
+    a.nav-link.dropdown-toggle.text-primary-emphasis(href="#", role="button", data-bs-toggle="dropdown", aria-expanded="false") Turnos
+    ul.dropdown-menu
+      li
+        a.dropdown-item(href="#") Crear turno
+      li
+        a.dropdown-item(href="#") Modificar turno 
+      li
+        a.dropdown-item(href="#") Ver turnos
+

@@ -1,7 +1,7 @@
 const { Paciente, ObraSocial, Persona } = require("../models/init-models");
 const sequelize = require("../models/db");
 const { Op } = require("sequelize");
-async function crearPaciente(req, res) {
+async function controlCrearPaciente(req, res) {
   const {
     dni,
     nombre,
@@ -31,10 +31,11 @@ async function crearPaciente(req, res) {
     !fecha_nacimiento ||
     !genero ||
     !direccion ||
-    !obra_social
+    !id_obra_social
   ) {
-    return res.render("crearPaciente", {
+    return res.render("admision/crearPaciente", {
       mensajeAlert: "Por favor llene todos los campos obligatorios(*)",
+      persona: req.body,
     });
   }
 
@@ -72,7 +73,7 @@ async function crearPaciente(req, res) {
     mensajeAlert.push("El teléfono de contacto debe tener 10 dígitos");
   }
   //mail
-  if (mail && !regexEmail.test(email)) {
+  if (mail && !regexEmail.test(mail)) {
     mensajeAlert.push("El email debe ser válido");
   }
   //obra_social
@@ -88,126 +89,168 @@ async function crearPaciente(req, res) {
       "El código de la obra social debe tener al menos 3 caracteres"
     );
   }
-}
-//detalle
-if (detalle && detalle.length > 255) {
-  mensajeAlert.push("El detalle no puede tener más de 255 caracteres");
-}
-//renderiza la vista con los errores
-if (mensajeAlert.length > 0) {
-  return res.status(400).render("crearPaciente", {
-    mensajeAlert,
-    paciente: req.body,
-  });
-}
 
-// Crear un nuevo paciente
-try {
-  // 1. Buscar persona por DNI
-  const persona = await Persona.findOne({ where: { dni } });
-
-  let idPersona;
-  if (persona) {
-    // 2. Si existe persona, buscar paciente
-    idPersona = persona.id_persona;
-    const pacienteExistente = await Paciente.findOne({
-      where: { id_persona: idPersona },
+  //detalle
+  if (detalle && detalle.length > 255) {
+    mensajeAlert.push("El detalle no puede tener más de 255 caracteres");
+  }
+  //renderiza la vista con los errores
+  if (mensajeAlert.length > 0) {
+    return res.status(400).render("admision/crearPaciente", {
+      mensajeAlert,
+      paciente: req.body,
     });
-    if (pacienteExistente) {
-      mensajeAlert.push("Ya hay un paciente con ese DNI");
-      return res.render("crearPaciente", { mensajeAlert, paciente: req.body });
+  }
+
+  // Crear un nuevo paciente
+  try {
+    // 1. Buscar persona por DNI
+    const persona = await Persona.findOne({ where: { dni } });
+
+    let idPersona;
+    if (persona) {
+      // 2. Si existe persona, buscar paciente
+      idPersona = persona.id_persona;
+      const pacienteExistente = await Paciente.findOne({
+        where: { id_persona: idPersona },
+      });
+      if (pacienteExistente) {
+        mensajeAlert.push("Ya hay un paciente con ese DNI");
+        return res.render("admision/crearPaciente", {
+          mensajeAlert,
+          paciente: req.body,
+        });
+      }
+    } else {
+      // 3. Si no existe persona, crearla
+      const nuevaPersona = await Persona.create({
+        dni,
+        nombre,
+        apellido,
+        f_nacimiento: fecha_nacimiento,
+        genero,
+        telefono,
+        mail,
+      });
+      idPersona = nuevaPersona.id_persona;
     }
-  } else {
-    // 3. Si no existe persona, crearla
-    const nuevaPersona = await Persona.create({
-      dni,
-      nombre,
-      apellido,
-      f_nacimiento: fecha_nacimiento,
-      genero,
-      telefono,
-      mail,
+
+    // 4. Crear paciente con la FK de persona
+    await Paciente.create({
+      id_persona: idPersona,
+      contacto,
+      direccion,
+      id_obra_social,
+      cod_os,
+      detalle,
     });
-    idPersona = nuevaPersona.id_persona;
+
+    mensajeAlert.push("Paciente creado exitosamente");
+    return res.render("admision/crearPaciente", { mensajeAlert });
+  } catch (error) {
+    mensajeAlert.push("Error al crear el paciente");
+    return res.render("admision/crearPaciente", {
+      mensajeAlert,
+      paciente: req.body,
+    });
   }
-
-  // 4. Crear paciente con la FK de persona
-  await Paciente.create({
-    id_persona: idPersona,
-    contacto,
-    direccion,
-    id_obra_social,
-    cod_os,
-    detalle,
-  });
-
-  mensajeAlert.push("Paciente creado exitosamente");
-  return res.render("crearPaciente", { mensajeAlert });
-} catch (error) {
-  mensajeAlert.push("Error al crear el paciente");
-  return res.render("crearPaciente", { mensajeAlert, paciente: req.body });
 }
-
-async function crearPaciente(req, res) {
-  res.render("crearPaciente");
+//get para renderizar la vista de crear paciente
+async function gcrearPaciente(req, res) {
+  res.render("admision/crearPaciente", { dni: req.query.dni });
 }
-
-async function verificarPaciente(req, res) {
-  const paciente = await vP.buscarDni(req.params.dni);
-  let claseB;
-  if (!paciente) {
-    claseB = "btn-outline-danger";
-  } else {
-    claseB = "btn-outline-success";
-  }
-  return res.render("crearPaciente", { paciente, claseB });
-}
+//capaz ni lo use
+// async function verificarPaciente(req, res) {
+//   const pacienteExiste = await Paciente.findOne({});
+//   let claseB;
+//   if (!paciente) {
+//     claseB = "btn-outline-danger";
+//   } else {
+//     claseB = "btn-outline-success";
+//   }
+//   return res.render("crearPaciente", { paciente, claseB });
+// }
 //checkea si el paciente existe, si no existe lo crea
 // si existe rederiza la vista corresponidente del navbar seleccionado
+//post para verificar el dni y redirigir a la vista correspondiente
 async function checkPaciente(req, res) {
   const { dni, navbar } = req.body;
-  const paciente = await vP.buscarDni(dni);
-  if (!paciente) {
-    navbar = "crearPaciente";
-    return res.render("crearPaciente", { dni, navbar });
-  } else {
-    switch (navbar) {
-      case "gestionPaciente":
-        return res.render("crearPaciente", { paciente, dni, navbar });
+  try {
+    const persona = await Persona.findOne({
+      where: { dni },
+      include: [
+        {
+          model: Paciente,
+          as: "paciente",
+        },
+      ],
+    });
+    if (!persona || !persona.paciente) {
+      navbar = "crearPaciente";
+      let mensajeAlert = [];
+      mensajeAlert.push("El paciente no existente");
+      //para crearlo
+      return res.render("admision/admision/crearPaciente", {
+        dni,
+        navbar,
+        mensajeAlert,
+      });
+    } else {
+      //si existe el paciente, redirige a la vista correspondiente
+      switch (navbar) {
+        //por si lo quiere modificar
+        case "gestionPaciente":
+          return res.render("admision/crearPaciente", { persona, navbar });
 
-      case "buscarPacientes":
-        return res.render("buscarPacientes", { dni, navbar });
+        // no pertenece aca por que no es necesario checkear el dni
+        // case "buscarPacientes":
+        //   return res.render("buscarPacientes", { persona, navbar });
 
-      case "crearAdmision":
-        return res.render("crearAdmision", { dni, navbar });
+        //para crear la admision
+        case "crearAdmision":
+          return res.render("admision/crearAdmision", { dni, navbar });
 
-      case "modificarAdmision":
-        return res.render("modificarAdmision", { dni, navbar });
+        //para modificar la admision
+        case "modificarAdmision":
+          return res.render("admision/modificarAdmision", { dni, navbar });
 
-      case "crearTurno":
-        return res.render("crearTurno", { dni, navbar });
+        //para crear el turno
+        case "crearTurno":
+          return res.render("admision/crearTurno", { dni, navbar });
 
-      case "modificarTurno":
-        return res.render("modificarTurno", { dni, navbar });
+        //para modificar el turno
+        case "modificarTurno":
+          return res.render("admision/modificarTurno", { dni, navbar });
 
-      case "verTurnos":
-        return res.render("verTurnos", { dni, navbar });
+        //para ver los turnos de x paciente
+        case "verTurnos":
+          return res.render("admision/verTurnos", { dni, navbar });
 
-      default:
-        console.log("Error en la redirección de checkPaciente");
-        return res.redirect("/");
+        default:
+          console.log("Error en la redirección de checkPaciente");
+          return res.redirect("/");
+      }
     }
+  } catch (error) {
+    console.error("Error al verificar el paciente:", error);
+    let mensajeAlert = [];
+    mensajeAlert.push("Error al verificar el paciente");
+    return res.render("admision/inicio", { mensajeAlert });
   }
 }
+//get para renderizar la vista de verficar dni
 async function gcheckPaciente(req, res) {
-  res.render("verficardni", {
+  res.render("admision/verficardni", {
     navbar: req.query.navbar,
   });
 }
+async function inicio(req, res) {
+  res.render("admision/inicio");
+}
 module.exports = {
-  controlPaciente,
-  crearPaciente,
-  verificarPaciente,
+  controlCrearPaciente,
+  gcrearPaciente,
   checkPaciente,
   gcheckPaciente,
+  inicio,
 };

@@ -8,7 +8,7 @@ html(lang="es")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
     title Medicus Corp
     //- subi mi css a github para que no de problemas de ruta
-    link(rel='stylesheet', href="../public/css/style.css")
+    link(rel='stylesheet', href="/css/style.css")
     link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.4/dist/css/bootstrap.min.css", integrity="sha384-DQvkBjpPgn7RC31MCQoOeC9TI2kdqa4+BSgNMNj8v77fdC77Kj5zpWFTJaaAoMbC", crossorigin="anonymous")
     script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.4/dist/js/bootstrap.bundle.min.js", integrity="sha384-YUe2LzesAfftltw+PEaao2tjU/QATaW/rOitAq67e0CT0Zi2VVRL0oC4+gAaeBKu", crossorigin="anonymous")
     block scripts
@@ -17,85 +17,12 @@ html(lang="es")
     header
       nav.navbar.navbar-expand-lg
         .container.d-flex.justify-content-between.align-items-center
-          a.navbar-brand.rounded(href="home")
+          a.navbar-brand.rounded(href="/")
             img(src=imghome, alt="logo", width="200")
           button.navbar-toggler(type="button", data-bs-toggle="collapse", data-bs-target="#navbarNav", aria-controls="navbarNav", aria-expanded="false", aria-label="Toggle navigation")
             span.navbar-toggler-icon
           #navbarNav.collapse.navbar-collapse
-            if rol== 1 
-              ul.nav.nav-underline.fs-4.ms-auto
-                li.nav-item
-                  a.nav-link.text-primary-emphasis(href="/") Inicio
-                li.nav-item
-                  a.nav-link.text-primary-emphasis(href="#") Servicios
-                li.nav-item
-                  a.nav-link.text-primary-emphasis(href="#") Nosotros
-                li.nav-item
-                  a.nav-link.text-primary-emphasis(href="#") Contacto
-            else if rol== 2 
-              ul.nav.nav-underline.fs-4.ms-auto
-                li.nav-item
-                  a.nav-link.text-primary-emphasis(href="#") Inicio
-                li.nav-item
-                  a.nav-link.text-primary-emphasis(href="#") Servicios
-                li.nav-item
-                  a.nav-link.text-primary-emphasis(href="#") Nosotros
-                li.nav-item
-                  a.nav-link.text-primary-emphasis(href="#") Contacto
-            else if rol== 3
-              ul.nav.nav-underline.fs-4.ms-auto
-                li.nav-item
-                  a.nav-link.text-primary-emphasis(href="#") Inicio
-                li.nav-item
-                  a.nav-link.text-primary-emphasis(href="#") Servicios
-                li.nav-item
-                  a.nav-link.text-primary-emphasis(href="#") Nosotros
-                li.nav-item
-                  a.nav-link.text-primary-emphasis(href="#") Contacto
-            else
-              ul.nav.nav-underline.fs-4.ms-auto 
-                li.nav-item
-                  a.nav-link.text-primary-emphasis(href="#") Inicio
-                li.nav-item.dropdown
-                  a.nav-link.dropdown-toggle.text-primary-emphasis(href="#", role="button", data-bs-toggle="dropdown", aria-expanded="false") Pacientes
-                  ul.dropdown-menu
-                    li
-                      a.dropdown-item(href="/paciente/check?navbar=crearPaciente") Gestion 
-                    li
-                      a.dropdown-item(href="#") Busqueda 
-                    li
-                      a.dropdown-item(href="#") Lista
-                li.nav-item.dropdown
-                  a.nav-link.dropdown-toggle.text-primary-emphasis(href="#", role="button", data-bs-toggle="dropdown", aria-expanded="false") Admision
-                  ul.dropdown-menu
-                    li
-                      a.dropdown-item(href="/paciente/check?navbar=admision") Admision  
-                    li
-                      a.dropdown-item(href="#") Modificacion 
-                    li
-                      a.dropdown-item(href="#") Lista 
-                        //-en la lista 2 bton para admision e internacion
-                li.nav-item.dropdown
-                  a.nav-link.dropdown-toggle.text-primary-emphasis(href="#", role="button", data-bs-toggle="dropdown", aria-expanded="false") Habitacion
-                    //-traigo 3 arrglos para mostrar en la lista (disponibles, ocupadas y mantenimiento) para tener un filtro de las camas
-                  ul.dropdown-menu
-                    li
-                      a.dropdown-item(href="#") Ver Habitaciones
-                    li
-                      a.dropdown-item(href="#") Buscar Camas   
-                    li  
-                      a.dropdown-item(href="#") Gestion Habitaciones 
-                    li
-                      a.dropdown-item(href="#") Gestion Camas                 
-                li.nav-item.dropdown
-                  a.nav-link.dropdown-toggle.text-primary-emphasis(href="#", role="button", data-bs-toggle="dropdown", aria-expanded="false") Turnos
-                  ul.dropdown-menu
-                    li
-                      a.dropdown-item(href="#") Crear turno
-                    li
-                      a.dropdown-item(href="#") Modificar turno 
-                    li
-                      a.dropdown-item(href="#") Ver turnos
+            block navbar
                       
     br
     main.flex-main
