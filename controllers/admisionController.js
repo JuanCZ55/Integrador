@@ -186,13 +186,12 @@ async function checkPaciente(req, res) {
       ],
     });
     if (!persona || !persona.paciente) {
-      navbar = "crearPaciente";
       let mensajeAlert = [];
       mensajeAlert.push("El paciente no existente");
       //para crearlo
       return res.render("admision/admision/crearPaciente", {
         dni,
-        navbar,
+        navbar: "crarPaciente",
         mensajeAlert,
       });
     } else {
@@ -240,7 +239,9 @@ async function checkPaciente(req, res) {
 }
 //get para renderizar la vista de verficar dni
 async function gcheckPaciente(req, res) {
-  res.render("admision/verficardni", {
+  console.log("navbar recibido:", req.query.navbar);
+
+  res.render("admision/verificardni", {
     navbar: req.query.navbar,
   });
 }
