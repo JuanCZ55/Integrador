@@ -1,6 +1,7 @@
 extends ../layout.pug
 block navbar
-  include ../mixins/navbarAdmision.pug
+  include ../mixinsNavbar.pug
+  +navbarAdmision
 block main 
   div.container.mt-3.p-3.bg-body-secondary.rounded-5
     h1 Bienvenido al inicio

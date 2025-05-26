@@ -1,4 +1,7 @@
 extends ../layout.pug
+block navbar 
+  include ../mixinsNavbar.pug
+  +navbarAdmision
 block main  
   .container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.checkdni
     form.p-4(method="POST",action='/paciente/check')
