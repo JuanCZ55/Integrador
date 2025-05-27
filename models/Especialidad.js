@@ -1,7 +1,7 @@
-const { Model, DataTypes } = require('sequelize');
-const sequelize = require('./db');
+const { Model, DataTypes } = require("sequelize");
+const sequelize = require("./db");
 
-class Especialidad extends Model { }
+class Especialidad extends Model {}
 
 Especialidad.init(
   {
@@ -9,32 +9,22 @@ Especialidad.init(
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
     },
     nombre: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: false,
     },
     descripcion: {
       type: DataTypes.STRING(255),
-      allowNull: true
-    }
+      allowNull: true,
+    },
   },
   {
     sequelize,
-    modelName: 'Especialidad',
-    tableName: 'especialidades',
+    modelName: "Especialidad",
+    tableName: "especialidades",
     timestamps: true,
-    indexes: [
-      {
-        name: "PRIMARY",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "id_especialidad" },
-        ]
-      },
-    ]
   }
 );
 

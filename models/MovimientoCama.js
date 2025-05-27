@@ -1,7 +1,7 @@
-const { Model, DataTypes } = require('sequelize');
-const sequelize = require('./db');
+const { Model, DataTypes } = require("sequelize");
+const sequelize = require("./db");
 
-class MovimientoCama extends Model { }
+class MovimientoCama extends Model {}
 
 MovimientoCama.init(
   {
@@ -9,59 +9,35 @@ MovimientoCama.init(
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
     },
     id_admision: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'admisiones',
-        key: 'id_admision'
-      }
+        model: "admisiones",
+        key: "id_admision",
+      },
     },
     id_cama: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'camas',
-        key: 'id_cama'
-      }
+        model: "camas",
+        key: "id_cama",
+      },
     },
     estado: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      comment: "1: activa\r\n2: finalizada"
-    }
+      comment: "1: activa\r\n2: finalizada",
+    },
   },
   {
     sequelize,
-    modelName: 'MovimientoCama',
-    tableName: 'movimiento_camas',
+    modelName: "MovimientoCama",
+    tableName: "movimiento_camas",
     timestamps: true,
-    indexes: [
-      {
-        name: "PRIMARY",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "id_movimiento_camas" },
-        ]
-      },
-      {
-        name: "id_admision",
-        using: "BTREE",
-        fields: [
-          { name: "id_admision" },
-        ]
-      },
-      {
-        name: "id_cama",
-        using: "BTREE",
-        fields: [
-          { name: "id_cama" },
-        ]
-      },
-    ]
   }
 );
 

@@ -1,7 +1,7 @@
-const { Model, DataTypes } = require('sequelize');
-const sequelize = require('./db');
+const { Model, DataTypes } = require("sequelize");
+const sequelize = require("./db");
 
-class Motivos extends Model { }
+class Motivos extends Model {}
 
 Motivos.init(
   {
@@ -9,33 +9,23 @@ Motivos.init(
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
     },
     nombre: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: false,
     },
     estado: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: 1
-    }
+      defaultValue: 1,
+    },
   },
   {
     sequelize,
-    modelName: 'Motivos',
-    tableName: 'motivos',
+    modelName: "Motivos",
+    tableName: "motivos",
     timestamps: true,
-    indexes: [
-      {
-        name: "PRIMARY",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "id_motivo" },
-        ]
-      },
-    ]
   }
 );
 

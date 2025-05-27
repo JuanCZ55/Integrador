@@ -1,7 +1,7 @@
-const { Model, DataTypes } = require('sequelize');
-const sequelize = require('./db');
+const { Model, DataTypes } = require("sequelize");
+const sequelize = require("./db");
 
-class Sector extends Model { }
+class Sector extends Model {}
 
 Sector.init(
   {
@@ -9,28 +9,18 @@ Sector.init(
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
     },
     nombre: {
       type: DataTypes.STRING(255),
-      allowNull: false
-    }
+      allowNull: false,
+    },
   },
   {
     sequelize,
-    modelName: 'Sector',
-    tableName: 'sectores',
+    modelName: "Sector",
+    tableName: "sectores",
     timestamps: true,
-    indexes: [
-      {
-        name: "PRIMARY",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "id_sector" },
-        ]
-      },
-    ]
   }
 );
 

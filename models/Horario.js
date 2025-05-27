@@ -1,7 +1,7 @@
-const { Model, DataTypes } = require('sequelize');
-const sequelize = require('./db');
+const { Model, DataTypes } = require("sequelize");
+const sequelize = require("./db");
 
-class Horario extends Model { }
+class Horario extends Model {}
 
 Horario.init(
   {
@@ -9,51 +9,30 @@ Horario.init(
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
     },
     id_medico: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: {
-        model: 'medicos',
-        key: 'id_medico'
-      }
     },
     dia: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: false,
     },
     hora_inicio: {
       type: DataTypes.TIME,
-      allowNull: false
+      allowNull: false,
     },
     hora_fin: {
       type: DataTypes.TIME,
-      allowNull: false
-    }
+      allowNull: false,
+    },
   },
   {
     sequelize,
-    modelName: 'Horario',
-    tableName: 'horarios',
+    modelName: "Horario",
+    tableName: "horarios",
     timestamps: true,
-    indexes: [
-      {
-        name: "PRIMARY",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "id_horarios" },
-        ]
-      },
-      {
-        name: "id_medico",
-        using: "BTREE",
-        fields: [
-          { name: "id_medico" },
-        ]
-      },
-    ]
   }
 );
 

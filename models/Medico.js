@@ -1,7 +1,7 @@
-const { Model, DataTypes } = require('sequelize');
-const sequelize = require('./db');
+const { Model, DataTypes } = require("sequelize");
+const sequelize = require("./db");
 
-class Medico extends Model { }
+class Medico extends Model {}
 
 Medico.init(
   {
@@ -9,51 +9,33 @@ Medico.init(
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
     },
     id_persona: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'personas',
-        key: 'id_persona'
+        model: "personas",
+        key: "id_persona",
       },
-      unique: "medicos_ibfk_1"
+      unique: "medicos_ibfk_1",
     },
     nro_licencia: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
     },
     estado: {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 1,
-      comment: "1:activo\r\n2:suspendido\r\n3:no activo\r\n"
-    }
+      comment: "1:activo\r\n2:suspendido\r\n3:no activo\r\n",
+    },
   },
   {
     sequelize,
-    modelName: 'Medico',
-    tableName: 'medicos',
+    modelName: "Medico",
+    tableName: "medicos",
     timestamps: true,
-    indexes: [
-      {
-        name: "PRIMARY",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "id_medico" },
-        ]
-      },
-      {
-        name: "id_persona",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "id_persona" },
-        ]
-      },
-    ]
   }
 );
 

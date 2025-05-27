@@ -47,20 +47,6 @@ Persona.init(
     modelName: "Persona",
     tableName: "personas",
     timestamps: true,
-    indexes: [
-      {
-        name: "PRIMARY",
-        unique: true,
-        using: "BTREE",
-        fields: [{ name: "id_persona" }],
-      },
-      {
-        name: "dni",
-        unique: true,
-        using: "BTREE",
-        fields: [{ name: "dni" }],
-      },
-    ],
   }
 );
 

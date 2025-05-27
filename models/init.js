@@ -1,0 +1,14 @@
+require("./Admision");
+require("./Cama");
+require("./Especialidad");
+require("./Habitacion");
+require("./Horario");
+require("./Medico");
+require("./Motivos");
+require("./MovimientoCama");
+require("./ObraSocial");
+require("./Paciente");
+require("./Persona");
+require("./Sector");
+require("./Turno");
+require("./medico_especialidad");

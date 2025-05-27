@@ -1,7 +1,7 @@
-const { Model, DataTypes } = require('sequelize');
-const sequelize = require('./db');
+const { Model, DataTypes } = require("sequelize");
+const sequelize = require("./db");
 
-class Paciente extends Model { }
+class Paciente extends Model {}
 
 Paciente.init(
   {
@@ -9,87 +9,54 @@ Paciente.init(
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
     },
     id_persona: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'personas',
-        key: 'id_persona'
+        model: "personas",
+        key: "id_persona",
       },
-      unique: "pacientes_ibfk_2"
+      unique: "pacientes_ibfk_2",
     },
     contacto: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: true,
     },
     direccion: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: false,
     },
     id_obra_social: {
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'obra_sociales',
-        key: 'id_obra_social'
-      }
+        model: "obra_sociales",
+        key: "id_obra_social",
+      },
     },
     cod_os: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      unique: "cod_os"
+      unique: "cod_os",
     },
     detalle: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: true,
     },
     estado: {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 1,
-      comment: "1:activo\r\n2:no activo"
-    }
+      comment: "1:activo\r\n2:no activo",
+    },
   },
   {
     sequelize,
-    modelName: 'Paciente',
-    tableName: 'pacientes',
+    modelName: "Paciente",
+    tableName: "pacientes",
     timestamps: true,
-    indexes: [
-      {
-        name: "PRIMARY",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "id_paciente" },
-        ]
-      },
-      {
-        name: "id_persona",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "id_persona" },
-        ]
-      },
-      {
-        name: "cod_os",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "cod_os" },
-        ]
-      },
-      {
-        name: "id_obra_social",
-        using: "BTREE",
-        fields: [
-          { name: "id_obra_social" },
-        ]
-      },
-    ]
   }
 );
 
