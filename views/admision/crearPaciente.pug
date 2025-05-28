@@ -1,6 +1,4 @@
 extends ../layout.pug
-block scripts 
-  script(src="./script/verificarDni.js") 
 block navbar
   include ../mixinsNavbar.pug
   +navbarAdmision
@@ -9,19 +7,19 @@ block main
   -let flagAlert = mensajeAlert ? true : false
   - var paciente = typeof paciente !== "undefined" ? paciente : {}
 
-  if flagAlert
-    script. 
-      alert("#{mensajeAlert}") 
+  .alert.alert-danger(role="alert")
+    | #{mensajeAlert || ""}
   div.container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box
     form.p-4(novalidate, action="/admision/crearPaciente", method="POST")
-
-      h2.text-center Admision1
+      .d-flex.align-items-center.mb-3
+        h2.mx-auto.mb-0 Admision
+        button.btn.btn-secondary.ms-auto(type="button", id="btn-autocompletar") Autocompletar Emergencia
       br
       .row
         .col
           .mb-3
             label.form-label(for="dni") DNI*
-            input.form-control(type="number", id="dni", placeholder="48455713", value=paciente.dni || "", name="dni")
+            input.form-control(type="number", id="dni", placeholder="48455713", value=paciente.dni ||dni|| "", name="dni")
 
           .mb-3
             label.form-label(for="nombre") Nombre*
@@ -89,4 +87,3 @@ block main
       .d-flex.justify-content-between
         button.btn.btn-primary(type="submit") Crear Paciente
         button.btn.btn-primary(type="submit") Modificar Paciente
-

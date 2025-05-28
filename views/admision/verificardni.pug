@@ -4,10 +4,15 @@ block navbar
   +navbarAdmision
 block main  
   .container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.checkdni
-    form.p-4(method="POST",action='/paciente/check')
+    form.p-4(method="POST",action='/admision/check')
       input(type="hidden", name="navbar", value=navbar)
       h1.form-label(for="dni") Verificar DNI para #{navbar}
       br
       input.form-control(type="number", placeholder="48789651", name="dni")
       br      
-      button.btn.btn-primary(type="submit") Verificar
+      button.btn.btn-primary(type="submit") Verificar 
+  br
+  if emergencia 
+    .placeholder-wave.container.d-flex.justify-content-center.align-items-center
+      a.placeholder.border.rounded-2.cEmergencia(href="www.google.com") Emergencia
+        //- este boton emergencia crea un paciente generico y redirige a admision mostrando el id/dni temporal 
