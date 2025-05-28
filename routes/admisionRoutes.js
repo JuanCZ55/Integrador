@@ -10,6 +10,9 @@ router.post("/crearPaciente", admisionController.controlCrearPaciente);
 //da el dni y devuelve el paciente
 router.get("/check", admisionController.gcheckPaciente);
 
-router.post("/check", admisionController.checkPaciente);
+router.post("/check", admisionController.pCheckPaciente);
+
+//emergencia
+router.post("/emergencia", admisionController.emergencia);
 
 module.exports = router;
