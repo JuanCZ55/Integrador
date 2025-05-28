@@ -1,4 +1,4 @@
-const { Paciente, ObraSocial, Persona } = require("../models/init-models");
+const { Paciente, ObraSocial, Persona } = require("../models/init");
 const sequelize = require("../models/db");
 const { Op } = require("sequelize");
 async function controlCrearPaciente(req, res) {
@@ -173,8 +173,10 @@ async function gcrearPaciente(req, res) {
 //checkea si el paciente existe, si no existe lo crea
 // si existe rederiza la vista corresponidente del navbar seleccionado
 //post para verificar el dni y redirigir a la vista correspondiente
-async function checkPaciente(req, res) {
+async function pCheckPaciente(req, res) {
   const { dni, navbar } = req.body;
+  console.log("Estoy en pCheckPaciente");
+
   try {
     const persona = await Persona.findOne({
       where: { dni },
@@ -187,10 +189,12 @@ async function checkPaciente(req, res) {
     });
     if (!persona || !persona.paciente) {
       let mensajeAlert = [];
-      mensajeAlert.push("El paciente no existente");
+      mensajeAlert.push(
+        "El paciente no esta registrado, por favor complete el formulario"
+      );
       //para crearlo
-      return res.render("admision/admision/crearPaciente", {
-        dni,
+      return res.render("admision/crearPaciente", {
+        dni: dni,
         navbar: "crarPaciente",
         mensajeAlert,
       });
@@ -207,7 +211,11 @@ async function checkPaciente(req, res) {
 
         //para crear la admision
         case "crearAdmision":
-          return res.render("admision/crearAdmision", { dni, navbar });
+          return res.render("admision/crearAdmision", {
+            dni,
+            navbar,
+            emergencia: true,
+          });
 
         //para modificar la admision
         case "modificarAdmision":
@@ -221,7 +229,7 @@ async function checkPaciente(req, res) {
         case "modificarTurno":
           return res.render("admision/modificarTurno", { dni, navbar });
 
-        //para ver los turnos de x paciente
+        //para ver los turnos de x pacientev
         case "verTurnos":
           return res.render("admision/verTurnos", { dni, navbar });
 
@@ -240,18 +248,60 @@ async function checkPaciente(req, res) {
 //get para renderizar la vista de verficar dni
 async function gcheckPaciente(req, res) {
   console.log("navbar recibido:", req.query.navbar);
-
+  emergencia = false;
+  if (req.query.navbar === "admision") {
+    emergencia = true;
+  }
   res.render("admision/verificardni", {
     navbar: req.query.navbar,
+    emergencia: emergencia,
   });
 }
 async function inicio(req, res) {
   res.render("admision/inicio");
 }
+async function emergencia(req, res) {
+  const { navbar } = req.body;
+  console.log("Estoy en emergencia");
+  try {
+    const pacientes = await Paciente.findAll({
+      include: [
+        {
+          model: Persona,
+          as: "persona",
+          attributes: ["dni", "nombre", "apellido"],
+        },
+      ],
+      where: {
+        [Op.or]: [
+          { contacto: { [Op.ne]: null } },
+          { telefono: { [Op.ne]: null } },
+        ],
+      },
+    });
+
+    if (pacientes.length === 0) {
+      return res.render("admision/emergencia", {
+        mensajeAlert: "No hay pacientes con contacto o teléfono registrado",
+        navbar,
+      });
+    }
+
+    return res.render("admision/emergencia", { pacientes, navbar });
+  } catch (error) {
+    console.error("Error al obtener pacientes:", error);
+    return res.render("admision/emergencia", {
+      mensajeAlert: "Error al obtener pacientes",
+      navbar,
+    });
+  }
+}
+
 module.exports = {
   controlCrearPaciente,
   gcrearPaciente,
-  checkPaciente,
+  pCheckPaciente,
   gcheckPaciente,
   inicio,
+  emergencia,
 };
