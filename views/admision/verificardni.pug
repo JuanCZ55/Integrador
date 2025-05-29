@@ -13,6 +13,9 @@ block main
       button.btn.btn-primary(type="submit") Verificar 
   br
   if emergencia 
-    .placeholder-wave.container.d-flex.justify-content-center.align-items-center
-      a.placeholder.border.rounded-2.cEmergencia(href="www.google.com") Emergencia
-        //- este boton emergencia crea un paciente generico y redirige a admision mostrando el id/dni temporal 
+    form(method="POST", action="/admision/emergencia")
+      .placeholder-wave.container.d-flex.justify-content-center.align-items-center
+        button#btnEmergencia.placeholder.border.rounded-2.cEmergencia(type="submit")  Emergencia
+        
+        //- este boton emergencia crea un paciente generico y redirige a admision mostrando el id temporal 
+  
