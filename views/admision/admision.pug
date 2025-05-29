@@ -1,9 +1,13 @@
 extends ../layout.pug
 include ../mixins.pug
+include ../mixinsNavbar.pug
+
+block navbar 
+  +navbarAdmision()
 block main
   //- paciente trae datos de paciente y persona juntos
   //- si es un paciente de emergencia
-  if emergencia
+  if emergencia==true
     +alert(mensajeAlert, alertClass)
   div.container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box
     form.p-4(novalidate, action="/admision/admision", method="GET")

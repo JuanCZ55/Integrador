@@ -207,9 +207,7 @@ async function pCheckPaciente(req, res) {
 
         //para crear la admision
         case "crearAdmision":
-          return res.redirect(
-            "/crearAdmision?dni=" + dni + "&emergencia=false"
-          );
+          return res.redirect("crearAdmision?dni=" + dni + "&emergencia=false");
 
         //para modificar la admision
         case "modificarAdmision":
@@ -341,7 +339,7 @@ async function admision(req, res) {
       );
       //para crearlo
       return res.redirect(
-        `/admision/crearPaciente?dni=${dni}&emergencia=${emergencia || false}`
+        `/admision/crearPaciente?dni=${dni}&emergencia=${emergencia}`
       );
     }
     const motivos = await Motivos.findAll({
@@ -354,7 +352,7 @@ async function admision(req, res) {
     }));
 
     let mensajeAlert;
-    if (emergencia) {
+    if (emergencia == true) {
       mensajeAlert = `Paciente de emergencia creado. Escriba este DNI: ${dni} en la pulsera/frente del paciente.`;
     }
     return res.render("admision/admision", {
@@ -369,11 +367,11 @@ async function admision(req, res) {
         genero: persona.genero,
         telefono: persona.telefono,
         mail: persona.mail,
-        contacto: paciente.contacto,
-        direccion: paciente.direccion,
-        id_obra_social: paciente.id_obra_social,
-        cod_os: paciente.cod_os,
-        detalle: paciente.detalle,
+        contacto: persona.paciente.contacto,
+        direccion: persona.paciente.direccion,
+        id_obra_social: persona.paciente.id_obra_social,
+        cod_os: persona.paciente.cod_os,
+        detalle: persona.paciente.detalle,
       },
       emergencia: true,
       motivos: motivosArray,
