@@ -1,23 +1,89 @@
 extends ../layout.pug
-block scripts 
-  script(src="./script/verificarDni.js") 
+include ../mixins.pug
 block main
-  //-dis usa true o false para habilitar o deshabilitar el formulario 2
-  //-vdni trae el dni este o no este en el sistema
-  -let vdni=dni||''
+  //- paciente trae datos de paciente y persona juntos
+  //- si es un paciente de emergencia
+  if emergencia
+    +alert(mensajeAlert, alertClass)
   div.container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box
     form.p-4(novalidate, action="/admision/admision", method="GET")
       h2.text-center Admision
       br
-      .input-group.mb-3
-        input.form-control(type="number", placeholder="DNI",for="dni",value=vdni)
-          button.btn.btn-outline-light(type="submit", id="button-verificar", onclick="verificarDni(document.getElementById('dni').value)") Verificar
-    form.p-4(novalidate, action="/admision/registrar", method="POST",for="dni")
-      fieldset (disabled =!dis)
-        .d-none
-          input.form-control(type="number", placeholder="DNI",for="dni",value=vdni)
-            button.btn.btn-outline-light(type="button", id="button-verificar", onclick="verificarDni(document.getElementById('dni').value)") Verificar
-        .mb-3
-          label.form-label(for="lastname") Apellido
-          input.form-control(type="email", id="exampleInputEmail1", placeholder="Sosa Perez", aria-describedby="emailHelp")
-       
+      .row 
+        .col
+          .mb-3
+            ul.list-unstyled.border.border-2.border-dark.rounded-3
+              h3 Dato del Paciente
+              li
+                strong DNI: 
+                |  #{paciente.dni || ""}
+              li
+                strong Nombre: 
+                |  #{paciente.nombre || ""}
+              li
+                strong Apellido: 
+                |  #{paciente.apellido || ""}
+              li
+                strong Fecha de Nacimiento: 
+                |  #{paciente.fecha_nacimiento || ""}
+              li
+                strong Genero: 
+                |  #{paciente.genero || ""}
+              li
+                strong Direccion: 
+                |  #{paciente.direccion || ""}
+              li
+                strong Telefono: 
+                |  #{paciente.telefono || ""}
+              li
+                strong Telefono Contacto: 
+                |  #{paciente.telefono_contacto || ""}
+              li
+                strong Email: 
+                |  #{paciente.email || ""}
+              li
+                strong Obra Social: 
+                |  #{paciente.obra_social || ""}
+              li
+                strong Numero de Afiliado: 
+                |  #{paciente.numero_afiliado || ""}
+              li
+                strong Numero de Historia Clinica: 
+                |  #{paciente.numero_historia_clinica || ""}
+              li
+                strong Detalle: 
+                |  #{paciente.detalle || ""}
+              a(href="/admision/crearPaciente", class="btn btn-secondary mt-3") Editar Paciente
+
+        .col 
+          .mb-3 
+            +select("motivo", motivos, motivoSeleccionado) 
+          .mb-3#derivado
+            label.form-label(for="derivado") Derivado por
+            input.form-control(type="text", id="derivado", name="derivado", value=derivado || "", placeholder="Nombre del Medico o Institucion")
+          .mb-3#turno
+            label.form-label(for="fecha_turno") Fecha del Turno*
+            input.form-control(type="date", id="fecha_turno", name="fecha_turno", value=fechaTurno || "")
+      button.btn.btn-primary(type="submit") Crear Admision 
+
+    script.
+      document.addEventListener('DOMContentLoaded', function() {
+        const motivo = document.getElementById('motivo');
+        const derivado = document.getElementById('derivado');
+        const turno = document.getElementById('turno');
+
+        function mostrarOcultarCampos() {
+          // Mostrar ambos por defecto
+          derivado.classList.remove('d-none');
+          turno.classList.remove('d-none');
+          // Ocultar según selección
+          if (motivo.value === 'Derivado') {
+            turno.classList.add('d-none');
+          } else if (motivo.value === 'Turno') {
+            derivado.classList.add('d-none');
+          }
+        }
+
+        mostrarOcultarCampos();
+        motivo.addEventListener('change', mostrarOcultarCampos);
+      });
