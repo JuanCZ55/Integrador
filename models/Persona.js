@@ -13,7 +13,7 @@ Persona.init(
     },
     dni: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       unique: "dni",
     },
     nombre: {
