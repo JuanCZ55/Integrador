@@ -1,4 +1,5 @@
 extends ../layout.pug
+include ../mixins.pug
 block navbar
   include ../mixinsNavbar.pug
   +navbarAdmision
@@ -34,11 +35,11 @@ block main
             input.form-control(type="date", id="fecha_nacimiento",value=paciente.fecha_nacimiento || "", name="fecha_nacimiento")
 
           .mb-3
-            label.form-label Sexo*
-            select.form-select(name="sexo")
-              option(value="F", selected=paciente.sexo === "F") Masculino
-              option(value="M", selected=paciente.sexo === "M") Femenino
-              option(value="O", selected=paciente.sexo === "O") Otro
+            label.form-label Genero*
+            select.form-select(name="genero")
+              option(value="femenino", selected=paciente.sexo === "femenino") Femenino
+              option(value="masculino", selected=paciente.sexo === "masculino") Masculino
+              option(value="otro", selected=paciente.sexo === "otro") Otro
           .mb-3
             label.form-label(for="direccion") Direccion*
             input.form-control(type="text", id="direccion", placeholder="Av. San Martin 1234", value=paciente.direccion || "", name="direccion")
@@ -52,30 +53,13 @@ block main
             input.form-control(type="tel", id="telefono_contacto", placeholder="2665451236", value=paciente.telefono_contacto || "", name="telefono_contacto")
 
           .mb-3
-            label.form-label(for="email") Email*
-            input.form-control(type="email", id="email", placeholder="usuario@mail.com", value=paciente.email || "", name="email")
+            label.form-label(for="mail") Email*
+            input.form-control(type="email", id="mail", placeholder="usuario@mail.com", value=paciente.email || "", name="mail")
 
 
           .mb-3
-            label.form-label Obra Social*
-            select.form-select(name="obra_social", id="obra_social")
-              option(value="Ninguna", selected=paciente.obra_social === "Ninguna") Ninguna
-              option(value="Dosep", selected=paciente.obra_social === "Dosep") Dosep
-              option(value="Dospu", selected=paciente.obra_social === "Dospu") Dospu
-              option(value="Pami", selected=paciente.obra_social === "Pami") Pami
-              option(value="Osde", selected=paciente.obra_social === "Osde") Osde
-              option(value="Swiss Medical", selected=paciente.obra_social === "Swiss Medical") Swiss Medical
-              option(value="Medife", selected=paciente.obra_social === "Medife") Medife
-              option(value="Federada Salud", selected=paciente.obra_social === "Federada Salud") Federada Salud
-              option(value="Galeno Argentina", selected=paciente.obra_social === "Galeno Argentina") Galeno Argentina
-              option(value="Jerárquicos Salud", selected=paciente.obra_social === "Jerárquicos Salud") Jerárquicos Salud
-              option(value="Medicus", selected=paciente.obra_social === "Medicus") Medicus
-              option(value="Omint", selected=paciente.obra_social === "Omint") Omint
-              option(value="Luz y Fuerza", selected=paciente.obra_social === "Luz y Fuerza") Luz y Fuerza
-              option(value="Osmata", selected=paciente.obra_social === "Osmata") Osmata
-              option(value="Osfatun", selected=paciente.obra_social === "Osfatun") Osfatun
-              option(value="Osetya", selected=paciente.obra_social === "Osetya") Osetya
-              option(value="Opdea", selected=paciente.obra_social === "Opdea") Opdea
+            +select("obra_social",OSarray)
+
           .mb-3
             label.form-label(for="cod_os") Numero Obra Social*
             input.form-control(type="text", id="cod_os", placeholder="OS1234", value=paciente.cod_os || "", name="cod_os")

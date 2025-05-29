@@ -10,8 +10,8 @@ mixin alert(message, alertClass)
 //-   { id: "O", nombre: "Otro" }
 //- ]
 //- selectedValue: el id seleccionado
-mixin select(lName,array, selectedValue)
-  label.form-label(for=lName) #{lName}
+mixin select(lName,array, selectedValue,nombre)
+  label.form-label(for=lName) #{nombre}*
   select.form-select(name=lName, id=lName)
     each item in array
       option(value=item.id, selected=(item.id == selectedValue) ? true : false)= item.nombre
