@@ -1,8 +1,10 @@
 extends ../layout.pug
+include ../mixins.pug
 block navbar
   include ../mixinsNavbar.pug
   +navbarAdmision
 block main 
+  +alert(mensajeAlert, alertClass)
   div.container.mt-3.p-3.bg-body-secondary.rounded-5
     h1 Bienvenido al inicio
     p Encontraras 3 secciones: Pacientes, Admision y Habitaciones
