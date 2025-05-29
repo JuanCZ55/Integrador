@@ -15,4 +15,7 @@ router.post("/check", admisionController.pCheckPaciente);
 //emergencia
 router.post("/emergencia", admisionController.emergencia);
 
+//admision
+router.get("/crearAdmision", admisionController.admision);
+router.post("/crearAdmision", admisionController.padmision);
 module.exports = router;
