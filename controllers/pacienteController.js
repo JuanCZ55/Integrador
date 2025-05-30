@@ -19,7 +19,7 @@ async function controlCrearPaciente(req, res) {
     genero,
     telefono,
     mail,
-    contacto,
+   telefono_contacto,
     direccion,
     id_obra_social,
     cod_os,
@@ -79,7 +79,7 @@ async function controlCrearPaciente(req, res) {
   }
   //telefono_contacto
   if (contacto && !regexTelefono.test(contacto)) {
-    mensajeAlert.push("El teléfono de contacto debe tener 10 dígitos");
+    mensajeAlert.push("El teléfono detelefono_contacto debe tener 10 dígitos");
   }
   //mail
   if (mail && !regexEmail.test(mail)) {
@@ -147,7 +147,7 @@ async function controlCrearPaciente(req, res) {
     // 4. Crear paciente con la FK de persona
     await Paciente.create({
       id_persona: idPersona,
-      contacto,
+     telefono_contacto,
       direccion,
       id_obra_social,
       cod_os,
@@ -157,22 +157,19 @@ async function controlCrearPaciente(req, res) {
     mensajeAlert.push("Paciente creado exitosamente");
     return res.render("admision/crearPaciente", { mensajeAlert });
   } catch (error) {
-    mensajeAlert.push("Error al crear el paciente");
-    return res.render("admision/crearPaciente", {
-      mensajeAlert,
-      paciente: req.body,
-    });
+    console.error("Error al crear el paciente:", error);
+   return res.redirect("/admision/inicio?error=crearPaciente");
   }
 }
 //+get para renderizar la vista de crear paciente
 async function gcrearPaciente(req, res) {
   const { dni } = req.query;
   try {
-    ObraSocial.findAll({
+    const obraSocial=ObraSocial.findAll({
       attributes: ["id_obra_social", "nombre"],
       where: { estado: true },
     });
-    const OSarray = ObraSocial.map((os) => ({
+    const OSarray = obraSocial.map((os) => ({
       id: os.id_obra_social,
       nombre: os.nombre,
     }));
@@ -195,7 +192,7 @@ async function gcrearPaciente(req, res) {
         genero: persona.genero,
         telefono: persona.telefono,
         mail: persona.mail,
-        contacto: persona.paciente.contacto,
+       telefono_contacto: persona.paciente.contacto,
         direccion: persona.paciente.direccion,
         id_obra_social: persona.paciente.id_obra_social,
         cod_os: persona.paciente.cod_os,
@@ -205,7 +202,7 @@ async function gcrearPaciente(req, res) {
         dni: req.query.dni,
         OSarray,
         paciente: persona ? paciente : null,
-        modifcar: true, // Indica que se quiere modificar un paciente existente
+        modificar: true, // Indica que se quiere modificar un paciente existente
       });
     } else {
       // Si no hay persona, renderiza el formulario vacío
@@ -213,7 +210,7 @@ async function gcrearPaciente(req, res) {
         dni: req.query.dni,
         OSarray,
         paciente: null,
-        modifcar: false, // Indica que se quiere crear un nuevo paciente
+        modificar: false, // Indica que se quiere crear un nuevo paciente
       });
     }
   } catch (error) {
@@ -287,8 +284,7 @@ async function pCheckPaciente(req, res) {
     }
   } catch (error) {
     console.error("Error al verificar el paciente:", error);
-    let mensajeAlert = [];
-    mensajeAlert.push("Error al verificar el paciente");
+
     return res.redirect("/admision/inicio?error=check");
   }
 }
@@ -301,7 +297,7 @@ async function gcheckPaciente(req, res) {
   }
   res.render("admision/verificardni", {
     navbar: req.query.navbar,
-    emergencia: emergencia,
+    emergencia,
   });
 }
 //+post para crear un paciente de emergencia
@@ -325,7 +321,7 @@ async function emergencia(req, res) {
     // 3. Crear paciente asociado a esa persona
     const paciente = await Paciente.create({
       id_persona: persona.id_persona,
-      contacto: null,
+     telefono_contacto: null,
       direccion: "Desconocida",
       id_obra_social: null,
       cod_os: null,
@@ -351,7 +347,7 @@ async function emergencia(req, res) {
         genero: persona.genero,
         telefono: persona.telefono,
         mail: persona.mail,
-        contacto: paciente.contacto,
+       telefono_contacto: paciente.contacto,
         direccion: paciente.direccion,
         id_obra_social: paciente.id_obra_social,
         cod_os: paciente.cod_os,
@@ -362,9 +358,7 @@ async function emergencia(req, res) {
     });
   } catch (error) {
     console.error("Error al crear paciente de emergencia:", error);
-    return res.render("admision/inicio", {
-      mensajeAlert: "Error al crear paciente de emergencia",
-    });
+    return res.redirect("admision/inicio?error=emergencia");
   }
 }
 //+post para modificar un paciente
@@ -437,7 +431,7 @@ async function modificarPaciente(req, res) {
   }
   //telefono_contacto
   if (contacto && !regexTelefono.test(contacto)) {
-    mensajeAlert.push("El teléfono de contacto debe tener 10 dígitos");
+    mensajeAlert.push("El teléfono detelefono_contacto debe tener 10 dígitos");
   }
   //mail
   if (mail && !regexEmail.test(mail)) {
@@ -514,7 +508,7 @@ async function modificarPaciente(req, res) {
     //-actualizo datos de paciente
     await persona.paciente.update({
       direccion,
-      contacto: telefono_contacto,
+     telefono_contacto: telefono_contacto,
       id_obra_social: obraSocialBuscada.id_obra_social,
       cod_os,
       detalle,
@@ -562,7 +556,7 @@ async function busqueda(req, res) {
           genero: persona.genero,
           telefono: persona.telefono,
           mail: persona.mail,
-          contacto: persona.paciente.contacto,
+         telefono_contacto: persona.paciente.contacto,
           direccion: persona.paciente.direccion,
           id_obra_social: persona.paciente.id_obra_social,
           cod_os: persona.paciente.cod_os,
@@ -612,7 +606,7 @@ async function listar(req, res) {
       genero: persona.genero,
       telefono: persona.telefono,
       mail: persona.mail,
-      contacto: persona.paciente.contacto,
+     telefono_contacto: persona.paciente.contacto,
       direccion: persona.paciente.direccion,
       id_obra_social: persona.paciente.id_obra_social,
       cod_os: persona.paciente.cod_os,
