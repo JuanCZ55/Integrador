@@ -15,7 +15,12 @@ router.post("/crearPaciente", pacienteController.controlCrearPaciente);
 router.get("/check", pacienteController.gcheckPaciente);
 //*checkea el dni y redirige a la vista correspondiente
 router.post("/check", pacienteController.pCheckPaciente);
-
+//*controla para la modificacion de un paciente
+router.post("/modificarPaciente", pacienteController.modificarPaciente);
+//*busca y muestra un paciente
+router.get("/buscarPaciente", pacienteController.busqueda);
+//*listar pacientes
+router.get("/listarPacientes", pacienteController.listarPacientes);
 //*emergencia
 router.post("/emergencia", pacienteController.emergencia);
 
