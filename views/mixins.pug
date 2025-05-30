@@ -15,3 +15,14 @@ mixin select(lName,array, selectedValue,nombre)
   select.form-select(name=lName, id=lName)
     each item in array
       option(value=item.id, selected=(item.id == selectedValue) ? true : false)= item.nombre
+mixin tabla(thead, tbody)
+  table.table.table-striped
+    thead
+      tr
+        each th in thead
+          th= th
+    tbody
+      each row in tbody
+        tr
+          each cell in row
+            td= cell
