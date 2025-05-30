@@ -19,7 +19,7 @@ async function controlCrearPaciente(req, res) {
     genero,
     telefono,
     mail,
-   telefono_contacto,
+    telefono_contacto,
     direccion,
     id_obra_social,
     cod_os,
@@ -147,7 +147,7 @@ async function controlCrearPaciente(req, res) {
     // 4. Crear paciente con la FK de persona
     await Paciente.create({
       id_persona: idPersona,
-     telefono_contacto,
+      telefono_contacto,
       direccion,
       id_obra_social,
       cod_os,
@@ -158,14 +158,14 @@ async function controlCrearPaciente(req, res) {
     return res.render("admision/crearPaciente", { mensajeAlert });
   } catch (error) {
     console.error("Error al crear el paciente:", error);
-   return res.redirect("/admision/inicio?error=crearPaciente");
+    return res.redirect("/admision/inicio?error=crearPaciente");
   }
 }
 //+get para renderizar la vista de crear paciente
 async function gcrearPaciente(req, res) {
   const { dni } = req.query;
   try {
-    const obraSocial=ObraSocial.findAll({
+    const obraSocial = ObraSocial.findAll({
       attributes: ["id_obra_social", "nombre"],
       where: { estado: true },
     });
@@ -192,7 +192,7 @@ async function gcrearPaciente(req, res) {
         genero: persona.genero,
         telefono: persona.telefono,
         mail: persona.mail,
-       telefono_contacto: persona.paciente.contacto,
+        telefono_contacto: persona.paciente.contacto,
         direccion: persona.paciente.direccion,
         id_obra_social: persona.paciente.id_obra_social,
         cod_os: persona.paciente.cod_os,
@@ -321,7 +321,7 @@ async function emergencia(req, res) {
     // 3. Crear paciente asociado a esa persona
     const paciente = await Paciente.create({
       id_persona: persona.id_persona,
-     telefono_contacto: null,
+      telefono_contacto: null,
       direccion: "Desconocida",
       id_obra_social: null,
       cod_os: null,
@@ -347,7 +347,7 @@ async function emergencia(req, res) {
         genero: persona.genero,
         telefono: persona.telefono,
         mail: persona.mail,
-       telefono_contacto: paciente.contacto,
+        telefono_contacto: paciente.contacto,
         direccion: paciente.direccion,
         id_obra_social: paciente.id_obra_social,
         cod_os: paciente.cod_os,
@@ -508,7 +508,7 @@ async function modificarPaciente(req, res) {
     //-actualizo datos de paciente
     await persona.paciente.update({
       direccion,
-     telefono_contacto: telefono_contacto,
+      telefono_contacto: telefono_contacto,
       id_obra_social: obraSocialBuscada.id_obra_social,
       cod_os,
       detalle,
@@ -556,7 +556,7 @@ async function busqueda(req, res) {
           genero: persona.genero,
           telefono: persona.telefono,
           mail: persona.mail,
-         telefono_contacto: persona.paciente.contacto,
+          telefono_contacto: persona.paciente.contacto,
           direccion: persona.paciente.direccion,
           id_obra_social: persona.paciente.id_obra_social,
           cod_os: persona.paciente.cod_os,
@@ -569,7 +569,7 @@ async function busqueda(req, res) {
     return res.redirect("/admision/inicio?error=buscar");
   }
 }
-async function listar(req, res) {
+async function listarPacientes(req, res) {
   try {
     const personas = await Persona.findAll({
       attributes: [
@@ -606,7 +606,7 @@ async function listar(req, res) {
       genero: persona.genero,
       telefono: persona.telefono,
       mail: persona.mail,
-     telefono_contacto: persona.paciente.contacto,
+      telefono_contacto: persona.paciente.contacto,
       direccion: persona.paciente.direccion,
       id_obra_social: persona.paciente.id_obra_social,
       cod_os: persona.paciente.cod_os,
@@ -616,13 +616,13 @@ async function listar(req, res) {
   } catch (error) {}
 }
 module.exports = {
-  controlCrearPaciente,
-  gcrearPaciente,
-  pCheckPaciente,
-  gcheckPaciente,
-  inicio,
-  emergencia,
-  modificarPaciente,
-  busqueda,
-  listar,
+  controlCrearPaciente, //+post para crear un paciente-
+  gcrearPaciente, //+get para renderizar la vista de crear paciente-
+  pCheckPaciente, //+post para verificar el dni y redirigir a la vista correspondiente-
+  gcheckPaciente, //+get para renderizar la vista de verficar dni-
+  inicio, //+get para renderizar la vista de admision-
+  emergencia, //+post para crear un paciente de emergencia-
+  modificarPaciente, //+post para modificar un paciente-
+  busqueda, //+get para buscar un paciente por dni-
+  listarPacientes, //+get para listar todos los pacientes activos
 };
