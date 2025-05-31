@@ -1,3 +1,4 @@
 /compiladoPug
 /node_modules
 /view/provisionales
+.env
