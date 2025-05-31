@@ -139,12 +139,7 @@ async function padmision(req, res) {
   }
 }
 module.exports = {
-  controlCrearPaciente,
-  gcrearPaciente,
-  pCheckPaciente,
-  gcheckPaciente,
   inicio,
-  emergencia,
   admision,
   padmision,
 };
