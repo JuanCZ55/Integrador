@@ -6,8 +6,8 @@ block navbar
   
 block main
   -let flagAlert = mensajeAlert ? true : false
-  - var paciente = typeof paciente !== "undefined" ? paciente : {}
-
+  - var paciente = (typeof paciente !== "undefined" && paciente) ? paciente : {}
+  +debug(locals)
   .alert.alert-danger(role="alert")
     | #{mensajeAlert || ""}
   div.container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box
@@ -54,11 +54,11 @@ block main
 
           .mb-3
             label.form-label(for="mail") Email*
-            input.form-control(type="email", id="mail", placeholder="usuario@mail.com", value=paciente.email || "", name="mail")
+            input.form-control(type="mail", id="mail", placeholder="usuario@mail.com", value=paciente.mail || "", name="mail")
 
 
           .mb-3
-            +select("obra_social",OSarray)
+            +select("id_obra_social",arregloObraSociales,id_obra_social, "Obra Social")
 
           .mb-3
             label.form-label(for="cod_os") Numero Obra Social*
