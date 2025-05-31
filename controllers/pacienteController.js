@@ -2,13 +2,12 @@ const {
   Paciente,
   ObraSocial,
   Persona,
-  Motivos,
   Admision,
   Turno,
 } = require("../models/init");
 const sequelize = require("../models/db");
 const { Op } = require("sequelize");
-
+//!nota hacer uso de ObS y poner trycatch
 //+post para crear un paciente
 async function controlCrearPaciente(req, res) {
   const {
@@ -25,6 +24,7 @@ async function controlCrearPaciente(req, res) {
     cod_os,
     detalle,
   } = { ...req.body };
+  console.log(req.body);
 
   let mensajeAlert = [];
   const regexName = /^[a-zA-Z\s]+$/;
@@ -42,10 +42,17 @@ async function controlCrearPaciente(req, res) {
     !direccion ||
     !id_obra_social
   ) {
-    return res.render("admision/crearPaciente", {
-      mensajeAlert: "Por favor llene todos los campos obligatorios(*)",
-      persona: req.body,
-    });
+    try {
+      const arrObra = await ObS();
+      return res.render("admision/crearPaciente", {
+        mensajeAlert: "Por favor llene todos los campos obligatorios(*)",
+        paciente: req.body,
+        arregloObraSociales: arrObra || [],
+      });
+    } catch (error) {
+      console.error("Error al obtener las obras sociales:", error);
+      return res.redirect("/admision/inicio?error=crearPaciente");
+    }
   }
 
   // Validaciones especificas
@@ -105,9 +112,12 @@ async function controlCrearPaciente(req, res) {
   }
   //renderiza la vista con los errores
   if (mensajeAlert.length > 0) {
-    return res.status(400).render("admision/crearPaciente", {
+    const arrObra = await ObS();
+    return res.render("admision/crearPaciente", {
       mensajeAlert,
       paciente: req.body,
+      arregloObraSociales: arrObra || [],
+      alertClass: "alert-danger",
     });
   }
 
@@ -164,10 +174,12 @@ async function controlCrearPaciente(req, res) {
 //+get para renderizar la vista de crear paciente
 async function gcrearPaciente(req, res) {
   const { dni } = req.query;
+  console.log(req.query);
+
   try {
-    const obraSocial = ObraSocial.findAll({
+    const obraSocial = await ObraSocial.findAll({
       attributes: ["id_obra_social", "nombre"],
-      where: { estado: true },
+      where: { estado: 1 },
     });
     const OSarray = obraSocial.map((os) => ({
       id: os.id_obra_social,
@@ -200,7 +212,7 @@ async function gcrearPaciente(req, res) {
       };
       return res.render("admision/crearPaciente", {
         dni: req.query.dni,
-        OSarray,
+        OSarray: OSarray || [],
         paciente: persona ? paciente : null,
         modificar: true, // Indica que se quiere modificar un paciente existente
       });
@@ -214,7 +226,7 @@ async function gcrearPaciente(req, res) {
       });
     }
   } catch (error) {
-    console.error("Error al obtener las obras sociales:", error);
+    console.error("Error al get paciente:", error);
     return res.redirect("/admision/inicio?error=crearPaciente");
   }
 }
@@ -241,11 +253,7 @@ async function pCheckPaciente(req, res) {
         "El paciente no esta registrado, por favor carguelo al sistema"
       );
       //para crearlo
-      return res.render("admision/crearPaciente", {
-        dni: dni,
-        navbar: "crearPaciente",
-        mensajeAlert,
-      });
+      return res.redirect("crearPaciente?dni=" + dni);
     } else {
       //si existe el paciente, redirige a la vista correspondiente
       switch (navbar) {
@@ -396,7 +404,7 @@ async function modificarPaciente(req, res) {
   ) {
     return res.render("admision/crearPaciente", {
       mensajeAlert: "Por favor llene todos los campos obligatorios(*)",
-      persona: req.body,
+      paciente: req.body,
     });
   }
 
@@ -615,12 +623,23 @@ async function listarPacientes(req, res) {
     }));
   } catch (error) {}
 }
+//-Utilidades
+async function ObS() {
+  const obras = await ObraSocial.findAll({
+    attributes: ["id_obra_social", "nombre"],
+    where: { estado: 1 },
+  });
+
+  return obras.map((os) => ({
+    id: os.id_obra_social,
+    nombre: os.nombre,
+  }));
+}
 module.exports = {
   controlCrearPaciente, //+post para crear un paciente-
   gcrearPaciente, //+get para renderizar la vista de crear paciente-
   pCheckPaciente, //+post para verificar el dni y redirigir a la vista correspondiente-
   gcheckPaciente, //+get para renderizar la vista de verficar dni-
-  inicio, //+get para renderizar la vista de admision-
   emergencia, //+post para crear un paciente de emergencia-
   modificarPaciente, //+post para modificar un paciente-
   busqueda, //+get para buscar un paciente por dni-
