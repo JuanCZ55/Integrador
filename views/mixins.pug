@@ -13,8 +13,12 @@ mixin alert(message, alertClass)
 mixin select(lName,array, selectedValue,nombre)
   label.form-label(for=lName) #{nombre}*
   select.form-select(name=lName, id=lName)
-    each item in array
-      option(value=item.id, selected=(item.id == selectedValue) ? true : false)= item.nombre
+    if array && array.length
+      each item in array
+        option(value=item.id, selected=(item.id == selectedValue) ? true : false)= item.nombre
+    else
+      option(value="") No hay opciones disponibles
+      
 mixin tabla(thead, tbody)
   table.table.table-striped
     thead
@@ -26,3 +30,6 @@ mixin tabla(thead, tbody)
         tr
           each cell in row
             td= cell
+            
+mixin debug(vars)
+  pre= JSON.stringify(vars, null, 2)
