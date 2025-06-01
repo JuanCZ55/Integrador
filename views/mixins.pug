@@ -1,6 +1,15 @@
 mixin alert(message, alertClass)
-  if message
-    .alert(class=`${alertClass}` role="alert")= message
+  if message && message !== ""&&message !== null
+    .alert(class=`${alertClass}` role="alert")
+      if Array.isArray(message)
+        each msg, i in message
+          | #{msg}
+          if i != message.length - 1
+            br
+      else
+        = message
+  
+
 
 //- lName: string
 //- array: array de objetos {id, nombre}
