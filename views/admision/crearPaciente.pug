@@ -5,7 +5,8 @@ block navbar
   +navbarAdmision
   
 block main
-  -let flagAlert = mensajeAlert ? true : false
+  -let etapa=etapa || ""
+  //- etapa es para saber si creo/mdifico un paciente correctamente y muestra un mensaje
   - var paciente = (typeof paciente !== "undefined" && paciente) ? paciente : {}
   +debug(locals)
   .alert.alert-danger(role="alert")
@@ -36,7 +37,7 @@ block main
 
           .mb-3
             label.form-label Genero*
-            select.form-select(name="genero")
+            select.form-select(name="genero",id="genero")
               option(value="femenino", selected=paciente.sexo === "femenino") Femenino
               option(value="masculino", selected=paciente.sexo === "masculino") Masculino
               option(value="otro", selected=paciente.sexo === "otro") Otro
@@ -45,15 +46,15 @@ block main
             input.form-control(type="text", id="direccion", placeholder="Av. San Martin 1234", value=paciente.direccion || "", name="direccion")
         .col      
           .mb-3
-            label.form-label(for="telefono") Telefono*
+            label.form-label(for="telefono") Telefono
             input.form-control(type="tel", id="telefono", placeholder="2665451236", value=paciente.telefono || "", name="telefono")
 
           .mb-3
-            label.form-label(for="telefono_contacto") Telefono Contacto
-            input.form-control(type="tel", id="telefono_contacto", placeholder="2665451236", value=paciente.telefono_contacto || "", name="telefono_contacto")
+            label.form-label(for="contacto") Telefono Contacto
+            input.form-control(type="tel", id="contacto", placeholder="2665451236", value=paciente.contacto || "", name="contacto")
 
           .mb-3
-            label.form-label(for="mail") Email*
+            label.form-label(for="mail") Email
             input.form-control(type="mail", id="mail", placeholder="usuario@mail.com", value=paciente.mail || "", name="mail")
 
 
@@ -69,5 +70,24 @@ block main
             textarea.form-control(id="detalle", rows="3", placeholder="Escriba un mensaje", name="detalle")= paciente.detalle || ""
         br
       .d-flex.justify-content-between
-        button.btn.btn-primary(type="submit") Crear Paciente
-        button.btn.btn-primary(type="submit") Modificar Paciente
+        button.btn.btn-primary(type="submit", onclick="this.form.action='/admision/crearPaciente'") Crear Paciente
+        button.btn.btn-primary(type="submit", onclick="this.form.action='/admision/modificarPaciente'") Modificar Paciente
+  script.
+    var dniEmergencia = !{JSON.stringify(dniEmergencia)} // DNI de emergencia
+
+    document.getElementById('btn-autocompletar').addEventListener('click', function() {
+      document.getElementById('dni').value = dniEmergencia;
+      document.getElementById('nombre').value = 'Paciente';
+      document.getElementById('apellido').value = 'Emergencia';
+      document.getElementById('fecha_nacimiento').value = '2000-01-01';
+      document.getElementById('genero').value = 'otro';
+      document.getElementById('direccion').value = 'Desconocida';
+      document.getElementById('telefono').value = '';
+      document.getElementById('contacto').value = '';
+      document.getElementById('mail').value = '';
+      // Obra social: selecciona la opción vacía o la primera
+      var obraSocial = document.getElementById('id_obra_social');
+      if (obraSocial) obraSocial.selectedIndex = 0;
+      document.getElementById('cod_os').value = '';
+      document.getElementById('detalle').value = 'Ingreso por emergencia';
+    });
