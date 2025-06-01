@@ -30,7 +30,7 @@ Paciente.init(
     },
     id_obra_social: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: "obra_sociales",
         key: "id_obra_social",
