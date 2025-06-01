@@ -1,8 +1,22 @@
 extends ../layout.pug
+include ../mixins.pug
 block navbar 
   include ../mixinsNavbar.pug
   +navbarAdmision
 block main  
+  - var etap = typeof etapa !== 'undefined' ? etapa : ""
+  if etap === "crear"
+    - var mensajeAlert = "Paciente creado correctamente."
+    - var alertClass = "alert-success"
+  else if etap === "modificar"
+    - var mensajeAlert = "Paciente modificado correctamente."
+    - var alertClass = "alert-success"
+  else if etap === "error"
+    - var mensajeAlert = "Error al crear/modificar el paciente. Verifique los datos ingresados."
+    - var alertClass = "alert-danger"
+  if etap
+    .w-75.container
+      +alert(mensajeAlert,alertClass)
   .container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.checkdni
     form.p-4(method="POST",action='/admision/check')
       input(type="hidden", name="navbar", value=navbar)
@@ -17,5 +31,4 @@ block main
       .placeholder-wave.container.d-flex.justify-content-center.align-items-center
         button#btnEmergencia.placeholder.border.rounded-2.cEmergencia(type="submit")  Emergencia
         
-        //- este boton emergencia crea un paciente generico y redirige a admision mostrando el id temporal 
-  
+        //- este boton emergencia crea un paciente generico y redirige a admision mostrando el id temporal
