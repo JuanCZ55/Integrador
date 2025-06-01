@@ -46,9 +46,9 @@ Paciente.init(
       allowNull: true,
     },
     estado: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: 1,
+      defaultValue: true,
       comment: "1:activo\r\n2:no activo",
     },
   },
