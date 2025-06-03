@@ -520,67 +520,6 @@ async function gcheckPaciente(req, res) {
     etapa: req.query.etapa,
   });
 }
-//+post para crear un paciente de emergencia
-async function emergencia(req, res) {
-  try {
-    // 1. Crear persona con datos mínimos (DNI temporal: autoincremental)
-    const persona = await Persona.create({
-      dni: null, // Se asignará luego del autoincrement
-      nombre: "Paciente",
-      apellido: "Emergencia",
-      f_nacimiento: "2000-01-01",
-      genero: "O",
-      telefono: null,
-      mail: null,
-    });
-
-    // 2. Usar el id_persona como DNI temporal y actualizar
-    persona.dni = persona.id_persona;
-    await persona.save();
-
-    // 3. Crear paciente asociado a esa persona
-    const paciente = await Paciente.create({
-      id_persona: persona.id_persona,
-      contacto: null,
-      direccion: "Desconocida",
-      id_obra_social: null,
-      cod_os: null,
-      detalle: "Ingreso por emergencia",
-    });
-
-    // 4. Renderizar una vista mostrando el DNI temporal generado
-    if (!persona || !paciente) {
-      return res.render("admision/inicio", {
-        mensajeAlert: "Error al crear paciente de emergencia",
-        alertClass: "alert-danger",
-      });
-    }
-    return res.render("admision/admision", {
-      tempDni: persona.dni,
-      mensajeAlert: `Paciente de emergencia creado. Escriba este DNI: ${persona.dni} en la pulsera/frente del paciente.`,
-      alertClass: "alert-success",
-      paciente: {
-        dni: persona.dni,
-        nombre: persona.nombre,
-        apellido: persona.apellido,
-        f_nacimiento: persona.f_nacimiento,
-        genero: persona.genero,
-        telefono: persona.telefono,
-        mail: persona.mail,
-        contacto: paciente.contacto,
-        direccion: paciente.direccion,
-        id_obra_social: paciente.id_obra_social,
-        cod_os: paciente.cod_os,
-        detalle: paciente.detalle,
-      },
-      emergencia: true,
-      motivos: motivosArray,
-    });
-  } catch (error) {
-    console.error("Error al crear paciente de emergencia:", error);
-    return res.redirect("admision/inicio?error=emergencia");
-  }
-}
 
 async function busqueda(req, res) {
   const { dni } = req.query;
@@ -691,7 +630,7 @@ module.exports = {
   gcrearPaciente, //+get para renderizar la vista de crear paciente-
   pCheckPaciente, //+post para verificar el dni y redirigir a la vista correspondiente-
   gcheckPaciente, //+get para renderizar la vista de verficar dni-
-  emergencia, //+post para crear un paciente de emergencia-
+  //emergencia, //+post para crear un paciente de emergencia-
   modificarPaciente, //+post para modificar un paciente-
   busqueda, //+get para buscar un paciente por dni-
   listarPacientes, //+get para listar todos los pacientes activos
