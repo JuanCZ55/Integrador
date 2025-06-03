@@ -1,5 +1,7 @@
 extends ../layout.pug
 include ../mixins.pug
+block script 
+  script(src="/script/listener.js",defer) 
 block navbar
   include ../mixinsNavbar.pug
   +navbarAdmision
