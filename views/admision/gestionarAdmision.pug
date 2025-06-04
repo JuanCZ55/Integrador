@@ -1,0 +1,136 @@
+extends ../layout.pug
+include ../mixins.pug
+include ../mixinsNavbar.pug
+
+block navbar 
+  +navbarAdmision()
+
+block main
+  //- paciente trae datos de paciente y persona juntos
+  //- si es un paciente de emergencia
+  if emergencia==true
+    +alert(mensajeAlert, alertClass)
+  div.container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box
+    form.p-4(novalidate, action="/admision/gestionarAdmision", method="GET")
+      h2.text-center Admision
+      br
+      .row 
+        .col
+          .mb-3
+            ul.list-unstyled.border.border-2.border-dark.rounded-3
+              h3 Dato del Paciente
+              li.d-flex.align-items-center
+                label.form-label.fw-bold.mb-0.me-1(for="id_paciente",readonly) ID:
+                input.form-control-plaintext.p-0.m-0(type="text",name="id_paciente", value=paciente.id || "")
+              li
+                strong DNI: 
+                |  #{paciente.dni || ""}
+              li
+                strong Nombre: 
+                |  #{paciente.nombre || ""}
+              li
+                strong Apellido: 
+                |  #{paciente.apellido || ""}
+              li
+                strong Fecha de Nacimiento: 
+                |  #{paciente.fecha_nacimiento || ""}
+              li
+                strong Genero: 
+                |  #{paciente.genero || ""}
+              li
+                strong Direccion: 
+                |  #{paciente.direccion || ""}
+              li
+                strong Telefono: 
+                |  #{paciente.telefono || ""}
+              li
+                strong Telefono Contacto: 
+                |  #{paciente.telefono_contacto || ""}
+              li
+                strong Email: 
+                |  #{paciente.email || ""}
+              li
+                strong Obra Social: 
+                |  #{paciente.obra_social || ""}
+              li
+                strong Numero de Afiliado: 
+                |  #{paciente.numero_afiliado || ""}
+              li
+                strong Detalle: 
+                |  #{paciente.detalle || ""}
+              if paciente.id
+                a(href="/admision/crearPaciente?id_paciente=" + paciente.dni, class="btn btn-secondary mt-3") Editar Paciente
+              else
+                a(href="/admision/crearPaciente", class="btn btn-primary mt-3") Crear Paciente
+
+
+        .col 
+          if admision   
+            .mb-3 
+              input(type="hidden", name="id_admision",value=admision.id_admision)
+          .mb-3
+            label.form-label(for="dni") DNI*
+            .input-group
+              
+              input.form-control(type="number", id="dni", name="dni", value=dni || "", placeholder="48796125")
+              button.btn.btn-outline-secondary(type="button", id="btnBuscar") Buscar
+          .mb-3 
+            +select("motivo", motivos, admision.id_motivo||"","Motivo") 
+          .mb-3#derivado
+            label.form-label(for="derivado") Derivado por
+            input.form-control(type="text", id="derivado", name="derivado", value=derivado || "", placeholder="Nombre del Medico o Institucion")
+          .mb-3#turno
+            if f_turno!=""          
+              label.form-label(for="fecha_turno") Fecha del Turno*
+              input.form-control(type="date", id="fecha_turno", name="fecha_turno", value=f_turno || "",readonly)
+            else 
+              label.form-label(for="fecha_turno") Fecha del Turno*
+              input.form-control(type="text",value="El paciente no tiene turno",readonly).
+          .mb-3 
+            input#egreso_check.btn-check(type="checkbox",name="egresar")
+            label.btn.btn-outline-primary(for="egreso_check") Egresa?
+            div#egreso_container(style="display: none;")
+              label.form-label(for="egreso") Fecha de egreso
+              input.form-control(type="date", id="egreso", name="egreso")
+      if admision  
+        button.btn.btn-primary(type="submit",id="modificar") Modificar 
+      else 
+        button.btn.btn-primary(type="submit",id="crear") Crear Admision 
+
+    script.
+      const checkbox = document.getElementById('egreso_check');
+      const container = document.getElementById('egreso_container');
+
+      checkbox.addEventListener('change', () => {
+        container.style.display = checkbox.checked ? 'block' : 'none';
+      });
+      document.getElementById('btnBuscar').addEventListener('click', function() {
+        const dni = document.getElementById('dni').value;
+        if (dni) {
+          window.location.href = '/admision/gestionarAdmision?dni=' + encodeURIComponent(dni);
+        } else {
+          alert('Por favor, ingrese un DNI válido');
+        }
+      });
+      document.addEventListener('DOMContentLoaded', function() {
+        const motivo = document.getElementById('motivo');
+        const derivado = document.getElementById('derivado');
+        const turno = document.getElementById('turno');
+
+       function mostrarOcultarCampos() {
+          derivado.classList.remove('d-none');
+          turno.classList.remove('d-none');
+
+          if (motivo.value === '2') { // Derivado
+            turno.classList.add('d-none');
+          } else if (motivo.value === '3') { // Turno
+            derivado.classList.add('d-none');
+          }else{
+            derivado.classList.add('d-none');
+            turno.classList.add('d-none');
+          }
+        } 
+        mostrarOcultarCampos();
+        motivo.addEventListener('change', mostrarOcultarCampos);
+      });
+  +debug(locals)
