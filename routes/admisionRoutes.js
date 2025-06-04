@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const admisionController = require("../controllers/admisionController");
 const pacienteController = require("../controllers/pacienteController");
-const infraestructuraController = require("../controllers/infraestructuraController");
+//const infraestructuraController = require("../controllers/infraestructuraController");
 
 //+Paciente--------------------------------------
 //*form para crear un paciente/modificarlo
@@ -21,17 +21,17 @@ router.post("/check", pacienteController.pCheckPaciente);
 router.get("/buscarPaciente", pacienteController.busqueda);
 //*listar pacientes
 router.get("/listarPacientes", pacienteController.listarPacientes);
-//*emergencia
-router.post("/emergencia", pacienteController.emergencia);
 
 //+Admision----------------------------------------
+//*emergencia
+router.post("/emergencia", admisionController.emergencia);
 //*inicio de admision
 //?cambiar "" por "/inicio"
 router.get("", admisionController.inicio);
 //**renderiza la vista de admision
-router.get("/crearAdmision", admisionController.admision);
+router.get("/gestionarAdmision", admisionController.admision);
 //**crea la admision y redirige a movimientoCama */
-router.post("/crearAdmision", admisionController.padmision);
+router.post("/gestionarAdmision", admisionController.padmision);
 
 //+Infrestructura--------------------------------------
 
