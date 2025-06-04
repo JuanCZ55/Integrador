@@ -11,17 +11,17 @@ function button(idBoton, action, metodo) {
     form.submit();
   });
 }
-button(
-  "id_persona",
-  `/admision/gestionarPaciente?id_persona=${
-    document.getElementById(id_persona).value
-  }`,
-  "GET"
-);
-button(
-  "dni",
-  `/admision/gestionarPaciente?dni=${document.getElementById(dni).value}`,
-  "GET"
-);
-button("modificar", "/admision/gestionarPaciente", "POST");
-button("crear", "/admision/gestionarPaciente", "POST");
+// button(
+//   "id_persona",
+//   `/admision/gestionarPaciente?id_persona=${
+//     document.getElementById(id_persona).value
+//   }`,
+//   "GET"
+// );
+// button(
+//   "dni",
+//   `/admision/gestionarPaciente?dni=${document.getElementById(dni).value}`,
+//   "GET"
+// );
+// button("modificar", "/admision/gestionarPaciente", "POST");
+// button("crear", "/admision/gestionarPaciente", "POST");
