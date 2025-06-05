@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const admisionController = require("../controllers/admisionController");
 const pacienteController = require("../controllers/pacienteController");
-//const infraestructuraController = require("../controllers/infraestructuraController");
+const infraestructuraController = require("../controllers/infraestructuraController");
 
 //+Paciente--------------------------------------
 //*form para crear un paciente/modificarlo
@@ -34,5 +34,10 @@ router.get("/gestionarAdmision", admisionController.admision);
 router.post("/gestionarAdmision", admisionController.padmision);
 
 //+Infrestructura--------------------------------------
+router.get(
+  "/api/habitaciones",
+  infraestructuraController.apiHabitacionesLibres
+);
+router.get("/api/camas", infraestructuraController.apiCamasLibres);
 
 module.exports = router;
