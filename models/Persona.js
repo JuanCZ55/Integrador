@@ -31,7 +31,7 @@ Persona.init(
     genero: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      comment: "f=femenino\r\nm=masculino\r\n0_otro\r\n",
+      comment: "Femenino\r\nMasculino\r\nOtro\r\n",
     },
     telefono: {
       type: DataTypes.BIGINT,
