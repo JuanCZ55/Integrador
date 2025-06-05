@@ -98,6 +98,17 @@ async function admision(req, res) {
       nombre: m.nombre,
     }));
     // #endregion
+    let secArray;
+    const sectores = await Sector.findAll({});
+    if (sectores.length === 0) {
+      console.error("No hay sectores disponibles");
+    } else {
+      secArray = sectores.map((a) => ({
+        id_sector: a.id_sector,
+        nombre: a.nombre,
+      }));
+    }
+
     const admiNula = {
       id_admision: "",
       id_paciente: "",
@@ -107,7 +118,6 @@ async function admision(req, res) {
       fecha_egreso: "",
       estado: "",
     };
-    let camas;
     let mensajeAlert = "";
     const pacienteNulo = {
       dni: "",
@@ -143,10 +153,11 @@ async function admision(req, res) {
           dni: dni,
           paciente: pacienteNulo,
           admision: admiNula,
+          sectores: secArray,
+          camaSeleccionada: {},
         });
       }
       if (persona) {
-        camas = await camasDisponiblesPorPersona2Sql(persona.genero);
         const turno = await Turno.findOne({
           where: {
             id_paciente: persona.paciente.id_paciente,
@@ -170,6 +181,24 @@ async function admision(req, res) {
               id_admision: admi.id_admision,
               estado: 1,
             },
+            include: [
+              {
+                model: Cama,
+                as: "cama",
+                include: [
+                  {
+                    model: Habitacion,
+                    as: "habitacion",
+                    include: [
+                      {
+                        model: Sector,
+                        as: "sector",
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
           });
         } //*Si el paciente esta cargado, lo devuelve
         return res.render("admision/gestionarAdmision", {
@@ -194,9 +223,9 @@ async function admision(req, res) {
           emergencia: emergencia || "false",
           motivos: motivosArray,
           admision: admi || admiNula,
-          camas: camas || [],
-          camaSeleccionada: camaSelec ? camaSelec.id_cama : "",
+          camaSeleccionada: camaSelec ? camaSelec : {},
           f_turno: turno ? turno.fecha : "",
+          sectores: secArray,
         });
       }
     }
@@ -204,10 +233,11 @@ async function admision(req, res) {
     return res.render("admision/gestionarAdmision", {
       emergencia: "false",
       motivos: motivosArray,
-      camas: camas || [],
       admision: admiNula,
       paciente: pacienteNulo,
       dni: dni,
+      sectores: secArray,
+      camaSeleccionada: {},
     });
   } catch (error) {
     console.error("Error al pedir la admision", error);
@@ -220,6 +250,8 @@ async function padmision(req, res) {
 
   const { id_admision, id_paciente, id_motivo, derivado, id_cama, egreso } =
     req.body;
+  console.log(id_admision, id_paciente, id_motivo, derivado, id_cama, egreso);
+
   try {
     // #region  2. Buscar motivos de admisión activos y los ordena
     const motivos = await Motivos.findAll({
@@ -230,7 +262,6 @@ async function padmision(req, res) {
       id: m.id_motivo,
       nombre: m.nombre,
     }));
-    let camas = null;
     const persona = await Persona.findOne({
       include: [
         {
@@ -242,8 +273,6 @@ async function padmision(req, res) {
     });
     if (!persona) {
       console.error("no existe el paciente");
-    } else {
-      camas = await camasDisponiblesPorPersona2Sql(persona.id_persona);
     }
     // #endregion
     // Validar campos obligatorios id_paciente, id_motivo
@@ -259,8 +288,7 @@ async function padmision(req, res) {
           derivado,
         },
         motivosArray,
-        camas: camas || [],
-        camaSeleccionada: camaSelec ? camaSelec.id_cama : "",
+        camaSeleccionada: camaSelec ? camaSelec.id_cama : {},
         paciente: {
           dni: persona.dni,
           nombre: persona.nombre,
@@ -289,8 +317,7 @@ async function padmision(req, res) {
           derivado,
         },
         motivosArray,
-        camas: camas || [],
-        camaSeleccionada: camaSelec ? camaSelec.id_cama : "",
+        camaSeleccionada: camaSelec ? camaSelec.id_cama : {},
         paciente: {
           dni: persona.dni,
           nombre: persona.nombre,
@@ -330,8 +357,7 @@ async function padmision(req, res) {
               derivado,
             },
             motivosArray,
-            camas: camas || [],
-            camaSeleccionada: camaSelec ? camaSelec.id_cama : "",
+            camaSeleccionada: camaSelec ? camaSelec.id_cama : {},
             paciente: {
               dni: persona.dni,
               nombre: persona.nombre,
@@ -361,8 +387,7 @@ async function padmision(req, res) {
               derivado,
             },
             motivosArray,
-            camas: camas || [],
-            camaSeleccionada: camaSelec ? camaSelec.id_cama : "",
+            camaSeleccionada: camaSelec ? camaSelec.id_cama : {},
             paciente: {
               dni: persona.dni,
               nombre: persona.nombre,
@@ -391,8 +416,7 @@ async function padmision(req, res) {
           derivado,
         },
         motivosArray,
-        camas: camas || [],
-        camaSeleccionada: camaSelec ? camaSelec.id_cama : "",
+        camaSeleccionada: camaSelec ? camaSelec.id_cama : {},
         paciente: {
           dni: persona.dni,
           nombre: persona.nombre,
@@ -424,8 +448,7 @@ async function padmision(req, res) {
             derivado,
           },
           motivosArray,
-          camas: camas || [],
-          camaSeleccionada: camaSelec ? camaSelec.id_cama : "",
+          camaSeleccionada: camaSelec ? camaSelec.id_cama : {},
           paciente: {
             dni: persona.dni,
             nombre: persona.nombre,
@@ -515,9 +538,17 @@ async function postGestionarAdmision(req, res) {
       id: m.id_motivo,
       nombre: m.nombre,
     }));
-
-    // 2) Obtener datos de persona/paciente y camas disponibles
-    let camas = [];
+    let secArray = [];
+    try {
+      const sectores = await Sector.findAll({});
+      secArray = sectores.map((a) => ({
+        id_sector: a.id_sector,
+        nombre: a.nombre,
+      }));
+    } catch (error) {
+      console.error("Error al obtener sectores:", error);
+    }
+    // 2) Obtener datos de persona/paciente
     const persona = await Persona.findOne({
       include: [
         {
@@ -535,12 +566,10 @@ async function postGestionarAdmision(req, res) {
         alertClass: "alert-danger",
         admision: null,
         motivosArray,
-        camas: [],
-        camaSeleccionada: "",
+        camaSeleccionada: {},
         paciente: {},
+        sectores: secArray,
       });
-    } else {
-      camas = await camasDisponiblesPorPersona2Sql(persona.id_persona);
     }
 
     // Funcion auxiliar para armar objeto comun de render
@@ -555,8 +584,7 @@ async function postGestionarAdmision(req, res) {
           derivado,
         },
         motivosArray,
-        camas: camas || [],
-        camaSeleccionada: id_cama || "",
+        camaSeleccionada: id_cama || {},
         paciente: {
           dni: persona.dni,
           nombre: persona.nombre,
@@ -571,6 +599,7 @@ async function postGestionarAdmision(req, res) {
           cod_os: persona.paciente.cod_os,
           detalle: persona.paciente.detalle,
         },
+        sectores: secArray,
       };
     };
 
@@ -738,102 +767,10 @@ async function postGestionarAdmision(req, res) {
       alertClass: "alert-danger",
       admision: null,
       motivosArray: [], // Quizas recargar motivosArray antes
-      camas: [],
-      camaSeleccionada: "",
+      camaSeleccionada: {},
       paciente: {},
     });
   }
-}
-
-async function camasDisponiblesPorPersona(idPersona) {
-  try {
-    const persona = await Persona.findByPk(idPersona, {
-      include: { model: Paciente, as: "paciente" },
-    });
-    if (!persona || !persona.paciente) {
-      console.error(
-        "Persona no encontrada estoy en camasDisponiblesPorPersona"
-      );
-      return [];
-    }
-    const genero = persona.genero;
-    const camas = await Cama.findAll({
-      where: { estado: 1 },
-      include: [
-        {
-          model: Habitacion,
-          include: [{ model: Sector }],
-        },
-        {
-          model: MovimientoCama,
-          required: false,
-          where: { estado: 1 },
-          include: {
-            model: Admision,
-            required: true,
-            where: { estado: 1 },
-            include: {
-              model: Paciente,
-              include: {
-                model: Persona,
-                attributes: ["genero"],
-              },
-            },
-          },
-        },
-      ],
-    });
-    if (!camas || camas.length === 0) {
-      console.error("No hay camas disponibles");
-      return [];
-    }
-    const camasFiltradas = camas.filter((cama) => {
-      const movimientos = cama.movimiento_camas || [];
-
-      const generosEnHabitacion = movimientos
-        .map((mov) => mov.admision?.paciente?.persona?.genero)
-        .filter(Boolean);
-
-      // si no hay pacientes en la habitación, es válida
-      if (generosEnHabitacion.length === 0) return true;
-
-      // si todos son del mismo género
-      return generosEnHabitacion.every((g) => g === genero);
-    });
-
-    return camasFiltradas;
-  } catch (error) {
-    console.error("Error al buscasr camas disponibles por persona:", error);
-    return [];
-  }
-}
-async function camasDisponiblesPorPersona2Sql(targetGenero) {
-  const sql = `
-  SELECT *
-  FROM camas c
-  JOIN habitaciones h ON c.id_habitacion = h.id_habitacion
-  JOIN sectores s ON h.id_sector = s.id_sector
-  LEFT JOIN movimiento_camas mc_c ON c.id_cama = mc_c.id_cama AND mc_c.estado = 1
-  WHERE mc_c.id_movimiento_camas IS NULL
-    AND NOT EXISTS (
-      SELECT 1
-      FROM camas c2
-      JOIN movimiento_camas mc2 ON c2.id_cama = mc2.id_cama AND mc2.estado = 1
-      JOIN admisiones a2 ON mc2.id_admision = a2.id_admision
-      JOIN pacientes p2 ON a2.id_paciente = p2.id_paciente
-      JOIN personas per2 ON p2.id_persona = per2.id_persona
-      WHERE c2.id_habitacion = c.id_habitacion
-        AND per2.genero COLLATE utf8mb4_general_ci <> :targetGenero
-    )
-  ORDER BY s.nombre, h.numero, c.n_cama;
-`;
-
-  const [results, metadata] = await sequelize.query(sql, {
-    replacements: { targetGenero },
-    type: sequelize.QueryTypes.SELECT,
-  });
-
-  return results;
 }
 
 module.exports = {
