@@ -28,6 +28,11 @@ Habitacion.init(
       allowNull: false,
       comment: "cantidad max de camas\r\n",
     },
+    genero: {
+      type: DataTypes.STRING(150),
+      allowNull: true,
+      comment: "Masculino\r\nFemenino\r\nOtro",
+    },
   },
   {
     sequelize,
