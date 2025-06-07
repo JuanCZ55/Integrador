@@ -21,6 +21,7 @@ router.post("/check", pacienteController.pCheckPaciente);
 router.get("/buscarPaciente", pacienteController.busqueda);
 //*listar pacientes
 router.get("/listarPacientes", pacienteController.listarPacientes);
+router.get("/api/busqueda", pacienteController.busquedaApi);
 
 //+Admision----------------------------------------
 //*emergencia
@@ -32,6 +33,7 @@ router.get("", admisionController.inicio);
 router.get("/gestionarAdmision", admisionController.admision);
 //**crea la admision y redirige a movimientoCama */
 router.post("/gestionarAdmision", admisionController.padmision);
+router.get("/api/busqueda", pacienteController.busqueda);
 
 //+Infrestructura--------------------------------------
 router.get(
