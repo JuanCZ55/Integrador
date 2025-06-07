@@ -17,7 +17,7 @@ block main
       .row 
         .col
           .mb-3
-            ulul.list-unstyled.border.border-2.border-dark.rounded-3.p-4.m-3.d-flex.flex-column
+            ul.list-unstyled.border.border-2.border-dark.rounded-3.p-4.m-3.d-flex.flex-column
               h3 Dato del Paciente
               li.d-flex.align-items-center
                 label.form-label.fw-bold.mb-0.me-1(for="id_paciente",readonly) ID:
@@ -59,10 +59,10 @@ block main
               li
                 strong Detalle: 
                 |  #{paciente.detalle || ""}
-              if paciente.id
-                a(href="/admision/crearPaciente?id_paciente=" + paciente.dni, class="btn btn-secondary mt-3") Editar Paciente
+              if paciente.dni!=""
+                a(href="/admision/crearPaciente?dni=" + paciente.dni class="btn btn-secondary mt-3") Editar Paciente
               else
-                a(href="/admision/crearPaciente", class="btn btn-primary mt-3") Crear Paciente
+                a(href="/admision/crearPaciente?dni="+ (paciente.dni||dni),, class="btn btn-primary mt-3") Crear Paciente
 
 
         .col 
@@ -86,13 +86,16 @@ block main
               input.form-control(type="date", id="fecha_turno", name="fecha_turno", value=f_turno || "",readonly)
             else 
               label.form-label(for="fecha_turno") Fecha del Turno*
-              input.form-control(type="text",value="El paciente no tiene turno",readonly).
+              input.form-control(type="text",value="El paciente no tiene turno",readonly)
           .mb-3 
             input#egreso_check.btn-check(type="checkbox",name="egresar")
             label.btn.btn-outline-primary(for="egreso_check") Egresa?
             div#egreso_container(style="display: none;")
               label.form-label(for="egreso") Fecha de egreso
               input.form-control(type="date", id="egreso", name="egreso")
+
+        .col 
+          br
           .mb-3 
             label.form-label(for="selectCama") Cama Actual 
             if camaSeleccionada.cama&&camaSeleccionada.cama.id_cama
@@ -118,11 +121,14 @@ block main
           .mb-3
             label.form-label(for="selectCama") Cama
             select#selectCama.form-select(name="id_cama_selector" )
-
-      if admision.id_admision!=""
-        button.btn.btn-primary(type="submit",id="modificar") Modificar 
-      else 
-        button.btn.btn-primary(type="submit",id="crear") Crear Admision 
+            br
+            br
+            br 
+            br
+          if admision.id_admision!=""
+            button.btn.btn-primary(type="submit",id="modificar") Modificar 
+          else 
+            button.btn.btn-primary(type="submit",id="crear") Crear Admision 
 
     script.
       document.addEventListener('DOMContentLoaded', function () {selects("#{paciente.genero || ''}");});

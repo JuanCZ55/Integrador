@@ -1,7 +1,8 @@
 extends ../layout.pug
 include ../mixins.pug
-block script 
-  script(src="/script/listener.js",defer) 
+block scripts 
+  script(src="/script/listener.js",defer)
+  script(src="/script/pacientes.js",defer) 
 block navbar
   include ../mixinsNavbar.pug
   +navbarAdmision
@@ -22,10 +23,15 @@ block main
       br
       .row
         .col
-          .mb-3
-            input(type="number", name="id_persona", value=(paciente && paciente.id_persona) || "", hidden)
+          .mb-3.d-flex.align-items-center.gap-2
+            label.mb-0(for="id_persona") ID:
+            input.form-control#id_persona(type="text", name="id_persona", value=(paciente && paciente.id_persona) || "",readonly)
+          .mb-3  
             label.form-label(for="dni") DNI*
-            input.form-control(type="number", id="dni", placeholder="48455713", value=(paciente && paciente.dni) || dni || "", name="dni")
+            .input-group
+              input.form-control(type="number", id="dni", placeholder="48455713", value=(paciente && paciente.dni) || dni || "", name="dni")
+              button.btn.btn-outline-secondary(type="button", id="btnBuscar") Buscar
+
             input.d-none(type="checkbox", name="emergencia",id="emergencia")
           .mb-3
             label.form-label(for="nombre") Nombre*
@@ -42,9 +48,9 @@ block main
           .mb-3
             label.form-label Genero*
             select.form-select(name="genero",id="genero")
-              option(value="femenino", selected=(paciente && paciente.genero === "femenino")) Femenino
-              option(value="masculino", selected=(paciente && paciente.genero === "masculino")) Masculino
-              option(value="otro", selected=(paciente && paciente.genero === "otro")) Otro
+              option(value="Femenino", selected=(paciente && paciente.genero === "Femenino")) Femenino
+              option(value="Masculino", selected=(paciente && paciente.genero === "Masculino")) Masculino
+              option(value="Otro", selected=(paciente && paciente.genero === "Otro")) Otro
           .mb-3
             label.form-label(for="direccion") Direccion*
             input.form-control(type="text", id="direccion", placeholder="Av. San Martin 1234", value=(paciente && paciente.direccion) || "", name="direccion")
