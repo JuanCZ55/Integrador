@@ -1,0 +1,24 @@
+extends ../layout.pug
+block navbar
+  include ../mixinsNavbar.pug
+  +navbarAdmision()
+
+block main
+  .container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box.mt-4
+    form.p-4.w-100(method="POST", action="/admision/cambiarPacienteAdmisiones", novalidate)
+      h2.text-center.mt-3 Actualizar DNI de Admisión
+      if mensajeAlert
+        +alert(mensajeAlert, alertClass)
+      .mb-3.d-flex.align-items-center.gap-2
+        input.form-check-input(type="checkbox", name="esEmergencia", id="esEmergencia", value="1")
+        label.form-check-label(for="esEmergencia") ¿DNI de Emergencia?
+      .mb-3
+        label.form-label(for="dni_antiguo") DNI antiguo:
+        input.form-control(type="number", name="dni_antiguo", id="dni_antiguo", placeholder="Ej: 2345678", required)
+      
+      .mb-3
+        label.form-label(for="dni_nuevo") DNI nuevo:
+        input.form-control(type="number", name="dni_nuevo", id="dni_nuevo", placeholder="Ej: 48789651", required)
+       
+      .d-flex.justify-content-end
+        button.btn.btn-primary(type="submit") Cambiar Paciente
