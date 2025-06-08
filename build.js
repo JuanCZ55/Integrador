@@ -1,15 +1,36 @@
 const sequelize = require("./models/db");
 require("./models/init");
 const seedObraSocial = require("./seeders/seedOS");
+const seedMotivos = require("./seeders/seedMotivos");
+const seedPersonasPacientes = require("./seeders/seedPP");
+const seedSectoresHabitacionesCamas = require("./seeders/seedInfra");
+const seedTurnos = require("./seeders/seedTurnos");
+
 //crear las tablas
 sequelize
   .sync({ force: true })
   .then(() => {
     console.log("Tablas creadas exitosamente");
-    return seedObraSocial(); // retornás la promesa
+    return seedObraSocial();
   })
   .then(() => {
-    console.log("Seed ejecutado correctamente");
+    console.log("Obras sociales seed ejecutado correctamente");
+    return seedMotivos();
+  })
+  .then(() => {
+    console.log("Motivos seed ejecutado correctamente");
+    return seedPersonasPacientes();
+  })
+  .then(() => {
+    console.log("Personas y pacientes seed ejecutado correctamente");
+    return seedSectoresHabitacionesCamas();
+  })
+  .then(() => {
+    console.log("Infraestructura seed ejecutado correctamente");
+    return seedTurnos();
+  })
+  .then(() => {
+    console.log("Turnos seed ejecutado correctamente");
     process.exit(0);
   })
   .catch((err) => {
