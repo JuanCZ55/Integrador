@@ -1,27 +1,19 @@
-function button(idBoton, action, metodo) {
-  const button = document.getElementById(idBoton);
-  if (!button) {
-    return console.error("el boton no existe o esta mal escrito: " + idBoton);
-  }
-  button.addEventListener("click", function () {
-    const form = this.form;
+document.addEventListener("DOMContentLoaded", () => {
+  const selectObraSocial = document.getElementById("id_obra_social");
+  const inputCodOS = document.getElementById("cod_os");
 
-    form.action = action;
-    form.method = metodo;
-    form.submit();
-  });
-}
-// button(
-//   "id_persona",
-//   `/admision/gestionarPaciente?id_persona=${
-//     document.getElementById(id_persona).value
-//   }`,
-//   "GET"
-// );
-// button(
-//   "dni",
-//   `/admision/gestionarPaciente?dni=${document.getElementById(dni).value}`,
-//   "GET"
-// );
-// button("modificar", "/admision/gestionarPaciente", "POST");
-// button("crear", "/admision/gestionarPaciente", "POST");
+  if (!selectObraSocial || !inputCodOS) return;
+
+  function toggleCodOS() {
+    if (selectObraSocial.value === "1") {
+      inputCodOS.disabled = true;
+      inputCodOS.value = "";
+    } else {
+      inputCodOS.disabled = false;
+    }
+  }
+
+  toggleCodOS();
+
+  selectObraSocial.addEventListener("change", toggleCodOS);
+});
