@@ -1,0 +1,38 @@
+extends ../layout.pug
+include ../mixins.pug
+block navbar
+  include ../mixinsNavbar.pug
+  +navbarAdmision()
+
+block main
+  .rounded-3
+    .container.mt-4.justify-content-center.align-items-center.tabla-pacientes
+      h2.text-center.mt-3 Lista de Pacientes
+      if pacientes.length
+        table.table.table-striped-columns
+          thead
+            tr
+              th DNI
+              th Nombre
+              th Apellido
+              th Fecha Nacimiento
+              th Género
+              th Teléfono
+              th Email
+              th Obra Social
+              th Acciones
+          tbody
+            each paciente in pacientes
+              tr
+                td= paciente.dni
+                td= paciente.nombre
+                td= paciente.apellido
+                td= paciente.f_nacimiento
+                td= paciente.genero
+                td= paciente.telefono
+                td= paciente.mail
+                td= paciente.obra_social
+                td
+                  a.btn.btn-primary.btn-sm(href=`/admision/crearPaciente?dni=${paciente.dni}`) Modificar
+      else
+        .alert.alert-info No hay pacientes registrados.
