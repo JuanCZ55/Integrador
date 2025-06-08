@@ -67,7 +67,7 @@ async function seedObraSocial() {
       updatedAt: new Date(),
     },
     {
-      nombre: "Jerárquicos Salud",
+      nombre: "Jerarquicos Salud",
       cuit: 30556676140,
       estado: 1,
       createdAt: new Date(),
