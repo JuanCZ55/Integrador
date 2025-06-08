@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const path = require("path");
+const sequelize = require("./models/db");
 //routes
 const admision = require("./routes/admisionRoutes");
 // const enfer = require("./routes/enfermeriaRoutes");
@@ -31,7 +32,15 @@ app.use("/admision", admision);
 app.use((req, res, next) => {
   res.status(404).render("notfound");
 });
-//Inicio del servidor
-app.listen(3000, () => {
-  console.log("Server corre en el puerto 3000");
-});
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log("Conexion exitosa a la base de datos");
+    app.listen(3000, () => {
+      console.log("Server corre en el puerto 3000");
+    });
+  })
+  .catch((err) => {
+    console.error("No se pudo conectar a la base de datos");
+    process.exit(1); // Sale del proceso si falla la conexión
+  });
