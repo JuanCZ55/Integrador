@@ -15,10 +15,24 @@ block main
     else if estado=="modificado"
       +alert("Paciente modificado exitosamente", "alert-success")
   +alert(mensajeAlert, alertClass)
+  .container-md.d-flex.justify-content-center.align-items-center.mb-3(style="gap: 1rem;")
+    form(method="POST", action="/admision/emergencia")
+      input(type="hidden", name="genero", value="Masculino")
+      button.btn(type="submit" style="background-color:#2196f3; color:white;") Emergencia Hombre
+    form(method="POST", action="/admision/emergencia")
+      input(type="hidden", name="genero", value="Femenino")
+      button.btn(type="submit" style="background-color:#e91e63; color:white;") Emergencia Mujer
   div.container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box.w-75
     form.p-4(novalidate, action="/admision/gestionarAdmision", method="POST")
-      h2.text-center Admision
-      br
+      .d-flex.align-items-center.justify-content-center.mb-3.gap-2
+        h2.mx-auto.mb-0 Admision
+        label.mb-0(for="id_admision") ID:
+        input.form-control.form-control-sm.w-auto#id_admision(
+          type="text",
+          value=admision.id_admision || "",
+          readonly,
+          style="max-width:120px;"
+        )
       .row 
         .col
           .mb-3
@@ -65,9 +79,9 @@ block main
                 strong Detalle: 
                 |  #{paciente.detalle || ""}
               if paciente.dni!=""
-                a(href="/admision/crearPaciente?dni=" + paciente.dni class="btn btn-secondary mt-3") Editar Paciente
+                a(href="/admision/crearPaciente?dni=" + paciente.dni class="btn btn-info mt-3") Editar Paciente
               else
-                a(href="/admision/crearPaciente?dni="+ (paciente.dni||dni),, class="btn btn-primary mt-3") Crear Paciente
+                a(href="/admision/crearPaciente?dni="+ (paciente.dni||dni),, class="btn btn-info mt-3") Crear Paciente
 
 
         .col 
@@ -79,7 +93,7 @@ block main
             .input-group
               
               input.form-control(type="number", id="dni", name="dni", value=dni ||paciente.dni|| "", placeholder="48796125")
-              button.btn.btn-outline-secondary(type="button", id="btnBuscar") Buscar
+              button.btn.btn-outline-secondary.text-light(type="button", id="btnBuscar") Buscar
           .mb-3 
             +select("id_motivo", motivos, admision.id_motivo||"","Motivo") 
           .mb-3#derivado
@@ -134,7 +148,7 @@ block main
             button.btn.btn-primary(type="submit",id="modificar") Modificar 
           else 
             button.btn.btn-primary(type="submit",id="crear") Crear Admision 
-
+      small Primero se debe buscar el paciente por DNI, luego se puede crear o modificar la admisión.
     script.
       document.addEventListener('DOMContentLoaded', function () {selects("#{paciente.genero || ''}");});
       const checkbox = document.getElementById('egreso_check');
@@ -174,4 +188,3 @@ block main
         motivo.addEventListener('change', mostrarOcultarCampos);
       });
 
-  +debug(locals)
