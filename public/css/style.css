@@ -29,7 +29,7 @@ footer {
 }
 
 body {
-  background-image: url("../iamages/background3.png");
+  background-image: url("../aimages/background3.png");
   background-repeat: repeat;
   background-size: auto 250px;
 }
@@ -66,7 +66,7 @@ body {
   height: auto;
   background-color: rgb(255, 0, 0) !important;
   color: #ffffff !important;
-  border: 2px solid #000000; /* Borde negro */
+  border: 2px solid #000000;
   /* text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); */
   text-align: center;
   padding: 10px !important;
@@ -74,6 +74,11 @@ body {
   text-decoration: none;
   cursor: pointer !important;
   font-weight: bold;
+}
+.tabla-pacientes {
+  background-color: rgba(25, 9, 240, 0.301);
+  border: 2px solid #000000;
+  border-radius: 20px;
 }
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
