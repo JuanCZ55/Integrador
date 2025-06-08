@@ -1,0 +1,61 @@
+extends ../layout.pug
+include ../mixins.pug
+block navbar
+  include ../mixinsNavbar.pug
+  +navbarAdmision()
+
+block main
+  h2.text-center.mt-3 Lista de Camas por Habitación
+  .container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box.mt-4
+    .w-100.p-4
+      if mensajeAlert
+        +alert(mensajeAlert, alertClass)
+      if habitaciones.length
+        each habitacion in habitaciones
+          .mb-4
+            h4.mb-2
+              | Habitación #{habitacion.numero} 
+              if habitacion.sector
+                |  - Sector: #{habitacion.sector.nombre}
+            if habitacion.camas && habitacion.camas.length
+              table.table.table-striped.align-middle
+                thead
+                  tr.bg-primary.text-white
+                    th N° Cama
+                    th Estado
+                    th Paciente
+                    th Género
+                tbody
+                  each cama in habitacion.camas
+                    tr
+                      td= cama.n_cama
+                      - const ocupada = cama.movimientosCama && cama.movimientosCama.length > 0;
+                      if ocupada
+                        //- Ocupada
+                        - const mov = cama.movimientosCama[0];
+                        - const paciente = mov.admision && mov.admision.paciente;
+                        - const persona = paciente && paciente.persona;
+                        td
+                          span.badge.bg-danger Ocupada
+                        td= persona ? persona.nombre + ' ' + persona.apellido : '-'
+                        td= persona ? persona.genero : '-'
+                      else if cama.estado == 1
+                        // Libre
+                        td
+                          span.badge.bg-success Libre
+                        td -
+                        td -
+                      else if cama.estado == 3
+                        td
+                          span.badge.bg-warning.text-dark Mantenimiento
+                        td -
+                        td -
+                      else
+                        td
+                          span.badge.bg-secondary Desconocido
+                        td -
+                        td -
+            else
+              .alert.alert-warning.text-center.mt-2 No tiene camas agregadas esta habitación
+      else
+        .alert.alert-info.text-center No hay habitaciones ni camas registradas.
