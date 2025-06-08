@@ -3,14 +3,22 @@ const router = express.Router();
 const admisionController = require("../controllers/admisionController");
 const pacienteController = require("../controllers/pacienteController");
 const infraestructuraController = require("../controllers/infraestructuraController");
+const pacienteC = require("../controllers/pacienteC");
 
-//+Paciente--------------------------------------
+// //+Paciente--------------------------------------
+// //*form para crear un paciente/modificarlo
+// router.get("/crearPaciente", pacienteController.gcrearPaciente);
+// //* controla el paciente y/o lo crea/modifica
+// router.post("/crearPaciente", pacienteController.controlCrearPaciente);
+// //*controla para la modificacion de un paciente
+// router.post("/modificarPaciente", pacienteController.modificarPaciente);
+//+PacienteNuevo--------------------------------------
 //*form para crear un paciente/modificarlo
-router.get("/crearPaciente", pacienteController.gcrearPaciente);
+router.get("/crearPaciente", pacienteC.gCrearPaciente);
 //* controla el paciente y/o lo crea/modifica
-router.post("/crearPaciente", pacienteController.controlCrearPaciente);
+router.post("/crearPaciente", pacienteC.pCrearPaciente);
 //*controla para la modificacion de un paciente
-router.post("/modificarPaciente", pacienteController.modificarPaciente);
+router.post("/modificarPaciente", pacienteC.pModificarPaciente);
 
 //*rederiza la vista para checkear un dni
 //-se usa antes de redirrecionar:Gestion,Busqueda,Admision,Modificacion,BuscarCama
@@ -31,8 +39,8 @@ router.post("/emergencia", admisionController.emergencia);
 router.get("", admisionController.inicio);
 //**renderiza la vista de admision
 router.get("/gestionarAdmision", admisionController.admision);
-//**crea la admision y redirige a movimientoCama */
-router.post("/gestionarAdmision", admisionController.padmision);
+//**crea la admision */
+router.post("/gestionarAdmision", admisionController.pAdmision);
 router.get("/api/busqueda", pacienteController.busqueda);
 
 //+Infrestructura--------------------------------------
