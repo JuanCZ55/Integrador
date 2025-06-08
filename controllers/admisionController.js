@@ -20,13 +20,14 @@ async function inicio(req, res) {
 //+post para crear un paciente de emergencia
 async function emergencia(req, res) {
   try {
-    // 1. Crear persona con datos mínimos (DNI temporal: autoincremental)
+    const genero = req.body.genero;
+
     const persona = await Persona.create({
       dni: null, // Se asignará luego del autoincrement
       nombre: "Paciente",
       apellido: "Emergencia",
       f_nacimiento: "2000-01-01",
-      genero: "O",
+      genero: genero,
       telefono: null,
       mail: null,
     });
@@ -40,7 +41,7 @@ async function emergencia(req, res) {
       id_persona: persona.id_persona,
       contacto: null,
       direccion: "Desconocida",
-      id_obra_social: null,
+      id_obra_social: 1,
       cod_os: null,
       detalle: "Ingreso por emergencia",
     });
@@ -52,30 +53,8 @@ async function emergencia(req, res) {
         alertClass: "alert-danger",
       });
     }
-    // return res.render("admision/admision", {
-    //   tempDni: persona.dni,
-    //   mensajeAlert: `Paciente de emergencia creado. Escriba este DNI: ${persona.dni} en la pulsera/frente del paciente.`,
-    //   alertClass: "alert-success",
-    //   paciente: {
-    //     dni: persona.dni,
-    //     nombre: persona.nombre,
-    //     apellido: persona.apellido,
-    //     f_nacimiento: persona.f_nacimiento,
-    //     genero: persona.genero,
-    //     telefono: persona.telefono,
-    //     mail: persona.mail,
-    //     contacto: paciente.contacto,
-    //     direccion: paciente.direccion,
-    //     id_obra_social: paciente.id_obra_social,
-    //     cod_os: paciente.cod_os,
-    //     detalle: paciente.detalle,
-    //   },
-    //   emergencia: true,
-    //   motivos: motivosArray,
-    // });
-    return res.redirect(
-      "/gestionarAdmision?dni=" + persona.dni + "&emergencia=true"
-    );
+
+    return res.redirect("/admision/gestionarAdmision?dni=" + persona.dni);
   } catch (error) {
     console.error("Error al crear paciente de emergencia:", error);
     return res.redirect("/admision/inicio?error=emergencia");
@@ -365,13 +344,12 @@ async function pAdmision(req, res) {
       });
       camaSeleccionada = mov || {};
     }
+    const egresara = egreso && egreso !== "" && egreso !== undefined;
     // Validar campos obligatorios id_paciente, id_motivo
     if (
       !id_paciente ||
       !id_motivo ||
-      !id_cama ||
-      id_cama === "" ||
-      id_cama === undefined
+      (!egresara && (!id_cama || id_cama === "" || id_cama === undefined))
     ) {
       console.log("Faltan campos obligatorios");
       return res.render("admision/gestionarAdmision", {
@@ -532,9 +510,205 @@ async function pAdmision(req, res) {
   }
 }
 
+//+GET para listar todas las admisiones
+async function listaAdmisiones(req, res) {
+  try {
+    const admisiones = await Admision.findAll({
+      include: [
+        {
+          model: Paciente,
+          as: "paciente",
+          include: [
+            {
+              model: Persona,
+              as: "persona",
+            },
+          ],
+        },
+        {
+          model: Motivos,
+          as: "motivo",
+        },
+      ],
+      order: [["fecha_ingreso", "DESC"]],
+    });
+
+    // Adaptar datos para la vista
+    const lista = admisiones.map((adm) => ({
+      id_admision: adm.id_admision,
+      paciente:
+        adm.paciente && adm.paciente.persona
+          ? {
+              nombre: adm.paciente.persona.nombre,
+              apellido: adm.paciente.persona.apellido,
+              dni: adm.paciente.persona.dni,
+            }
+          : null,
+      motivo: adm.motivo ? { nombre: adm.motivo.nombre } : null,
+      fecha_ingreso: adm.fecha_ingreso,
+      fecha_egreso: adm.fecha_egreso,
+      estado: adm.estado,
+    }));
+
+    res.render("admision/listaAdmision", { admisiones: lista });
+  } catch (error) {
+    console.error("Error al listar admisiones:", error);
+    res.render("admision/listaAdmision", {
+      admisiones: [],
+      mensajeAlert: "Error al cargar las admisiones",
+      alertClass: "alert-danger",
+    });
+  }
+}
+async function cancelarAdmision(req, res) {
+  const { id_admision } = req.body;
+  try {
+    await Admision.update(
+      { estado: 2 }, // 2 cancelada
+      { where: { id_admision } }
+    );
+    // Buscar el movimiento de cama activo
+    const movi = await MovimientoCama.findOne({
+      where: { id_admision, estado: 1 },
+    });
+    if (movi) {
+      await MovimientoCama.update(
+        { estado: 2 }, // 2 finalizada
+        { where: { id_movimiento_camas: movi.id_movimiento_camas } }
+      );
+      await Cama.update(
+        { estado: 3 }, // 3 mantenimiento/limpieza
+        { where: { id_cama: movi.id_cama } }
+      );
+    }
+    res.redirect("/admision/listaAdmision");
+  } catch (error) {
+    console.error("Error al cancelar la admisión:", error);
+    res.redirect("/admision/listaAdmision");
+  }
+}
+async function cambiarPacienteAdmisiones(req, res) {
+  // Si es GET solo renderiza la vista
+  if (req.method === "GET") {
+    return res.render("admision/cambiarPacienteAdmisiones");
+  }
+
+  // Si es POST hace el cambio
+  const { dni_antiguo, dni_nuevo, esEmergencia } = req.body;
+  let mensajeAlert = "";
+  let alertClass = "alert-danger";
+  const regexDniEmergencia = /^[2-9][0-9]{0,7}$/;
+  const regexDniReal = /^[0-9]{7,8}$/;
+
+  if (esEmergencia) {
+    if (!dni_antiguo || !regexDniEmergencia.test(dni_antiguo)) {
+      mensajeAlert =
+        "El DNI antiguo de emergencia debe ser numerico, de 1 a 8 digitos";
+      return res.render("admision/cambiarPacienteAdmisiones", {
+        mensajeAlert,
+        alertClass,
+      });
+    }
+  } else {
+    if (!dni_antiguo || !regexDniReal.test(dni_antiguo)) {
+      mensajeAlert = "El DNI antiguo debe ser numerico y tener 7 u 8 digitos.";
+      return res.render("admision/cambiarPacienteAdmisiones", {
+        mensajeAlert,
+        alertClass,
+      });
+    }
+  }
+
+  if (!dni_nuevo || !regexDniReal.test(dni_nuevo)) {
+    mensajeAlert = "El DNI nuevo debe ser numerico y tener 7 u 8 digitos.";
+    return res.render("admision/cambiarPacienteAdmisiones", {
+      mensajeAlert,
+      alertClass,
+    });
+  }
+
+  const t = await sequelize.transaction();
+  try {
+    const personaAntigua = await Persona.findOne({
+      where: { dni: dni_antiguo },
+      include: [{ model: Paciente, as: "paciente" }],
+      transaction: t,
+    });
+    if (!personaAntigua || !personaAntigua.paciente) {
+      await t.rollback();
+      mensajeAlert = "No se encontro paciente con ese DNI para antiguo";
+      return res.render("admision/cambiarPacienteAdmisiones", {
+        mensajeAlert,
+        alertClass,
+      });
+    }
+    const pacienteAntiguo = personaAntigua.paciente;
+
+    const admision = await Admision.findOne({
+      where: { id_paciente: pacienteAntiguo.id_paciente, estado: 1 },
+      transaction: t,
+    });
+    if (!admision) {
+      await t.rollback();
+      mensajeAlert = "No se encontro una admision activa para ese paciente";
+      return res.render("admision/cambiarPacienteAdmisiones", {
+        mensajeAlert,
+        alertClass,
+      });
+    }
+
+    const personaReal = await Persona.findOne({
+      where: { dni: dni_nuevo },
+      include: [{ model: Paciente, as: "paciente" }],
+      transaction: t,
+    });
+    if (!personaReal || !personaReal.paciente) {
+      await t.rollback();
+      mensajeAlert = "No se encontro un paciente real con ese DNI pARA nuevo";
+      return res.render("admision/cambiarPacienteAdmisiones", {
+        mensajeAlert,
+        alertClass,
+      });
+    }
+    const pacienteReal = personaReal.paciente;
+
+    await Admision.update(
+      { id_paciente: pacienteReal.id_paciente },
+      { where: { id_admision: admision.id_admision }, transaction: t }
+    );
+
+    if (esEmergencia) {
+      await Paciente.update(
+        { estado: 2 },
+        { where: { id_paciente: pacienteAntiguo.id_paciente }, transaction: t }
+      );
+    }
+
+    await t.commit();
+    mensajeAlert =
+      "La admisión fue actualizada correctamente y el paciente temporal fue deleteado";
+    alertClass = "alert-success";
+    return res.render("admision/cambiarPacienteAdmisiones", {
+      mensajeAlert,
+      alertClass,
+    });
+  } catch (error) {
+    await t.rollback();
+    console.error("Error al cambiar paciente en admisiones:", error);
+    mensajeAlert = "Error al actualizar la admisión.";
+    return res.render("admision/cambiarPacienteAdmisiones", {
+      mensajeAlert,
+      alertClass,
+    });
+  }
+}
+
 module.exports = {
   inicio,
   admision,
   pAdmision,
   emergencia,
+  listaAdmisiones,
+  cancelarAdmision,
+  cambiarPacienteAdmisiones,
 };
