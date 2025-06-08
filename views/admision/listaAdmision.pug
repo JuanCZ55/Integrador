@@ -1,0 +1,45 @@
+extends ../layout.pug
+include ../mixins.pug
+block navbar
+  include ../mixinsNavbar.pug
+  +navbarAdmision()
+
+block main
+  .container.mt-4.justify-content-center.align-items-center.tabla-pacientes
+    h2.text-center.mt-3 Lista de Admisiones
+    if admisiones.length
+      table.table.table-striped
+        thead
+          tr
+            th ID
+            th Paciente
+            th Motivo
+            th Fecha Ingreso
+            th Fecha Egreso
+            th Estado
+            th Acciones
+        tbody
+          each adm in admisiones
+            tr
+              td= adm.id_admision
+              td #{adm.paciente ? adm.paciente.nombre + ' ' + adm.paciente.apellido : ''}
+              td= adm.motivo ? adm.motivo.nombre : ''
+              td= adm.fecha_ingreso
+              td= adm.fecha_egreso || '-'
+              td
+                if adm.estado == 1
+                  span.badge.bg-success Activa
+                else if adm.estado == 2
+                  span.badge.bg-warning Cancelada
+                else if adm.estado == 3
+                  span.badge.bg-secondary Finalizada
+                else
+                  span.badge.bg-light Desconocido
+              td
+                a.btn.btn-primary.btn-sm(href=`/admision/gestionarAdmision?dni=${adm.paciente ? adm.paciente.dni : ''}`) Modificar
+                if adm.estado == 1
+                  form.d-inline(method="POST", action=`/admision/cancelarAdmision`)
+                    input(type="hidden", name="id_admision", value=adm.id_admision)
+                    button.btn.btn-danger.btn-sm(type="submit") Cancelar
+    else
+      .alert.alert-info No hay admisiones registradas.
