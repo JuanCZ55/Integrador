@@ -9,28 +9,26 @@ block navbar
   
 block main
   
-  +debug(locals.paciente)
+  //-+debug(locals)
 
   .w-75.container
     +alert(mensajeAlert,alertClass)
-  //- .alert.alert-danger(role="alert")
-  //-   | #{mensajeAlert || ""}
+
   div.container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box
     form.p-4(novalidate, action="/admision/crearPaciente", method="POST")
-      .d-flex.align-items-center.mb-3
+      .mb-3.d-flex.align-items-center.gap-2
         h2.mx-auto.mb-0 Admision
-        button.btn.btn-secondary.ms-auto(type="button", id="btn-autocompletar") Autocompletar Emergencia
+        .mb-3.d-flex.align-items-center.gap-2.p-1
+          label.mb-0(for="id_persona") ID:
+          input.form-control#id_persona(type="text", name="id_persona", value=(paciente && paciente.id_persona) || "",readonly)
       br
       .row
         .col
-          .mb-3.d-flex.align-items-center.gap-2
-            label.mb-0(for="id_persona") ID:
-            input.form-control#id_persona(type="text", name="id_persona", value=(paciente && paciente.id_persona) || "",readonly)
           .mb-3  
             label.form-label(for="dni") DNI*
             .input-group
               input.form-control(type="number", id="dni", placeholder="48455713", value=(paciente && paciente.dni) || dni || "", name="dni")
-              button.btn.btn-outline-secondary(type="button", id="btnBuscar") Buscar
+              button.btn.btn-outline-secondary.text-light(type="button", id="btnBuscar") Buscar
 
             input.d-none(type="checkbox", name="emergencia",id="emergencia")
           .mb-3
@@ -81,26 +79,7 @@ block main
 
         br
       .d-flex.justify-content-between
-        button.btn.btn-primary(type="submit", onclick="this.form.action='/admision/crearPaciente'") Crear Paciente
         button.btn.btn-primary(type="submit", onclick="this.form.action='/admision/modificarPaciente'") Modificar Paciente
-  script.
-    let dniEmergencia = !{JSON.stringify(dniEmergencia)} // DNI de emergencia
-
-    document.getElementById('btn-autocompletar').addEventListener('click', function() {
-      document.getElementById('dni').value = dniEmergencia;
-      document.getElementById('emergencia').checked = true; 
-      console.log(document.getElementById('emergencia').value+"hola")
-      document.getElementById('nombre').value = 'Paciente';
-      document.getElementById('apellido').value = 'Emergencia';
-      document.getElementById('f_nacimiento').value = '2000-01-01';
-      document.getElementById('genero').value = 'otro';
-      document.getElementById('direccion').value = 'Desconocida';
-      document.getElementById('telefono').value = '';
-      document.getElementById('contacto').value = '';
-      document.getElementById('mail').value = '';
-      // Obra social: selecciona la opción vacía o la primera
-      let obraSocial = document.getElementById('id_obra_social');
-      if (obraSocial) obraSocial.selectedIndex = 0;
-      document.getElementById('cod_os').value = dniEmergencia;
-      document.getElementById('detalle').value = 'Ingreso por emergencia';
-    });
+        button.btn.btn-primary(type="submit", onclick="this.form.action='/admision/crearPaciente'") Crear Paciente
+        
+  
