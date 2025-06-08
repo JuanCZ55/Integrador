@@ -9,7 +9,6 @@ block navbar
   
 block main
   
-  //-+debug(locals)
 
   .w-75.container
     +alert(mensajeAlert,alertClass)
@@ -17,7 +16,7 @@ block main
   div.container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box
     form.p-4(novalidate, action="/admision/crearPaciente", method="POST")
       .mb-3.d-flex.align-items-center.gap-2
-        h2.mx-auto.mb-0 Admision
+        h2.mx-auto.mb-0 Gestion de Paciente
         .mb-3.d-flex.align-items-center.gap-2.p-1
           label.mb-0(for="id_persona") ID:
           input.form-control#id_persona(type="text", name="id_persona", value=(paciente && paciente.id_persona) || "",readonly)
