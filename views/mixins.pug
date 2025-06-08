@@ -1,5 +1,5 @@
 mixin alert(message, alertClass)
-  if message && message !== ""&&message !== null
+  if message && message !== ""&&message !== null&&message !== undefined  && (!Array.isArray(message) || message.length > 0)
     .alert(class=`${alertClass}` role="alert")
       if Array.isArray(message)
         each msg, i in message
@@ -9,16 +9,6 @@ mixin alert(message, alertClass)
       else
         = message
   
-
-
-//- lName: string
-//- array: array de objetos {id, nombre}
-//- [
-//-   { id: "F", nombre: "Femenino" },
-//-   { id: "M", nombre: "Masculino" },
-//-   { id: "O", nombre: "Otro" }
-//- ]
-//- selectedValue: el id seleccionado
 mixin select(lName,array, selectedValue,nombre)
   label.form-label(for=lName) #{nombre}*
   select.form-select(name=lName, id=lName)
