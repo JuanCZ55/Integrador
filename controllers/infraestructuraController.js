@@ -66,10 +66,66 @@ async function apiCamasLibres(req, res) {
     return res.status(500).json({ error: "Error al cargar camas libres" });
   }
 }
+async function listaCamas(req, res) {
+  try {
+    // Trae todas las habitaciones con sus camas
+    const habitaciones = await Habitacion.findAll({
+      include: [
+        {
+          model: Sector,
+          as: "sector",
+        },
+        {
+          model: Cama,
+          as: "camas",
+          include: [
+            {
+              model: MovimientoCama,
+              as: "movimientosCama",
+              where: { estado: 1 }, // Solo movimiento activo (cama ocupada)
+              required: false,
+              include: [
+                {
+                  model: Admision,
+                  as: "admision",
+                  include: [
+                    {
+                      model: Paciente,
+                      as: "paciente",
+                      include: [
+                        {
+                          model: Persona,
+                          as: "persona",
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      order: [
+        ["id_sector", "ASC"],
+        ["numero", "ASC"],
+        [{ model: Cama, as: "camas" }, "n_cama", "ASC"],
+      ],
+    });
 
+    res.render("admision/listaCamas", { habitaciones });
+  } catch (error) {
+    console.error("Error al listar camas:", error);
+    res.render("admision/listaCamas", {
+      habitaciones: [],
+      mensajeAlert: "Error al cargar las camas",
+      alertClass: "alert-danger",
+    });
+  }
+}
 module.exports = {
   crearCama,
-
+  listaCamas,
   apiHabitacionesLibres,
   apiCamasLibres,
 };
