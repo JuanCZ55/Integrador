@@ -71,12 +71,12 @@ function validarDatos(data, esEmergencia = false) {
   }
   console.log(cod_os);
 
-  if (nombre && (nombre.length < 3 || !regexName.test(nombre))) {
+  if (nombre && (nombre.length < 2 || !regexName.test(nombre))) {
     errores.push(
       "Nombre invalido, pon mas de 3 caracteres y tu nombre no debe tener numeros"
     );
   }
-  if (apellido && (apellido.length < 3 || !regexName.test(apellido))) {
+  if (apellido && (apellido.length < 2 || !regexName.test(apellido))) {
     errores.push(
       "Apellido invalido, pon mas de 3 caracteres y tu apellido no debe tener numeros"
     );
@@ -317,9 +317,60 @@ async function pModificarPaciente(req, res) {
     return res.redirect("/admision/inicio?error=modificar");
   }
 }
+//+GET para listar todos los pacientes activos
+async function listarPacientes(req, res) {
+  try {
+    const personas = await Persona.findAll({
+      include: [
+        {
+          model: Paciente,
+          as: "paciente",
+          required: true,
+          include: [
+            {
+              model: ObraSocial,
+              as: "obraSocial", // O el alias que uses en tu modelo Paciente
+              required: false,
+            },
+          ],
+        },
+      ],
+      order: [["apellido", "ASC"]],
+    });
 
+    // Adaptar datos para la vista
+    const pacientes = personas.map((persona) => ({
+      id_persona: persona.id_persona,
+      dni: persona.dni,
+      nombre: persona.nombre,
+      apellido: persona.apellido,
+      f_nacimiento: persona.f_nacimiento,
+      genero: persona.genero,
+      telefono: persona.telefono,
+      mail: persona.mail,
+      contacto: persona.paciente.contacto,
+      direccion: persona.paciente.direccion,
+      id_obra_social: persona.paciente.id_obra_social,
+      obra_social: persona.paciente.obraSocial
+        ? persona.paciente.obraSocial.nombre
+        : "",
+      cod_os: persona.paciente.cod_os,
+      detalle: persona.paciente.detalle,
+    }));
+
+    res.render("admision/listaPaciente", { pacientes });
+  } catch (error) {
+    console.error("Error al listar pacientes:", error);
+    res.render("admision/listaPaciente", {
+      pacientes: [],
+      mensajeAlert: "Error al cargar los pacientes",
+      alertClass: "alert-danger",
+    });
+  }
+}
 module.exports = {
   gCrearPaciente,
   pCrearPaciente,
   pModificarPaciente,
+  listarPacientes,
 };
