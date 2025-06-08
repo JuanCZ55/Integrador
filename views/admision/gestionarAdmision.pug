@@ -9,6 +9,11 @@ block navbar
 block main
   //- paciente trae datos de paciente y persona juntos
   //- si es un paciente de emergencia
+  if estado 
+    if estado=="creado"
+      +alert("Paciente creado exitosamente", "alert-success")
+    else if estado=="modificado"
+      +alert("Paciente modificado exitosamente", "alert-success")
   +alert(mensajeAlert, alertClass)
   div.container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box.w-75
     form.p-4(novalidate, action="/admision/gestionarAdmision", method="POST")
@@ -21,7 +26,7 @@ block main
               h3 Dato del Paciente
               li.d-flex.align-items-center
                 label.form-label.fw-bold.mb-0.me-1(for="id_paciente",readonly) ID:
-                input.form-control-plaintext.p-0.m-0(type="text",name="id_paciente", value=paciente.id || "")
+                input.form-control-plaintext.p-0.m-0(type="text",name="id_paciente", value=paciente.id ||paciente.id_paciente|| "")
               li
                 strong DNI: 
                 |  #{paciente.dni || ""}
@@ -49,13 +54,13 @@ block main
                 |  #{paciente.telefono_contacto || ""}
               li
                 strong Email: 
-                |  #{paciente.email || ""}
+                |  #{paciente.mail || ""}
               li
                 strong Obra Social: 
                 |  #{paciente.obra_social || ""}
               li
                 strong Numero de Afiliado: 
-                |  #{paciente.numero_afiliado || ""}
+                |  #{paciente.cod_os || ""}
               li
                 strong Detalle: 
                 |  #{paciente.detalle || ""}
@@ -73,7 +78,7 @@ block main
             label.form-label(for="dni") DNI*
             .input-group
               
-              input.form-control(type="number", id="dni", name="dni", value=dni || "", placeholder="48796125")
+              input.form-control(type="number", id="dni", name="dni", value=dni ||paciente.dni|| "", placeholder="48796125")
               button.btn.btn-outline-secondary(type="button", id="btnBuscar") Buscar
           .mb-3 
             +select("id_motivo", motivos, admision.id_motivo||"","Motivo") 
@@ -120,7 +125,7 @@ block main
 
           .mb-3
             label.form-label(for="selectCama") Cama
-            select#selectCama.form-select(name="id_cama_selector" )
+            select#selectCama.form-select(name="id_cama" )
             br
             br
             br 
@@ -138,16 +143,17 @@ block main
       checkbox.addEventListener('change', () => {
         container.style.display = checkbox.checked ? 'block' : 'none';
       });
+      //buscar
       document.getElementById('btnBuscar').addEventListener('click', function() {
         const dni = document.getElementById('dni').value;
         if (dni) {
-          window.location.href = '/admision/gestionarAdmision?dni=' + encodeURIComponent(dni);
+          window.location.href = '/admision/gestionarAdmision?dni=' + dni;
         } else {
-          alert('Por favor, ingrese un DNI válido');
+          alert('Por favor, ingrese un DNI valido');
         }
       });
       document.addEventListener('DOMContentLoaded', function() {
-        const motivo = document.getElementById('motivo');
+        const motivo = document.getElementById('id_motivo');
         const derivado = document.getElementById('derivado');
         const turno = document.getElementById('turno');
 
