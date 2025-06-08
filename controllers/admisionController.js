@@ -86,7 +86,7 @@ async function emergencia(req, res) {
 async function admision(req, res) {
   console.log("Estoy en admision get");
 
-  const { dni, emergencia } = req.query;
+  const { dni, emergencia, estado } = req.query;
   try {
     // #region  2. Buscar motivos de admisión activos y los ordena
     const motivos = await Motivos.findAll({
@@ -100,6 +100,7 @@ async function admision(req, res) {
     // #endregion
     let secArray;
     const sectores = await Sector.findAll({});
+
     if (sectores.length === 0) {
       console.error("No hay sectores disponibles");
     } else {
@@ -129,7 +130,7 @@ async function admision(req, res) {
       mail: "",
       contacto: "",
       direccion: "",
-      id_obra_social: "",
+      obra_social: "",
       cod_os: "",
       detalle: "",
     };
@@ -169,7 +170,12 @@ async function admision(req, res) {
             estado: "1",
           },
         });
-
+        const obraS = await ObraSocial.findOne({
+          where: {
+            id_obra_social: persona.paciente.id_obra_social,
+          },
+        });
+        const nombreOS = obraS.nombre;
         if (emergencia == "true") {
           mensajeAlert = `Paciente de emergencia creado. Escriba este DNI: ${dni} en la pulsera/frente del paciente.`;
         }
@@ -200,7 +206,9 @@ async function admision(req, res) {
               },
             ],
           });
-        } //*Si el paciente esta cargado, lo devuelve
+        }
+        console.log(2);
+        //*Si el paciente esta cargado, lo devuelve
         return res.render("admision/gestionarAdmision", {
           dni: dni,
           mensajeAlert: mensajeAlert || "",
@@ -216,7 +224,7 @@ async function admision(req, res) {
             mail: persona.mail,
             contacto: persona.paciente.contacto,
             direccion: persona.paciente.direccion,
-            id_obra_social: persona.paciente.id_obra_social,
+            obra_social: nombreOS,
             cod_os: persona.paciente.cod_os,
             detalle: persona.paciente.detalle,
           },
@@ -229,6 +237,8 @@ async function admision(req, res) {
         });
       }
     }
+    console.log(1);
+
     //este carga cuando se busca al paciente o no
     return res.render("admision/gestionarAdmision", {
       emergencia: "false",
@@ -238,6 +248,7 @@ async function admision(req, res) {
       dni: dni,
       sectores: secArray,
       camaSeleccionada: {},
+      estado: estado || "",
     });
   } catch (error) {
     console.error("Error al pedir la admision", error);
@@ -245,15 +256,15 @@ async function admision(req, res) {
   }
 }
 //-------------post para crear admision----------------
-async function padmision(req, res) {
+async function pAdmision(req, res) {
   console.log("Estoy en admision post");
 
   const { id_admision, id_paciente, id_motivo, derivado, id_cama, egreso } =
     req.body;
   console.log(id_admision, id_paciente, id_motivo, derivado, id_cama, egreso);
+  const t = await sequelize.transaction();
 
   try {
-    // #region  2. Buscar motivos de admisión activos y los ordena
     const motivos = await Motivos.findAll({
       attributes: ["id_motivo", "nombre"],
       where: { estado: true },
@@ -262,320 +273,110 @@ async function padmision(req, res) {
       id: m.id_motivo,
       nombre: m.nombre,
     }));
-    const persona = await Persona.findOne({
-      include: [
-        {
-          model: Paciente,
-          as: "paciente",
-          where: { id_paciente: id_paciente },
-        },
-      ],
-    });
-    if (!persona) {
-      console.error("no existe el paciente");
-    }
-    // #endregion
-    // Validar campos obligatorios id_paciente, id_motivo
-    if (!id_paciente || !id_motivo) {
-      console.log("Faltan campos obligatorios");
-      return res.render("admision/gestionarAdmision", {
-        mensajeAlert: "Por favor llene todos los campos obligatorios(*)",
-        alertClass: "alert-danger",
-        admision: {
-          id_admision,
-          id_paciente,
-          id_motivo,
-          derivado,
-        },
-        motivosArray,
-        camaSeleccionada: camaSelec ? camaSelec.id_cama : {},
-        paciente: {
-          dni: persona.dni,
-          nombre: persona.nombre,
-          apellido: persona.apellido,
-          f_nacimiento: persona.f_nacimiento,
-          genero: persona.genero,
-          telefono: persona.telefono,
-          mail: persona.mail,
-          contacto: persona.paciente.contacto,
-          direccion: persona.paciente.direccion,
-          id_obra_social: persona.paciente.id_obra_social,
-          cod_os: persona.paciente.cod_os,
-          detalle: persona.paciente.detalle,
-        },
-      });
-    }
-    const cama = await Cama.findByPk(id_cama);
-    if (id_cama && !cama) {
-      return res.render("admision/gestionarAdmision", {
-        mensajeAlert: "La cama seleccionada no existe",
-        alertClass: "alert-danger",
-        admision: {
-          id_admision,
-          id_paciente,
-          id_motivo,
-          derivado,
-        },
-        motivosArray,
-        camaSeleccionada: camaSelec ? camaSelec.id_cama : {},
-        paciente: {
-          dni: persona.dni,
-          nombre: persona.nombre,
-          apellido: persona.apellido,
-          f_nacimiento: persona.f_nacimiento,
-          genero: persona.genero,
-          telefono: persona.telefono,
-          mail: persona.mail,
-          contacto: persona.paciente.contacto,
-          direccion: persona.paciente.direccion,
-          id_obra_social: persona.paciente.id_obra_social,
-          cod_os: persona.paciente.cod_os,
-          detalle: persona.paciente.detalle,
-        },
-      });
-    }
-    //busco los motivos por id_motivo
-    const motivo = await Motivos.findByPk(id_motivo);
-    // Validar motivo de admisión turno o derivado, emergencia no ocupa
-    if (motivo) {
-      if (motivo.nombre === "Turno") {
-        const turno = await Turno.findOne({
-          where: {
-            id_paciente: id_paciente,
-            fecha: new Date().toISOString().split("T")[0],
-          },
-        });
-        if (!turno) {
-          return res.render("admision/gestionarAdmision", {
-            mensajeAlert:
-              "No hay turnos asosiados de este paciente para la fecha de hoy",
-            alertClass: "alert-danger",
-            admision: {
-              id_admision,
-              id_paciente,
-              id_motivo,
-              derivado,
-            },
-            motivosArray,
-            camaSeleccionada: camaSelec ? camaSelec.id_cama : {},
-            paciente: {
-              dni: persona.dni,
-              nombre: persona.nombre,
-              apellido: persona.apellido,
-              f_nacimiento: persona.f_nacimiento,
-              genero: persona.genero,
-              telefono: persona.telefono,
-              mail: persona.mail,
-              contacto: persona.paciente.contacto,
-              direccion: persona.paciente.direccion,
-              id_obra_social: persona.paciente.id_obra_social,
-              cod_os: persona.paciente.cod_os,
-              detalle: persona.paciente.detalle,
-            },
-          });
-        }
-      } else if (motivo.nombre === "Derivado") {
-        if (!derivado || derivado === "") {
-          return res.render("admision/gestionarAdmision", {
-            mensajeAlert:
-              "Por favor ingrese el nombre del medico/hospital derivado",
-            alertClass: "alert-danger",
-            admision: {
-              id_admision,
-              id_paciente,
-              id_motivo,
-              derivado,
-            },
-            motivosArray,
-            camaSeleccionada: camaSelec ? camaSelec.id_cama : {},
-            paciente: {
-              dni: persona.dni,
-              nombre: persona.nombre,
-              apellido: persona.apellido,
-              f_nacimiento: persona.f_nacimiento,
-              genero: persona.genero,
-              telefono: persona.telefono,
-              mail: persona.mail,
-              contacto: persona.paciente.contacto,
-              direccion: persona.paciente.direccion,
-              id_obra_social: persona.paciente.id_obra_social,
-              cod_os: persona.paciente.cod_os,
-              detalle: persona.paciente.detalle,
-            },
-          });
-        }
-      }
+    let secArray;
+    const sectores = await Sector.findAll({});
+
+    if (sectores.length === 0) {
+      console.error("No hay sectores disponibles");
     } else {
-      return res.render("admision/gestionarAdmision", {
-        mensajeAlert: "Ingrese un motivo de admisión válido",
-        alertClass: "alert-danger",
-        admision: {
-          id_admision,
-          id_paciente,
-          id_motivo,
-          derivado,
-        },
-        motivosArray,
-        camaSeleccionada: camaSelec ? camaSelec.id_cama : {},
-        paciente: {
-          dni: persona.dni,
-          nombre: persona.nombre,
-          apellido: persona.apellido,
-          f_nacimiento: persona.f_nacimiento,
-          genero: persona.genero,
-          telefono: persona.telefono,
-          mail: persona.mail,
-          contacto: persona.paciente.contacto,
-          direccion: persona.paciente.direccion,
-          id_obra_social: persona.paciente.id_obra_social,
-          cod_os: persona.paciente.cod_os,
-          detalle: persona.paciente.detalle,
-        },
-      });
-    }
-
-    let admision;
-    if (id_admision) {
-      admision = await Admision.findByPk(id_admision);
-      if (!admision) {
-        return res.render("admision/gestionarAdmision", {
-          mensajeAlert: "No se encontro la admision a modificar",
-          alertClass: "alert-danger",
-          admision: {
-            id_admision,
-            id_paciente,
-            id_motivo,
-            derivado,
-          },
-          motivosArray,
-          camaSeleccionada: camaSelec ? camaSelec.id_cama : {},
-          paciente: {
-            dni: persona.dni,
-            nombre: persona.nombre,
-            apellido: persona.apellido,
-            f_nacimiento: persona.f_nacimiento,
-            genero: persona.genero,
-            telefono: persona.telefono,
-            mail: persona.mail,
-            contacto: persona.paciente.contacto,
-            direccion: persona.paciente.direccion,
-            id_obra_social: persona.paciente.id_obra_social,
-            cod_os: persona.paciente.cod_os,
-            detalle: persona.paciente.detalle,
-          },
-        });
-      }
-      admision.id_motivo = id_motivo;
-      admision.derivado = derivado || null;
-      if (egreso != "") {
-        admision.fecha_egreso = egreso;
-        admision.estado = 3;
-      }
-      await admision.save();
-      // Actualizar movimiento de cama si corresponde
-      if (id_cama) {
-        // Buscar movimiento activo
-        let mov = await MovimientoCama.findOne({
-          where: {
-            id_admision: admision.id_admision,
-            estado: 1,
-          },
-        });
-        if (mov) {
-          mov.id_cama = id_cama;
-          await mov.save();
-        } else {
-          // Si no hay movimiento activo, crear uno nuevo
-          await MovimientoCama.create({
-            id_admision: admision.id_admision,
-            id_cama: id_cama,
-          });
-        }
-      }
-    } else {
-      // Crear nueva admisión
-      admision = await Admision.create({
-        id_paciente,
-        id_motivo,
-        derivado: derivado || null,
-        fecha_ingreso: new Date().toISOString().split("T")[0],
-      });
-      // Crear movimiento de cama si corresponde
-      if (id_cama) {
-        await MovimientoCama.create({
-          id_admision: admision.id_admision,
-          id_cama: id_cama,
-        });
-      }
-    }
-
-    return res.redirect("/admision/gestionarAdmision?etapa=crear");
-  } catch (error) {
-    console.error("Error al crear la admisión de post:", error);
-    return res.redirect("/admision/inicio?error=admision");
-  }
-}
-async function postGestionarAdmision(req, res) {
-  console.log("Estoy en admision post");
-
-  const {
-    id_admision,
-    id_paciente,
-    id_motivo,
-    derivado,
-    id_cama,
-    egreso,
-    egresar, // checkbox para marcar egreso
-  } = req.body;
-
-  try {
-    // 1) Obtener lista de motivos activos
-    const motivos = await Motivos.findAll({
-      attributes: ["id_motivo", "nombre"],
-      where: { estado: true },
-    });
-    const motivosArray = motivos.map((m) => ({
-      id: m.id_motivo,
-      nombre: m.nombre,
-    }));
-    let secArray = [];
-    try {
-      const sectores = await Sector.findAll({});
       secArray = sectores.map((a) => ({
         id_sector: a.id_sector,
         nombre: a.nombre,
       }));
-    } catch (error) {
-      console.error("Error al obtener sectores:", error);
     }
-    // 2) Obtener datos de persona/paciente
-    const persona = await Persona.findOne({
-      include: [
-        {
-          model: Paciente,
-          as: "paciente",
-          where: { id_paciente: id_paciente },
-        },
-      ],
-    });
-    if (!persona) {
-      console.error("no existe el paciente");
-      // Si no hay persona, no podemos continuar
-      return res.render("admision/gestionarAdmision", {
-        mensajeAlert: "Paciente no encontrado",
-        alertClass: "alert-danger",
-        admision: null,
-        motivosArray,
-        camaSeleccionada: {},
-        paciente: {},
-        sectores: secArray,
+    const admiNula = {
+      id_admision: "",
+      id_paciente: "",
+      id_motivo: "",
+      derivado: "",
+      fecha_ingreso: "",
+      fecha_egreso: "",
+      estado: "",
+    };
+    const pacienteNulo = {
+      id_paciente: "",
+      dni: "",
+      nombre: "",
+      apellido: "",
+      f_nacimiento: "",
+      genero: "",
+      telefono: "",
+      mail: "",
+      contacto: "",
+      direccion: "",
+      obra_social: "",
+      cod_os: "",
+      detalle: "",
+    };
+    let persona = null;
+    if (id_paciente) {
+      persona = await Persona.findOne({
+        include: [
+          {
+            model: Paciente,
+            as: "paciente",
+            where: { id_paciente: id_paciente },
+          },
+        ],
       });
     }
-
-    // Funcion auxiliar para armar objeto comun de render
-    const datosRenderComun = (mensajeAlert) => {
-      return {
-        mensajeAlert,
+    let paciente = pacienteNulo;
+    if (persona && persona.paciente) {
+      const obra = await ObraSocial.findByPk(persona.paciente.id_obra_social);
+      paciente = {
+        id_paciente: persona.paciente.id_paciente,
+        dni: persona.dni,
+        nombre: persona.nombre,
+        apellido: persona.apellido,
+        f_nacimiento: persona.f_nacimiento,
+        genero: persona.genero,
+        telefono: persona.telefono,
+        mail: persona.mail,
+        contacto: persona.paciente.contacto,
+        direccion: persona.paciente.direccion,
+        obra_social: obra ? obra.nombre : "",
+        cod_os: persona.paciente.cod_os,
+        detalle: persona.paciente.detalle,
+      };
+    }
+    if (!persona || !persona.paciente) {
+      return res.render("admision/gestionarAdmision", {
+        mensajeAlert: "Paciente no existe",
+        alertClass: "alert-danger",
+        admision: { id_admision, id_paciente, id_motivo, derivado },
+        motivos: motivosArray,
+        sectores: secArray,
+        camaSeleccionada: {},
+        paciente: pacienteNulo,
+        f_turno: "",
+      });
+    }
+    const turno = await Turno.findOne({
+      where: { id_paciente, fecha: new Date().toISOString().split("T")[0] },
+    });
+    const admAct = await Admision.findOne({
+      where: { id_paciente, estado: 1 },
+    });
+    let camaSeleccionada = {};
+    if (admAct) {
+      const mov = await MovimientoCama.findOne({
+        where: { id_admision: admAct.id_admision, estado: 1 },
+        include: [{ model: Cama, as: "cama" }],
+      });
+      camaSeleccionada = mov || {};
+    }
+    // Validar campos obligatorios id_paciente, id_motivo
+    if (
+      !id_paciente ||
+      !id_motivo ||
+      !id_cama ||
+      id_cama === "" ||
+      id_cama === undefined
+    ) {
+      console.log("Faltan campos obligatorios");
+      return res.render("admision/gestionarAdmision", {
+        mensajeAlert:
+          "Por favor llene/seleccione todos los campos obligatorios(*)",
         alertClass: "alert-danger",
         admision: {
           id_admision,
@@ -583,200 +384,157 @@ async function postGestionarAdmision(req, res) {
           id_motivo,
           derivado,
         },
-        motivosArray,
-        camaSeleccionada: id_cama || {},
-        paciente: {
-          dni: persona.dni,
-          nombre: persona.nombre,
-          apellido: persona.apellido,
-          f_nacimiento: persona.f_nacimiento,
-          genero: persona.genero,
-          telefono: persona.telefono,
-          mail: persona.mail,
-          contacto: persona.paciente.contacto,
-          direccion: persona.paciente.direccion,
-          id_obra_social: persona.paciente.id_obra_social,
-          cod_os: persona.paciente.cod_os,
-          detalle: persona.paciente.detalle,
-        },
         sectores: secArray,
-      };
-    };
-
-    // 3) Validar campos obligatorios (id_paciente, id_motivo)
-    if (!id_paciente || !id_motivo) {
-      console.log("Faltan campos obligatorios");
-      return res.render(
-        "admision/gestionarAdmision",
-        datosRenderComun("Por favor llene todos los campos obligatorios")
-      );
+        motivos: motivosArray,
+        camaSeleccionada,
+        paciente,
+        f_turno: turno ? turno.fecha : "",
+      });
     }
 
-    // 4) Validar cama seleccionada si existe id_cama
     if (id_cama) {
-      const camaObj = await Cama.findByPk(id_cama);
-      if (!camaObj) {
-        return res.render(
-          "admision/gestionarAdmision",
-          datosRenderComun("La cama seleccionada no existe")
-        );
+      const cama = await Cama.findByPk(id_cama);
+      if (!cama) {
+        return res.render("admision/gestionarAdmision", {
+          mensajeAlert: "La cama seleccionada no existe",
+          alertClass: "alert-danger",
+          admision: { id_admision, id_paciente, id_motivo, derivado },
+          motivos: motivosArray,
+          sectores: secArray,
+          camaSeleccionada,
+          paciente,
+          f_turno: turno ? turno.fecha : "",
+        });
       }
     }
-
-    // 5) Validar motivo de admision
+    //busco los motivos por id_motivo
     const motivo = await Motivos.findByPk(id_motivo);
     if (!motivo) {
-      return res.render(
-        "admision/gestionarAdmision",
-        datosRenderComun("Ingrese un motivo de admision valido")
+      return res.render("admision/gestionarAdmision", {
+        mensajeAlert: "Ingrese un motivo de admision valido",
+        alertClass: "alert-danger",
+        admision: { id_admision, id_paciente, id_motivo, derivado },
+        motivos: motivosArray,
+        sectores: secArray,
+        camaSeleccionada,
+        paciente,
+        f_turno: turno ? turno.fecha : "",
+      });
+    }
+    if (motivo.nombre === "Turno" && !turno) {
+      return res.render("admision/gestionarAdmision", {
+        mensajeAlert: "No hay turno para hoy",
+        alertClass: "alert-danger",
+        admision: { id_admision, id_paciente, id_motivo, derivado },
+        motivos: motivosArray,
+        sectores: secArray,
+        camaSeleccionada,
+        paciente,
+        f_turno: "",
+      });
+    }
+    if (motivo.nombre === "Derivado" && (!derivado || derivado === "")) {
+      return res.render("admision/gestionarAdmision", {
+        mensajeAlert: "Indique derivado",
+        alertClass: "alert-danger",
+        admision: { id_admision, id_paciente, id_motivo, derivado },
+        motivos: motivosArray,
+        sectores: secArray,
+        camaSeleccionada,
+        paciente,
+        f_turno: turno ? turno.fecha : "",
+      });
+    }
+    let admision;
+    if (id_admision) {
+      admision = await Admision.findByPk(id_admision, { transaction: t });
+      if (!admision) {
+        admision = await Admision.create(
+          {
+            id_paciente,
+            id_motivo,
+            derivado: derivado || null,
+            fecha_ingreso: new Date().toISOString().split("T")[0],
+          },
+          { transaction: t }
+        );
+      } else {
+        admision.id_motivo = id_motivo;
+        admision.derivado = derivado || null;
+        if (egreso != "") {
+          admision.fecha_egreso = egreso;
+          admision.estado = 3;
+        }
+        await admision.save({ transaction: t });
+      }
+      if (!admision) throw new Error("admision no encontrada");
+      admision.id_motivo = id_motivo;
+      admision.derivado = derivado || null;
+      if (egreso) {
+        admision.fecha_egreso = egreso;
+        admision.estado = 3; // finalizada
+      }
+      await admision.save({ transaction: t });
+    } else {
+      admision = await Admision.create(
+        {
+          id_paciente,
+          id_motivo,
+          derivado: derivado || null,
+          fecha_ingreso: new Date().toISOString().split("T")[0],
+        },
+        { transaction: t }
       );
     }
 
-    if (motivo.nombre === "Turno") {
-      const hoy = new Date().toISOString().split("T")[0];
-      const turno = await Turno.findOne({
-        where: {
-          id_paciente: id_paciente,
-          fecha: hoy,
-        },
+    // Crear movimiento de cama si corresponde
+    if (id_cama) {
+      // Finalizar movimiento anterior
+      const movAnterior = await MovimientoCama.findOne({
+        where: { id_admision: admision.id_admision, estado: 1 },
+        transaction: t,
       });
-      if (!turno) {
-        return res.render(
-          "admision/gestionarAdmision",
-          datosRenderComun(
-            "No hay turnos asociados de este paciente para la fecha de hoy"
-          )
+      if (movAnterior) {
+        movAnterior.estado = 2;
+        await movAnterior.save({ transaction: t });
+        // Poner la cama anterior en mantenimiento/limpieza
+        await Cama.update(
+          { estado: 3 },
+          { where: { id_cama: movAnterior.id_cama }, transaction: t }
         );
       }
-    } else if (motivo.nombre === "Derivado") {
-      if (!derivado || derivado.trim() === "") {
-        return res.render(
-          "admision/gestionarAdmision",
-          datosRenderComun(
-            "Por favor ingrese el nombre del medico u hospital derivado"
-          )
-        );
-      }
-    }
-
-    // 6) Si existe id_admision, actualizamos. Sino, creamos nueva
-    let admision;
-    if (id_admision) {
-      admision = await Admision.findByPk(id_admision);
-      if (!admision) {
-        return res.render(
-          "admision/gestionarAdmision",
-          datosRenderComun("No se encontro la admision a modificar")
-        );
-      }
-
-      // Actualizar campos generales
-      admision.id_motivo = id_motivo;
-      admision.derivado = derivado || null;
-
-      // --- Manejo de egreso ---
-      if (egresar) {
-        // Si checkbox de egreso fue marcado
-        if (!egreso) {
-          return res.render(
-            "admision/gestionarAdmision",
-            datosRenderComun("Debe ingresar la fecha de egreso")
-          );
-        }
-        // Validar que egreso >= ingreso
-        const fechaIngresoDB = new Date(admision.fecha_ingreso);
-        const fechaEgresoInput = new Date(egreso);
-        if (fechaEgresoInput < fechaIngresoDB) {
-          return res.render(
-            "admision/gestionarAdmision",
-            datosRenderComun(
-              "La fecha de egreso no puede ser anterior a la de ingreso"
-            )
-          );
-        }
-        admision.fecha_egreso = egreso;
-        admision.estado = 3; // Egresado
-
-        // Liberar cama asociada (todos los movimientos activos)
-        await MovimientoCama.update(
-          { estado: 0 },
-          {
-            where: {
-              id_admision: admision.id_admision,
-              estado: 1,
-            },
-          }
-        );
-      } else {
-        // Si no se quiere egresar: limpiar fecha y marcar activo
-        admision.fecha_egreso = null;
-        admision.estado = 1; // Activo
-      }
-      // --- Fin manejo egreso ---
-
-      await admision.save();
-
-      // Si hay cambio de cama (y no es egreso), creamos/actualizamos movimiento
-      if (id_cama && !egresar) {
-        // Buscamos movimiento activo
-        const movActivo = await MovimientoCama.findOne({
-          where: {
-            id_admision: admision.id_admision,
-            estado: 1,
-          },
-        });
-        if (movActivo) {
-          if (movActivo.id_cama !== Number(id_cama)) {
-            // Si cambió la cama, actualizamos
-            movActivo.id_cama = id_cama;
-            await movActivo.save();
-          }
-        } else {
-          // No hay movimiento activo, creamos uno nuevo
-          await MovimientoCama.create({
-            id_admision: admision.id_admision,
-            id_cama: id_cama,
-          });
-        }
-      }
-    } else {
-      // Crear nueva admision
-      admision = await Admision.create({
-        id_paciente,
-        id_motivo,
-        derivado: derivado || null,
-        fecha_ingreso: new Date().toISOString().split("T")[0],
-        estado: 1, // Activo por defecto
-      });
-      // Crear movimiento de cama si corresponde
-      if (id_cama) {
-        await MovimientoCama.create({
+      // Crear nuevo movimiento de cama
+      await MovimientoCama.create(
+        {
           id_admision: admision.id_admision,
-          id_cama: id_cama,
-        });
-      }
+          id_cama,
+          estado: 1,
+        },
+        { transaction: t }
+      );
+      // Setear la nueva cama como ocupada
+      await Cama.update({ estado: 2 }, { where: { id_cama }, transaction: t });
     }
+    if (egreso && id_cama) {
+      await Cama.update({ estado: 3 }, { where: { id_cama }, transaction: t });
+    }
+    await t.commit();
 
-    return res.redirect(
-      "/admision/gestionarAdmision?id_admision=" + admision.id_admision
-    );
+    // Redirigir al GET con query de estado
+    if (!id_admision || id_admision === "") {
+      return res.redirect("/admision/gestionarAdmision?estado=creado");
+    } else {
+      return res.redirect("/admision/gestionarAdmision?estado=modificado");
+    }
   } catch (error) {
-    console.error("Error al procesar la admision:", error);
-    return res.render("admision/gestionarAdmision", {
-      mensajeAlert: "Error interno al procesar la admision",
-      alertClass: "alert-danger",
-      admision: null,
-      motivosArray: [], // Quizas recargar motivosArray antes
-      camaSeleccionada: {},
-      paciente: {},
-    });
+    console.error("Error al crear la admisión de post:", error);
+    return res.redirect("/admision/inicio?error=admision");
   }
 }
 
 module.exports = {
   inicio,
   admision,
-  padmision,
+  pAdmision,
   emergencia,
-  postGestionarAdmision,
 };
