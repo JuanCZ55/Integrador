@@ -34,7 +34,6 @@ function selects(genero) {
 
       if (habitacion.value) habitacion.dispatchEvent(new Event("change"));
     } catch (error) {
-      console.error(error);
       alert("No se pudieron cargar las habitaciones");
     }
   });
@@ -51,7 +50,6 @@ function selects(genero) {
         camas.appendChild(option);
       });
     } catch (error) {
-      console.error(error);
       alert("No se pudieron cargar las camas");
     }
   });

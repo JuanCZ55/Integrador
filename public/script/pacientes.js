@@ -3,16 +3,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const idPersonaInput = document.getElementById("id_persona");
   const alertContainer = document.querySelector(".w-75.container");
   const btnBuscar = document.getElementById("btnBuscar");
-  const btnAutocompletar = document.getElementById("btn-autocompletar");
   const emergenciaCheckbox = document.getElementById("emergencia");
 
   async function buscarPaciente(dni) {
     if (!dni) return;
     try {
       const url = `/admision/api/busqueda?dni=${dni}`;
-      console.log("Intentando fetch a:", url);
       const res = await fetch(url);
-      console.log("Respuesta del servidor:", res.status);
       if (!res.ok) {
         const errorData = await res.json();
         alertContainer.innerHTML = `
@@ -29,7 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
       btnBuscar.classList.remove("btn-danger");
       btnBuscar.classList.add("btn-success");
     } catch (e) {
-      console.error("Excepción en fetch:", e);
       alertContainer.innerHTML = `
         <div class="alert alert-danger" role="alert">
           Error al conectar con el servidor
@@ -43,7 +39,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function cargarFormulario(paciente) {
     if (!paciente) return limpiarFormulario();
 
-    // Compruebo que exista el input oculto antes de asignarle .value
     if (idPersonaInput) {
       idPersonaInput.value = paciente.id_persona || "";
     }
@@ -93,32 +88,5 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     buscarPaciente(dni);
-  });
-
-  btnAutocompletar.addEventListener("click", () => {
-    const dniEmergencia = window.dniEmergencia || "00000000";
-
-    if (idPersonaInput) {
-      idPersonaInput.value = dniEmergencia;
-    }
-    dniInput.value = dniEmergencia;
-    if (emergenciaCheckbox) emergenciaCheckbox.checked = true;
-
-    document.getElementById("nombre").value = "Paciente";
-    document.getElementById("apellido").value = "Emergencia";
-    document.getElementById("f_nacimiento").value = "2000-01-01";
-    document.getElementById("genero").value = "otro";
-    document.getElementById("direccion").value = "Desconocida";
-    document.getElementById("telefono").value = "";
-    document.getElementById("contacto").value = "";
-    document.getElementById("mail").value = "";
-
-    const obraSocial = document.getElementById("id_obra_social");
-    if (obraSocial) obraSocial.selectedIndex = 0;
-
-    document.getElementById("cod_os").value = dniEmergencia;
-    document.getElementById("detalle").value = "Ingreso por emergencia";
-
-    alertContainer.innerHTML = "";
   });
 });

@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const admisionController = require("../controllers/admisionController");
-const pacienteController = require("../controllers/pacienteController");
 const infraestructuraController = require("../controllers/infraestructuraController");
 const pacienteC = require("../controllers/pacienteC");
 
@@ -16,7 +15,9 @@ router.post("/modificarPaciente", pacienteC.pModificarPaciente);
 router.get("/listarPacientes", pacienteC.listarPacientes);
 
 //*api de busqueda
-router.get("/api/busqueda", pacienteController.busquedaApi);
+//*Api de busqeda
+//router.get("/api/busqueda", pacienteController.busqueda);
+router.get("/api/busqueda", pacienteC.busquedaApi);
 
 //+Admision----------------------------------------
 //*emergencia
@@ -41,8 +42,6 @@ router.post(
   "/cambiarPacienteAdmisiones",
   admisionController.cambiarPacienteAdmisiones
 );
-//*Api de busqeda
-router.get("/api/busqueda", pacienteController.busqueda);
 
 //+Infrestructura--------------------------------------
 router.get("/listaCamas", infraestructuraController.listaCamas);
