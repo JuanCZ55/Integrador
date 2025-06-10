@@ -2,7 +2,7 @@
 
 ## Descripción
 
-Sistema de gestión hospitalaria para la administración de pacientes, admisiones, camas, habitaciones y turnos. Desarrollado en Node.js con Express, Sequelize y Pug como motor de vistas.
+Sistema de admision e internacion hospitalaria para pacientes, admisiones, camas, habitaciones y turnos. Desarrollado en Node.js con Express, Sequelize y Pug como motor de vistas.
 
 ## Requisitos previos
 
@@ -20,6 +20,16 @@ Sistema de gestión hospitalaria para la administración de pacientes, admisione
    ```
    Esto instalará todas las dependencias necesarias.
 
+## Variables de entorno
+
+- Se uso clever cloud para la base de datos
+  - DB_NAME=bdon6mzbw82ufclkk04i
+  - DB_USER=uyrlcmhusjr1zhfs
+  - DB_PASSWORD=Qzs2z1DUjYfYUOW7G6ZT
+  - DB_HOST=bdon6mzbw82ufclkk04i-mysql.services.clever-cloud.com
+  - DB_PORT=3306
+  - DB_DIALECT=mysql
+
 ## Comandos principales
 
 - **Iniciar el servidor en modo producción:**
@@ -30,7 +40,7 @@ Sistema de gestión hospitalaria para la administración de pacientes, admisione
   ```sh
   npm run dev
   ```
-- **Compilar recursos o tareas de build:**
+- **Creara las tablas y cargara con datos**
   ```sh
   npm run build
   ```
@@ -38,9 +48,9 @@ Sistema de gestión hospitalaria para la administración de pacientes, admisione
 ## Estructura principal del proyecto
 
 - `app.js`: Archivo principal de la aplicación Express.
-- `routes/`: Rutas de la aplicación (ej: admisión, pacientes, infraestructura).
+- `routes/`: Rutas de la aplicación admisión(admision(personas,infraestructura)).
 - `controllers/`: Lógica de negocio y controladores de cada módulo.
-- `models/`: Modelos de datos Sequelize.
+- `models/`: Modelos de datos con Sequelize.
 - `views/`: Vistas Pug para renderizado del frontend.
 - `public/`: Archivos estáticos (CSS, JS, imágenes).
 - `seeders/`: Scripts para poblar la base de datos con datos iniciales.
@@ -48,7 +58,7 @@ Sistema de gestión hospitalaria para la administración de pacientes, admisione
 ## Uso
 
 1. Configura la conexión a la base de datos en `models/db.js` según tu entorno.
-2. (Opcional) Ejecuta los seeders para poblar datos iniciales:
+2. `npm run build` Ejecuta la creacion de las tablas con los seeders para poblar datos iniciales:
    ```sh
    node seeders/seedInfra.js
    node seeders/seedMotivos.js
@@ -57,21 +67,21 @@ Sistema de gestión hospitalaria para la administración de pacientes, admisione
    node seeders/seedTurnos.js
    ```
 3. Inicia el servidor con `npm start` o `npm run dev`.
-4. Accede a la aplicación en tu navegador en `http://localhost:3000` (o el puerto configurado).
+4. Accede a la aplicación en tu navegador en `http://localhost:3000` .
 
 ## Funcionalidades principales
 
-- Gestión de pacientes (alta, modificación, listado, búsqueda)
-- Admisión de pacientes (normal y emergencia)
-- Gestión de camas, habitaciones y sectores
+- Gestión de pacientes (creacion, modificación, listado)
+- Admisión de pacientes (Turno,Emergencia y Derivado) aignacion de camas
 - Listado y gestión de admisiones
+- Listado de camas por habitaciones y sector
 - Motor de vistas con Pug
 
 ## Notas
 
 - El sistema utiliza rutas agrupadas bajo `/admision` para la mayoría de las funcionalidades.
-- Personaliza los archivos de configuración y seeders según tus necesidades.
+- La pagina de inicial (/admision/) indica brevemente que hacer cada navbar existente
 
 ---
 
-Desarrollado por el equipo IntegradorX.
+Desarrollado por JuanC
