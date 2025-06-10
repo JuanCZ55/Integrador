@@ -16,21 +16,17 @@ async function apiHabitacionesLibres(req, res) {
   const { id_sector, genero } = req.query;
 
   try {
-    // Configuración de consulta optimizada
     const habitaciones = await Habitacion.findAll({
       where: {
         id_sector: id_sector,
-        [Op.or]: [
-          { genero: null }, // Habitaciones sin nadie
-          { genero: genero }, // fitro genero
-        ],
+        [Op.or]: [{ genero: null }, { genero: genero }],
       },
       include: [
         {
           model: Cama,
           as: "camas",
           where: { estado: 1 },
-          attributes: ["id_cama"], // Solo IDs para reducir datos
+          attributes: ["id_cama"],
         },
         {
           model: Sector,
@@ -42,7 +38,6 @@ async function apiHabitacionesLibres(req, res) {
 
     return res.status(200).json(habitaciones);
   } catch (error) {
-    console.error("Error al buscar habitaciones libres:", error);
     return res.status(500).json({ error: "Error interno del servidor" });
   }
 }
@@ -52,7 +47,6 @@ async function apiCamasLibres(req, res) {
   const { id_habitacion } = req.query;
 
   try {
-    // Traemos todas las camas de la habitacion con su movimiento actual
     const camas = await Cama.findAll({
       where: {
         id_habitacion: id_habitacion,
@@ -62,13 +56,11 @@ async function apiCamasLibres(req, res) {
 
     return res.status(200).json(camas);
   } catch (error) {
-    console.error("Error al cargar camas libres:", error);
     return res.status(500).json({ error: "Error al cargar camas libres" });
   }
 }
 async function listaCamas(req, res) {
   try {
-    // Trae todas las habitaciones con sus camas
     const habitaciones = await Habitacion.findAll({
       include: [
         {
@@ -82,7 +74,7 @@ async function listaCamas(req, res) {
             {
               model: MovimientoCama,
               as: "movimientosCama",
-              where: { estado: 1 }, // Solo movimiento activo (cama ocupada)
+              where: { estado: 1 },
               required: false,
               include: [
                 {
@@ -115,7 +107,6 @@ async function listaCamas(req, res) {
 
     res.render("admision/listaCamas", { habitaciones });
   } catch (error) {
-    console.error("Error al listar camas:", error);
     res.render("admision/listaCamas", {
       habitaciones: [],
       mensajeAlert: "Error al cargar las camas",
