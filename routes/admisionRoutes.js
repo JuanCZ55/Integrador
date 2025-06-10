@@ -18,7 +18,7 @@ router.get("/listarPacientes", pacienteC.listarPacientes);
 //*Api de busqeda
 //router.get("/api/busqueda", pacienteController.busqueda);
 router.get("/api/busqueda", pacienteC.busquedaApi);
-
+router.get("/listaTurnos", pacienteC.listaTurnos);
 //+Admision----------------------------------------
 //*emergencia
 router.post("/emergencia", admisionController.emergencia);

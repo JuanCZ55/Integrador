@@ -1,4 +1,5 @@
 extends ../layout.pug
+include ../mixins.pug
 block navbar
   include ../mixinsNavbar.pug
   +navbarAdmision()
@@ -22,3 +23,4 @@ block main
        
       .d-flex.justify-content-end
         button.btn.btn-primary(type="submit") Cambiar Paciente
+      small Con el dni antiguo se buscar la admision y se le cambia el dni a esa admision
