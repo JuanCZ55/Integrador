@@ -15,7 +15,36 @@ const { Op } = require("sequelize");
 const { Sequelize } = require("sequelize");
 
 async function inicio(req, res) {
-  res.render("admision/inicio");
+  const { error } = req.query;
+  //admision,/emergencia/camas/modificar
+  if (error) {
+    let horror = "";
+    if (admision) {
+      horror = "Error al gestionar la admisión";
+    } else if (emergencia) {
+      horror = "Error al gestionar la emergencia";
+    }
+    if (camas) {
+      horror = "Error al gestionar las camas";
+    }
+    if (modificar) {
+      horror = "Error al modificar el paciente";
+    }
+    if (modificar) {
+      horror = "Error al crear el paciente";
+    }
+    if (error) {
+      horror = "Error desconocido";
+    }
+    return res.render("admision/inicio", {
+      mensajeAlert: horror,
+      alertClass: "alert-danger",
+    });
+  }
+  return res.render("admision/inicio", {
+    mensajeAlert: "",
+    alertClass: "",
+  });
 }
 //+post para crear un paciente de emergencia
 async function emergencia(req, res) {
@@ -32,11 +61,9 @@ async function emergencia(req, res) {
       mail: null,
     });
 
-    // 2. Usar el id_persona como DNI temporal y actualizar
     persona.dni = persona.id_persona;
     await persona.save();
 
-    // 3. Crear paciente asociado a esa persona
     const paciente = await Paciente.create({
       id_persona: persona.id_persona,
       contacto: null,
@@ -46,7 +73,6 @@ async function emergencia(req, res) {
       detalle: "Ingreso por emergencia",
     });
 
-    // 4. Renderizar una vista mostrando el DNI temporal generado
     if (!persona || !paciente) {
       return res.render("admision/inicio", {
         mensajeAlert: "Error al crear paciente de emergencia",
@@ -56,18 +82,14 @@ async function emergencia(req, res) {
 
     return res.redirect("/admision/gestionarAdmision?dni=" + persona.dni);
   } catch (error) {
-    console.error("Error al crear paciente de emergencia:", error);
     return res.redirect("/admision/inicio?error=emergencia");
   }
 }
 //-------------get para admision----------------
 //*lo uso para rederizar la vista con un paciente ya creado(normal/emergencia) o sin paciente
 async function admision(req, res) {
-  console.log("Estoy en admision get");
-
   const { dni, emergencia, estado } = req.query;
   try {
-    // #region  2. Buscar motivos de admisión activos y los ordena
     const motivos = await Motivos.findAll({
       attributes: ["id_motivo", "nombre"],
       where: { estado: true },
@@ -76,12 +98,11 @@ async function admision(req, res) {
       id: m.id_motivo,
       nombre: m.nombre,
     }));
-    // #endregion
+
     let secArray;
     const sectores = await Sector.findAll({});
 
     if (sectores.length === 0) {
-      console.error("No hay sectores disponibles");
     } else {
       secArray = sectores.map((a) => ({
         id_sector: a.id_sector,
@@ -114,7 +135,6 @@ async function admision(req, res) {
       detalle: "",
     };
     if (dni) {
-      // 1. Buscar persona por DNI
       const persona = await Persona.findOne({
         where: { dni },
         include: [
@@ -158,7 +178,7 @@ async function admision(req, res) {
         if (emergencia == "true") {
           mensajeAlert = `Paciente de emergencia creado. Escriba este DNI: ${dni} en la pulsera/frente del paciente.`;
         }
-        //*si se hizo un adminsion debe tener una cama asignada, entoces la busco
+
         let camaSelec = null;
         if (admi) {
           camaSelec = await MovimientoCama.findOne({
@@ -186,8 +206,7 @@ async function admision(req, res) {
             ],
           });
         }
-        console.log(2);
-        //*Si el paciente esta cargado, lo devuelve
+
         return res.render("admision/gestionarAdmision", {
           dni: dni,
           mensajeAlert: mensajeAlert || "",
@@ -216,9 +235,7 @@ async function admision(req, res) {
         });
       }
     }
-    console.log(1);
 
-    //este carga cuando se busca al paciente o no
     return res.render("admision/gestionarAdmision", {
       emergencia: "false",
       motivos: motivosArray,
@@ -230,17 +247,13 @@ async function admision(req, res) {
       estado: estado || "",
     });
   } catch (error) {
-    console.error("Error al pedir la admision", error);
     return res.redirect("/admision/inicio?error=admision");
   }
 }
 //-------------post para crear admision----------------
 async function pAdmision(req, res) {
-  console.log("Estoy en admision post");
-
   const { id_admision, id_paciente, id_motivo, derivado, id_cama, egreso } =
     req.body;
-  console.log(id_admision, id_paciente, id_motivo, derivado, id_cama, egreso);
   const t = await sequelize.transaction();
 
   try {
@@ -256,7 +269,6 @@ async function pAdmision(req, res) {
     const sectores = await Sector.findAll({});
 
     if (sectores.length === 0) {
-      console.error("No hay sectores disponibles");
     } else {
       secArray = sectores.map((a) => ({
         id_sector: a.id_sector,
@@ -345,13 +357,12 @@ async function pAdmision(req, res) {
       camaSeleccionada = mov || {};
     }
     const egresara = egreso && egreso !== "" && egreso !== undefined;
-    // Validar campos obligatorios id_paciente, id_motivo
+
     if (
       !id_paciente ||
       !id_motivo ||
       (!egresara && (!id_cama || id_cama === "" || id_cama === undefined))
     ) {
-      console.log("Faltan campos obligatorios");
       return res.render("admision/gestionarAdmision", {
         mensajeAlert:
           "Por favor llene/seleccione todos los campos obligatorios(*)",
@@ -385,7 +396,7 @@ async function pAdmision(req, res) {
         });
       }
     }
-    //busco los motivos por id_motivo
+
     const motivo = await Motivos.findByPk(id_motivo);
     if (!motivo) {
       return res.render("admision/gestionarAdmision", {
@@ -450,7 +461,6 @@ async function pAdmision(req, res) {
       admision.derivado = derivado || null;
       if (egreso) {
         admision.fecha_egreso = egreso;
-        admision.estado = 3; // finalizada
       }
       await admision.save({ transaction: t });
     } else {
@@ -465,9 +475,7 @@ async function pAdmision(req, res) {
       );
     }
 
-    // Crear movimiento de cama si corresponde
     if (id_cama) {
-      // Finalizar movimiento anterior
       const movAnterior = await MovimientoCama.findOne({
         where: { id_admision: admision.id_admision, estado: 1 },
         transaction: t,
@@ -475,13 +483,13 @@ async function pAdmision(req, res) {
       if (movAnterior) {
         movAnterior.estado = 2;
         await movAnterior.save({ transaction: t });
-        // Poner la cama anterior en mantenimiento/limpieza
+
         await Cama.update(
           { estado: 3 },
           { where: { id_cama: movAnterior.id_cama }, transaction: t }
         );
       }
-      // Crear nuevo movimiento de cama
+
       await MovimientoCama.create(
         {
           id_admision: admision.id_admision,
@@ -490,7 +498,7 @@ async function pAdmision(req, res) {
         },
         { transaction: t }
       );
-      // Setear la nueva cama como ocupada
+
       await Cama.update({ estado: 2 }, { where: { id_cama }, transaction: t });
     }
     if (egreso && id_cama) {
@@ -498,14 +506,12 @@ async function pAdmision(req, res) {
     }
     await t.commit();
 
-    // Redirigir al GET con query de estado
     if (!id_admision || id_admision === "") {
       return res.redirect("/admision/gestionarAdmision?estado=creado");
     } else {
       return res.redirect("/admision/gestionarAdmision?estado=modificado");
     }
   } catch (error) {
-    console.error("Error al crear la admisión de post:", error);
     return res.redirect("/admision/inicio?error=admision");
   }
 }
@@ -533,7 +539,6 @@ async function listaAdmisiones(req, res) {
       order: [["fecha_ingreso", "DESC"]],
     });
 
-    // Adaptar datos para la vista
     const lista = admisiones.map((adm) => ({
       id_admision: adm.id_admision,
       paciente:
@@ -552,7 +557,6 @@ async function listaAdmisiones(req, res) {
 
     res.render("admision/listaAdmision", { admisiones: lista });
   } catch (error) {
-    console.error("Error al listar admisiones:", error);
     res.render("admision/listaAdmision", {
       admisiones: [],
       mensajeAlert: "Error al cargar las admisiones",
@@ -563,37 +567,27 @@ async function listaAdmisiones(req, res) {
 async function cancelarAdmision(req, res) {
   const { id_admision } = req.body;
   try {
-    await Admision.update(
-      { estado: 2 }, // 2 cancelada
-      { where: { id_admision } }
-    );
-    // Buscar el movimiento de cama activo
+    await Admision.update({ where: { id_admision } });
+
     const movi = await MovimientoCama.findOne({
       where: { id_admision, estado: 1 },
     });
     if (movi) {
-      await MovimientoCama.update(
-        { estado: 2 }, // 2 finalizada
-        { where: { id_movimiento_camas: movi.id_movimiento_camas } }
-      );
-      await Cama.update(
-        { estado: 3 }, // 3 mantenimiento/limpieza
-        { where: { id_cama: movi.id_cama } }
-      );
+      await MovimientoCama.update({
+        where: { id_movimiento_camas: movi.id_movimiento_camas },
+      });
+      await Cama.update({ where: { id_cama: movi.id_cama } });
     }
     res.redirect("/admision/listaAdmision");
   } catch (error) {
-    console.error("Error al cancelar la admisión:", error);
     res.redirect("/admision/listaAdmision");
   }
 }
 async function cambiarPacienteAdmisiones(req, res) {
-  // Si es GET solo renderiza la vista
   if (req.method === "GET") {
     return res.render("admision/cambiarPacienteAdmisiones");
   }
 
-  // Si es POST hace el cambio
   const { dni_antiguo, dni_nuevo, esEmergencia } = req.body;
   let mensajeAlert = "";
   let alertClass = "alert-danger";
@@ -664,7 +658,7 @@ async function cambiarPacienteAdmisiones(req, res) {
     });
     if (!personaReal || !personaReal.paciente) {
       await t.rollback();
-      mensajeAlert = "No se encontro un paciente real con ese DNI pARA nuevo";
+      mensajeAlert = "No se encontro un paciente real con ese DNI para nuevo";
       return res.render("admision/cambiarPacienteAdmisiones", {
         mensajeAlert,
         alertClass,
@@ -694,7 +688,7 @@ async function cambiarPacienteAdmisiones(req, res) {
     });
   } catch (error) {
     await t.rollback();
-    console.error("Error al cambiar paciente en admisiones:", error);
+
     mensajeAlert = "Error al actualizar la admisión.";
     return res.render("admision/cambiarPacienteAdmisiones", {
       mensajeAlert,
