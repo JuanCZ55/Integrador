@@ -1,0 +1,43 @@
+extends ../layout.pug
+include ../mixins.pug
+block navbar
+  include ../mixinsNavbar.pug
+  +navbarAdmision()
+
+block main
+  .container.mt-4.justify-content-center.align-items-center.tabla-pacientes
+    small.text-white El boton ver/editar no tiene funcionalidad, es solo un ejemplo
+    h2.text-center.mt-3 Lista de Turnos
+    if turnos && turnos.length
+      table.table.table-striped
+        thead
+          tr
+            th ID Turno
+            th Paciente
+            th Médico
+            th Fecha
+            th Hora
+            th Estado
+            th Acciones
+        tbody
+          each turno in turnos
+            tr
+              td= turno.id_turnos
+              td #{turno.paciente && turno.paciente.persona ? turno.paciente.persona.nombre + ' ' + turno.paciente.persona.apellido : '-'}
+              td #{turno.medico && turno.medico.persona ? turno.medico.persona.nombre + ' ' + turno.medico.persona.apellido : '-'}
+              td= turno.fecha
+              td= turno.hora || '-'
+              td
+                if turno.estado == 1
+                  span.badge.bg-warning Pendiente
+                else if turno.estado == 2
+                  span.badge.bg-success Finalizado
+                else if turno.estado == 3
+                  span.badge.bg-danger Cancelado
+                else
+                  span.badge.bg-secondary Desconocido
+              td
+                //- Aquí puedes agregar acciones como editar/cancelar el turno
+                a.btn.btn-primary.btn-sm(href=`/asd`) Ver/Editar
+    else
+      .alert.alert-info No hay turnos registrados.
