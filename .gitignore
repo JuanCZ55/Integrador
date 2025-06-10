@@ -1,11 +1,15 @@
 /compiladoPug
 /node_modules
 /view/provisionales
+.env
 pruebas.js
 .vscode/settings.json
 .vscode/settings.json
 .vscode/settings.json
 /.vscode
+<<<<<<< HEAD
 .env
 
 .vercel
+=======
+>>>>>>> parent of 3492fce (variables)
