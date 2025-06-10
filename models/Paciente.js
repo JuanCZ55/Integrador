@@ -21,7 +21,7 @@ Paciente.init(
       unique: "pacientes_ibfk_2",
     },
     contacto: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT,
       allowNull: true,
     },
     direccion: {
