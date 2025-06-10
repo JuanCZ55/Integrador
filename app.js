@@ -36,11 +36,9 @@ sequelize
   .authenticate()
   .then(() => {
     console.log("Conexion exitosa a la base de datos");
-    app.listen(3000, () => {
-      console.log("Server corre en el puerto 3000");
-    });
   })
   .catch((err) => {
     console.error("No se pudo conectar a la base de datos");
-    process.exit(1); // Sale del proceso si falla la conexión
   });
+
+module.exports = app;
