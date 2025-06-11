@@ -4,7 +4,6 @@ const {
   Persona,
   Admision,
   Turno,
-  Medico,
 } = require("../models/init");
 const sequelize = require("../models/db");
 const { Op } = require("sequelize");
@@ -16,6 +15,7 @@ async function ObS() {
   return obras.map((os) => ({ id: os.id_obra_social, nombre: os.nombre }));
 }
 
+// valida datos de paciente, retorna array de errores
 function validarDatos(data, esEmergencia = false) {
   data = typeof data === "object" && data !== null ? data : {};
 
@@ -39,7 +39,7 @@ function validarDatos(data, esEmergencia = false) {
   const regexTelefono = /^\d{10}$/;
   const regexEmail = /^([a-zA-Z0-9._-]+)@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const regexCodOs = /^\d{6}$/;
-
+  // campos obligatorios
   const obligatorios = {
     nombre,
     apellido,
@@ -65,9 +65,11 @@ function validarDatos(data, esEmergencia = false) {
     }
   }
 
+  // validaciones específicas
   if (!esEmergencia && dni && !regexDni.test(dni)) {
     errores.push("Dni debe tener 7 u 8 digitos");
   }
+  console.log(cod_os);
 
   if (nombre && (nombre.length < 2 || !regexName.test(nombre))) {
     errores.push(
@@ -177,6 +179,7 @@ async function gCrearPaciente(req, res) {
       dniEmergencia,
     });
   } catch (e) {
+    console.error(e);
     return res.redirect("/admision/inicio?error=crear");
   }
 }
@@ -244,7 +247,7 @@ async function pCrearPaciente(req, res) {
     return res.redirect("/admision/check?etapa=crear&navbar=gestionPaciente");
   } catch (e) {
     await t.rollback();
-
+    console.error(e);
     return res.redirect("/admision/inicio?error=crear");
   }
 }
@@ -310,7 +313,7 @@ async function pModificarPaciente(req, res) {
     });
   } catch (e) {
     await t.rollback();
-
+    console.error(e);
     return res.redirect("/admision/inicio?error=modificar");
   }
 }
@@ -326,7 +329,7 @@ async function listarPacientes(req, res) {
           include: [
             {
               model: ObraSocial,
-              as: "obraSocial",
+              as: "obraSocial", // O el alias que uses en tu modelo Paciente
               required: false,
             },
           ],
@@ -335,6 +338,7 @@ async function listarPacientes(req, res) {
       order: [["apellido", "ASC"]],
     });
 
+    // Adaptar datos para la vista
     const pacientes = personas.map((persona) => ({
       id_persona: persona.id_persona,
       dni: persona.dni,
@@ -356,6 +360,7 @@ async function listarPacientes(req, res) {
 
     res.render("admision/listaPaciente", { pacientes });
   } catch (error) {
+    console.error("Error al listar pacientes:", error);
     res.render("admision/listaPaciente", {
       pacientes: [],
       mensajeAlert: "Error al cargar los pacientes",
@@ -363,90 +368,9 @@ async function listarPacientes(req, res) {
     });
   }
 }
-async function busquedaApi(req, res) {
-  const dni = req.query.dni;
-
-  if (!dni) {
-    return res.status(400).json({ error: "Falta el parámetro dni" });
-  }
-
-  try {
-    const personaConPaciente = await Persona.findOne({
-      where: { dni: dni },
-      include: [{ model: Paciente, as: "paciente" }],
-    });
-
-    if (!personaConPaciente) {
-      return res.status(404).json({ mensaje: "Paciente no encontrado" });
-    }
-
-    const paciente = {
-      id_persona: personaConPaciente.id_persona,
-      dni: personaConPaciente.dni,
-      nombre: personaConPaciente.nombre,
-      apellido: personaConPaciente.apellido,
-      f_nacimiento: personaConPaciente.f_nacimiento,
-      genero: personaConPaciente.genero,
-      telefono: personaConPaciente.telefono || "",
-      mail: personaConPaciente.mail || "",
-      contacto: personaConPaciente.paciente?.contacto || "",
-      direccion: personaConPaciente.paciente?.direccion || "",
-      id_obra_social: personaConPaciente.paciente?.id_obra_social || "",
-      cod_os: personaConPaciente.paciente?.cod_os || "",
-      detalle: personaConPaciente.paciente?.detalle || "",
-      estado: personaConPaciente.paciente?.estado ?? true,
-    };
-
-    return res.json({ paciente });
-  } catch (error) {
-    return res.status(500).json({ error: "Error interno del servidor" });
-  }
-}
-//* GET para listar turnos
-async function listaTurnos(req, res) {
-  try {
-    const turnos = await Turno.findAll({
-      include: [
-        {
-          model: Paciente,
-          as: "paciente",
-          include: [
-            {
-              model: Persona,
-              as: "persona",
-              attributes: ["nombre", "apellido"],
-            },
-          ],
-        },
-        {
-          model: Medico,
-          as: "medico",
-          include: [
-            {
-              model: Persona,
-              as: "persona",
-              attributes: ["nombre", "apellido"],
-            },
-          ],
-        },
-      ],
-    });
-
-    return res.render("admision/listaTurnos", { turnos });
-  } catch (error) {
-    return res.render("admision/listaTurnos", {
-      turnos: [],
-      mensajeAlert: "Error al cargar los turnos",
-      alertClass: "alert-danger",
-    });
-  }
-}
-
 module.exports = {
   gCrearPaciente,
   pCrearPaciente,
   pModificarPaciente,
   listarPacientes,
-  busquedaApi,
-  listaTurnos,
 };
