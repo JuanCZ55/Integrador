@@ -32,17 +32,18 @@ app.use("/admision", admision);
 app.use((req, res, next) => {
   res.status(404).render("notfound");
 });
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log("Conexion exitosa a la base de datos");
-  })
-  .catch((err) => {
-    console.error("No se pudo conectar a la base de datos");
-  });
 
-module.exports = app;
-/* sequelize
+// sequelize
+//   .authenticate()
+//   .then(() => {
+//     console.log("Conexion exitosa a la base de datos");
+//   })
+//   .catch((err) => {
+//     console.error("No se pudo conectar a la base de datos");
+//   });
+
+// module.exports = app;
+sequelize
   .authenticate()
   .then(() => {
     console.log("Conexion exitosa a la base de datos");
@@ -52,5 +53,5 @@ module.exports = app;
   })
   .catch((err) => {
     console.error("No se pudo conectar a la base de datos");
-    process.exit(1); // Sale del proceso si falla la conexión
-  });*/
+    process.exit(1);
+  });
