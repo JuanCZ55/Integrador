@@ -583,11 +583,11 @@ async function cancelarAdmision(req, res) {
     res.redirect("/admision/listaAdmision");
   }
 }
-async function cambiarPacienteAdmisiones(req, res) {
-  if (req.method === "GET") {
-    return res.render("admision/cambiarPacienteAdmisiones");
-  }
+async function gCambiarPacienteAdmisiones(req, res) {
+  return res.render("admision/cambiarPacienteAdmisiones");
+}
 
+async function cambiarPacienteAdmisiones(req, res) {
   const { dni_antiguo, dni_nuevo, esEmergencia } = req.body;
   let mensajeAlert = "";
   let alertClass = "alert-danger";
@@ -705,4 +705,5 @@ module.exports = {
   listaAdmisiones,
   cancelarAdmision,
   cambiarPacienteAdmisiones,
+  gCambiarPacienteAdmisiones,
 };

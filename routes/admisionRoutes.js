@@ -36,7 +36,7 @@ router.post("/cancelarAdmision", admisionController.cancelarAdmision);
 //*cambiar paciente de admision
 router.get(
   "/cambiarPacienteAdmisiones",
-  admisionController.cambiarPacienteAdmisiones
+  admisionController.gCambiarPacienteAdmisiones
 );
 router.post(
   "/cambiarPacienteAdmisiones",
