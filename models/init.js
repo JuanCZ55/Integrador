@@ -12,6 +12,7 @@ const Persona = require("./Persona");
 const Sector = require("./Sector");
 const Turno = require("./Turno");
 const MedicoEspecialidad = require("./medico_especialidad");
+const HorarioTurno = require("./HorarioTurno");
 
 // Relaciones Persona
 Persona.hasOne(Paciente, { foreignKey: "id_persona", as: "paciente" });
@@ -55,7 +56,12 @@ MedicoEspecialidad.belongsTo(Especialidad, {
 // Relaciones Turno
 Turno.belongsTo(Paciente, { foreignKey: "id_paciente", as: "paciente" });
 Turno.belongsTo(Medico, { foreignKey: "id_medico", as: "medico" });
+Turno.belongsTo(HorarioTurno, {
+  foreignKey: "id_horario_turno",
+  as: "horarioTurno",
+});
 
+HorarioTurno.hasMany(Turno, { foreignKey: "id_horario_turno", as: "turnos" });
 // Relaciones Horario
 Horario.belongsTo(Medico, { foreignKey: "id_medico", as: "medico" });
 
@@ -106,4 +112,5 @@ module.exports = {
   Sector,
   Turno,
   MedicoEspecialidad,
+  HorarioTurno,
 };

@@ -27,13 +27,17 @@ Turno.init(
         key: "id_medico",
       },
     },
+    id_horario_turno: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "horario_turno",
+        key: "id",
+      },
+    },
     fecha: {
       type: DataTypes.DATEONLY,
       allowNull: false,
-    },
-    hora: {
-      type: DataTypes.TIME,
-      allowNull: true,
     },
     estado: {
       type: DataTypes.INTEGER,
