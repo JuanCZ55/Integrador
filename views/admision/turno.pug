@@ -8,31 +8,20 @@ block main
   - var fecha = typeof fecha !== 'undefined' ? fecha : []
   - var hora = typeof hora !== 'undefined' ? hora : []
   div.container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box
-    form.p-4(novalidate, action="/admision/crearPaciente", method="POST")
-      h1 Turno 
+    form.p-4(novalidate, action="/admision/", method="POST")
+      h1 Gestion de Turno 
       br  
       .mb-3
         label.form-label(for="dni") DNI*
         input.form-control(type="number", id="dni", placeholder="48455713", value=dni , name="dni")
-      .row
-        .col
-          .mb-3
-            label.form-label Medico
-            select.form-select(name="medico")
-              if medicos.length > 0
-                each med in medicos
-                  option(value=med.id) #{med.nombre} #{med.apellido}
-              else 
-                option(value="nun") No hay medicos disponibles
-        .col
-          .mb-3
-            label.form-label Especialidad
-            select.form-select(name="especialidad")
-              if especialdades.length > 0
-                each esp in especialdades
-                  option(value=esp.id) #{esp.nombre} 
-              else 
-                option(value="nun") No especialidades disponibles
+      .mb-3
+        label.form-label Medico
+        select.form-select(name="medico")
+          if medicos.length > 0
+            each med in medicos
+              option(value=med.id) #{med.nombre} #{med.apellido}
+          else 
+            option(value="nun") No hay medicos cargados
       .mb-3
         label.form-label Fecha Disponibles
         select.form-select(name="fecha")
@@ -42,11 +31,12 @@ block main
           else 
             option(value="nun") No fecha disponibles
       .mb-3
-        label.form-label Hora Disponibles
+        label.form-label Horarios Disponibles
         select.form-select(name="hora")
           if hora.length > 0
             each h in hora
               option(value=h) #{h}
           else 
             option(value="nun") No horas disponibles
-      button.btn.btn-primary(type="submit") Enviar
+      button.btn.btn-primary(type="submit" formaction="/admision/crear") Crear
+      button.btn.btn-secondary(type="submit" formaction="/admision/modificar") Modificarbtn

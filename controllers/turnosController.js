@@ -13,6 +13,7 @@ const {
   Horario,
 } = require("../models/init");
 const sequelize = require("../models/db");
+const { Op } = require("sequelize");
 
 function validarDatos(nombre, id_medico, estado, fecha, hora, medicos) {
   data = typeof data === "object" && data !== null ? data : {};
@@ -78,6 +79,7 @@ async function renderForm(res, vari) {
   };
   return res.render("admision/gestionTurno", datos);
 }
+// POST para crear un turno
 async function postTurnos(req, res) {
   const { dni, id_medico, estado, fecha_hora } = req.body;
   const [fecha, hora] = fecha_hora.split("T");
@@ -87,21 +89,57 @@ async function postTurnos(req, res) {
     const medicos = await Medicos.findAll({
       include: [
         {
+          model: Turno,
+          where: { estado: 1 },
+        },
+      ],
+      include: [
+        {
           model: Horario,
-          as: "horario",
+          where: { id_medico },
         },
       ],
     });
-  } catch (error) {}
-  if (mensajeAlert.length > 0) {
-    return renderForm(res, {
-      mensajeAlert,
-      alertClass: "alert-danger",
-      dni,
-      id_medico,
-      fecha,
-      hora,
-      estado,
-    });
+    if (mensajeAlert.length > 0) {
+      return renderForm(res, {
+        mensajeAlert,
+        alertClass: "alert-danger",
+        dni,
+        id_medico,
+        fecha,
+        hora,
+        estado,
+      });
+    }
+  } catch (error) {
+    console.error("Error al obtener los medicos:", error);
+    mensajeAlert.push("Error al obtener los medicos");
+  }
+}
+// GET api para tener horarios por fecha
+async function apiHorarios(req, res) {
+  const { fecha } = req.query;
+  if (!fecha) return res.status(400).json({ error: "Faltan las fechas" });
+
+  try {
+    const horarios = await HorarioTurno.findAll({ order: [["hora", "ASC"]] });
+    if (horarios.length === 0) {
+      return res.status(404).json({ error: "No hay horarios definidos" });
+    }
+
+    const conteos = await Promise.all(
+      horarios.map((h) =>
+        Turno.count({ where: { id_horario_turno: h.id, fecha } })
+      )
+    );
+
+    const disponibles = horarios
+      .map((h, i) => ({ id: h.id, hora: h.hora, usados: conteos[i] }))
+      .filter((h) => h.usados < 5);
+
+    return res.json(disponibles);
+  } catch (error) {
+    console.error("Error al obtener los horarios:", error);
+    return res.status(500).json({ error: "Error interno del servidor" });
   }
 }
