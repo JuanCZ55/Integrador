@@ -33,10 +33,6 @@ block main
       .mb-3
         label.form-label Horarios Disponibles
         select.form-select(name="hora")
-          if hora.length > 0
-            each h in hora
-              option(value=h) #{h}
-          else 
-            option(value="nun") No horas disponibles
+          option(value="nun") Elige una fecha primero
       button.btn.btn-primary(type="submit" formaction="/admision/crear") Crear
       button.btn.btn-secondary(type="submit" formaction="/admision/modificar") Modificarbtn
