@@ -3,6 +3,7 @@ const router = express.Router();
 const admisionController = require("../controllers/admisionController");
 const infraestructuraController = require("../controllers/infraestructuraController");
 const pacienteC = require("../controllers/pacienteC");
+const turnosController = require("../controllers/turnosController");
 
 //+PacienteNuevo--------------------------------------
 //*form para crear un paciente/modificarlo
@@ -51,5 +52,24 @@ router.get(
 );
 
 router.get("/api/camas", infraestructuraController.apiCamasLibres);
+
+//+Turnos--------------------------------------------------
+// Mostrar formulario y buscar por DNI
+router.get("/turno", turnosController.getTurnos);
+
+// Crear turno
+router.post("/crear", turnosController.postTurnos);
+
+// Modificar turno
+router.post("/modificar", turnosController.postModificarTurno);
+
+//fianlizar turno
+router.post("/finalizarTurno", turnosController.finalizarTurno);
+
+//cancelar turno
+router.post("/cancelarTurno", turnosController.cancelarTurno);
+
+// Buscar horarios disponibles (API)
+router.get("/api/horarios", turnosController.apiHorarios);
 
 module.exports = router;
