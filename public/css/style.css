@@ -39,7 +39,11 @@ body {
   background-color: rgba(25, 9, 240, 0.301);
   width: 600px !important;
 }
-
+.form-box1 {
+  backdrop-filter: blur(5px);
+  background-color: rgba(25, 9, 240, 0.301);
+  width: 700px !important;
+}
 #detalle {
   resize: none;
 }
