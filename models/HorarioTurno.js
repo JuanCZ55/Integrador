@@ -5,7 +5,7 @@ class HorarioTurno extends Model {}
 
 HorarioTurno.init(
   {
-    id: {
+    id_horario_turno: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,

@@ -199,7 +199,39 @@ async function seedTurnos() {
   }
   await queryInterface.bulkInsert("horarios", horarios, {});
 
-  // 6. Crear turnos para pacientes existentes (usa los primeros 5 pacientes)
+  // 6. Crear horarios_turno (horario_turno)
+  const horarioTurnos = [
+    { id_horario_turno: 1, hora: "08:00" },
+    { id_horario_turno: 2, hora: "08:30" },
+    { id_horario_turno: 3, hora: "09:00" },
+    { id_horario_turno: 4, hora: "09:30" },
+    { id_horario_turno: 5, hora: "10:00" },
+    { id_horario_turno: 6, hora: "10:30" },
+    { id_horario_turno: 7, hora: "11:00" },
+    { id_horario_turno: 8, hora: "11:30" },
+    { id_horario_turno: 9, hora: "12:00" },
+    { id_horario_turno: 10, hora: "12:30" },
+    { id_horario_turno: 11, hora: "13:00" },
+    { id_horario_turno: 12, hora: "13:30" },
+    { id_horario_turno: 13, hora: "14:00" },
+    { id_horario_turno: 14, hora: "14:30" },
+    { id_horario_turno: 15, hora: "15:00" },
+    { id_horario_turno: 16, hora: "15:30" },
+    { id_horario_turno: 17, hora: "16:00" },
+    { id_horario_turno: 18, hora: "16:30" },
+    { id_horario_turno: 19, hora: "17:00" },
+    { id_horario_turno: 20, hora: "17:30" },
+    { id_horario_turno: 21, hora: "18:00" },
+    { id_horario_turno: 22, hora: "18:30" },
+    { id_horario_turno: 23, hora: "19:00" },
+    { id_horario_turno: 24, hora: "19:30" },
+    { id_horario_turno: 25, hora: "20:00" },
+    { id_horario_turno: 26, hora: "20:30" },
+    { id_horario_turno: 27, hora: "21:00" },
+  ];
+  await queryInterface.bulkInsert("horario_turno", horarioTurnos, {});
+
+  // 7. Crear turnos para pacientes existentes (usa los primeros 5 pacientes)
   const pacientes = await queryInterface.sequelize.query(
     "SELECT id_paciente FROM pacientes ORDER BY id_paciente ASC LIMIT 5",
     { type: sequelize.QueryTypes.SELECT }
@@ -209,8 +241,8 @@ async function seedTurnos() {
     turnos.push({
       id_paciente: pacientes[i].id_paciente,
       id_medico: i + 1,
+      id_horario_turno: (i % 5) + 1, // Asigna un id_horario_turno valido
       fecha: new Date().toISOString().split("T")[0],
-      hora: "09:00",
       estado: 1,
       createdAt: new Date(),
       updatedAt: new Date(),

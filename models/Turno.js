@@ -5,7 +5,7 @@ class Turno extends Model {}
 
 Turno.init(
   {
-    id_turnos: {
+    id_turno: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
@@ -32,7 +32,7 @@ Turno.init(
       allowNull: false,
       references: {
         model: "horario_turno",
-        key: "id",
+        key: "id_horario_turno",
       },
     },
     fecha: {
