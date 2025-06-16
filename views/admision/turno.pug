@@ -1,38 +1,173 @@
 extends ../layout.pug
+include ../mixins
 block scripts 
-  script(src="./script/verificarDni.js") 
+  //- script(src="./script/verificarDni.js") 
+block navbar
+  include ../mixinsNavbar.pug
+  +navbarAdmision
 block main
-  - var dni = typeof vdni !== 'undefined' ? vdni : ""
-  - var medicos = typeof medicos !== 'undefined' ? medicos : []
-  - var especialdades = typeof especialdades !== 'undefined' ? especialdades : []
-  - var fecha = typeof fecha !== 'undefined' ? fecha : []
-  - var hora = typeof hora !== 'undefined' ? hora : []
+  +alert(mensajeAlert,alertClass)
   div.container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box
-    form.p-4(novalidate, action="/admision/", method="POST")
+    form#formTurno.p-4(novalidate, action="/admision/turno", method="GET")
       h1 Gestion de Turno 
-      br  
+      br 
+      .mb-3 
+        label.form-label(for="id_turno") ID Turno
+        input.form-control(type="number", id="id_turno", name="id_turno", value=(id_turno || ''),readonly )
       .mb-3
-        label.form-label(for="dni") DNI*
-        input.form-control(type="number", id="dni", placeholder="48455713", value=dni , name="dni")
+        label.form-label(for="dni") DNI* 
+        .input-group
+          input.form-control(type="number", id="dni", placeholder="48455713", value=(dni || ''), name="dni")
+          if mensajeAlert.length === 0 && alertClass === 'alert-success'
+            button.btn.btn-success.text-white(type="submit") Buscar
+          else if mensajeAlert.length > 0 && alertClass === 'alert-danger'
+            button.btn.btn-danger.text-white(type="submit") Buscar
+          else
+            button.btn.btn-info.text-white(type="submit") Buscar
+
       .mb-3
         label.form-label Medico
-        select.form-select(name="medico")
+        select.form-select(name="id_medico")
+          option(value="") Seleccione un medico
           if medicos.length > 0
             each med in medicos
-              option(value=med.id) #{med.nombre} #{med.apellido}
+              option(value=med.id) #{med.nombre}
           else 
-            option(value="nun") No hay medicos cargados
+            option(value="") No hay medicos cargados
       .mb-3
         label.form-label Fecha Disponibles
-        select.form-select(name="fecha")
-          if fecha.length > 0
-            each f in fecha
-              option(value=f) #{f} 
-          else 
-            option(value="nun") No fecha disponibles
+        input#fecha.form-control(type="date", name="fecha",value=(fecha||""))
       .mb-3
         label.form-label Horarios Disponibles
         select.form-select(name="hora")
-          option(value="nun") Elige una fecha primero
-      button.btn.btn-primary(type="submit" formaction="/admision/crear") Crear
-      button.btn.btn-secondary(type="submit" formaction="/admision/modificar") Modificarbtn
+          option(value="") Elige una fecha primero
+      .mb-3 
+        label.form-label(for="estado") Estado 
+        select.form-select(name="estado" id="estado")
+          option(value="1") Pendiente
+          option(value="2") Finalizado
+          option(value="3") Cancelado
+      .d-flex.justify-content-between
+        button.btn.btn-primary(type="button" onclick="enviarForm('/admision/crear', 'POST')") Crear
+        button.btn.btn-primary(type="button" onclick="enviarForm('/admision/modificar', 'POST')") Modificar
+      small.text-white *Los campos marcados con * son obligatorios
+      br
+      small.text-white *Primero busque el DNI para crear el turno.
+      br
+      small.text-white *Solo se daran 5 sobreturnos por cada horario.
+
+  div.container-md.border.border-2.border-dark.rounded-3.d-flex.flex-column.align-items-center.form-box1
+    if turnosPaciente && turnosPaciente.length > 0
+      h2.text-center.mt-4 Turnos del Paciente
+      table.table.table-striped.mt-2
+        thead
+          tr
+            th ID
+            th Fecha
+            th Hora
+            th Medico
+            th Estado
+            th Acciones
+        tbody
+          each turno in turnosPaciente
+            tr
+              td #{turno.id_turno}
+              td #{turno.fecha}
+              td #{turno.hora}
+              td #{turno.medico}
+              td #{turno.estado}
+              td
+                button.btn.btn-warning.btn-sm(type="button" onclick=`cargarTurnoEnFormulario('${turno.id_turno}','${turno.fecha}','${turno.id_horario}','${turno.id_medico}','${turno.estado_val}')`) Modificar
+                form.d-inline(method="POST", action="/admision/finalizarTurno")
+                  input(type="hidden", name="id_turno", value=turno.id_turno)
+                  button.btn.btn-success.btn-sm(type="submit") Finalizar
+                form.d-inline(method="POST", action="/admision/cancelarTurno")
+                  input(type="hidden", name="id_turno", value=turno.id_turno)
+                  button.btn.btn-danger.btn-sm(type="submit") Cancelar
+    else if typeof dni !== 'undefined' && dni !== ''
+      .alert.alert-warning.mt-4 No se encontraron turnos para el DNI ingresado.
+      //-cambio de method y action
+    script.
+      function enviarForm(action, method) {
+        const form = document.getElementById('formTurno');
+        form.action = action;
+        form.method = method;
+        form.submit();
+      }
+      //-calendario limites
+    script.
+      function configurarCalendario() {
+        const input = document.getElementById("fecha");
+        if (!input) return;
+
+        const hoy = new Date();
+        const minimo = new Date();
+        const maximo = new Date();
+
+        maximo.setDate(hoy.getDate() + 29); // 30dias plus
+
+        const minStr = minimo.toISOString().split('T')[0];
+        const maxStr = maximo.toISOString().split('T')[0];
+
+        input.min = minStr;
+        input.max = maxStr;
+      }
+      window.addEventListener('DOMContentLoaded', configurarCalendario);
+      //-cargar horarios al cambiar la fecha
+    script.
+      document.addEventListener('DOMContentLoaded', function() {
+        const fechaInput = document.getElementById('fecha');
+        const horaSelect = document.querySelector('select[name="hora"]');
+        fechaInput.addEventListener('change', async function() {
+          const fecha = fechaInput.value;
+          horaSelect.innerHTML = '<option value="">Cargando...</option>';
+          if (!fecha) {
+            horaSelect.innerHTML = '<option value="">Elige una fecha primero</option>';
+            return;
+          }
+          try {
+            const res = await fetch(`/admision/api/horarios?fecha=${fecha}`);
+            const horarios = await res.json();
+            if (horarios.error || horarios.length === 0) {
+              horaSelect.innerHTML = '<option value="">No hay horarios disponibles</option>';
+            } else {
+              horaSelect.innerHTML = '<option value="">Seleccione un horario</option>';
+              horarios.forEach(h => {
+                horaSelect.innerHTML += `<option value="${h.id}">${h.hora}</option>`;
+              });
+            }
+          } catch (e) {
+            horaSelect.innerHTML = '<option value="">Error al cargar horarios</option>';
+          }
+        });
+      });
+    script.
+      function cargarTurnoEnFormulario(id_turno, fecha, id_horario, id_medico, estado_val) {
+        document.getElementById('id_turno').value = id_turno || '';
+
+        document.getElementById('fecha').value = fecha || '';
+        document.getElementById('fecha').dispatchEvent(new Event('change'));
+
+        const medicoSelect = document.querySelector('select[name="id_medico"]');
+        if(medicoSelect) {
+          medicoSelect.value = id_medico ? String(id_medico) : '';
+        }
+
+        const estadoSelect = document.getElementById('estado');
+        if(estadoSelect) {
+          estadoSelect.value = estado_val || '';
+        }
+
+        function setHorarioValue(reintentos = 10) {
+          const horaSelect = document.querySelector('select[name="hora"]');
+          if(horaSelect && horaSelect.options.length > 1) {
+            horaSelect.value = id_horario || '';
+          } else if(reintentos > 0) {
+            setTimeout(() => setHorarioValue(reintentos - 1), 100);
+          }
+        }
+        setHorarioValue();
+
+        document.getElementById('formTurno').scrollIntoView({behavior: 'smooth'});
+      }
+  +debug(locals)
