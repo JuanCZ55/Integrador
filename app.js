@@ -43,6 +43,8 @@ sequelize
   });
 
 module.exports = app;
+//-Local
+
 // sequelize
 //   .authenticate()
 //   .then(() => {
