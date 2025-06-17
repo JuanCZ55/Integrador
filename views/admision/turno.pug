@@ -10,6 +10,7 @@ block main
   div.container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box
     form#formTurno.p-4(novalidate, action="/admision/turno", method="GET")
       h1 Gestion de Turno 
+      small.text-white Si busca al paciente por DNI, abajo encontrara una lista de turnos del paciente.
       br 
       .mb-3 
         label.form-label(for="id_turno") ID Turno
@@ -26,7 +27,7 @@ block main
             button.btn.btn-info.text-white(type="submit") Buscar
 
       .mb-3
-        label.form-label Medico
+        label.form-label Medico*
         select.form-select(name="id_medico")
           option(value="") Seleccione un medico
           if medicos.length > 0
@@ -35,10 +36,10 @@ block main
           else 
             option(value="") No hay medicos cargados
       .mb-3
-        label.form-label Fecha Disponibles
+        label.form-label Fecha Disponibles*
         input#fecha.form-control(type="date", name="fecha",value=(fecha||""))
       .mb-3
-        label.form-label Horarios Disponibles
+        label.form-label Horarios Disponibles*
         select.form-select(name="hora")
           option(value="") Elige una fecha primero
       .mb-3 

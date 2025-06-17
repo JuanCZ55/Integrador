@@ -6,13 +6,14 @@ block navbar
 
 block main
   .container.mt-4.justify-content-center.align-items-center.tabla-pacientes
-    small.text-white El boton ver/editar no tiene funcionalidad, es solo un ejemplo
+    small.text-white El boton Ver turnos del paciente muestra los turnos del paciente seleccionado.
     h2.text-center.mt-3 Lista de Turnos
     if turnos && turnos.length
       table.table.table-striped
         thead
           tr
             th ID Turno
+            th DNI Paciente
             th Paciente
             th Médico
             th Fecha
@@ -22,11 +23,12 @@ block main
         tbody
           each turno in turnos
             tr
-              td= turno.id_turnos
+              td= turno.id_turno
+              td= turno.paciente.persona.dni
               td #{turno.paciente && turno.paciente.persona ? turno.paciente.persona.nombre + ' ' + turno.paciente.persona.apellido : '-'}
               td #{turno.medico && turno.medico.persona ? turno.medico.persona.nombre + ' ' + turno.medico.persona.apellido : '-'}
               td= turno.fecha
-              td= turno.hora || '-'
+              td= turno.horarioTurno.hora || '-'
               td
                 if turno.estado == 1
                   span.badge.bg-warning Pendiente
@@ -38,6 +40,6 @@ block main
                   span.badge.bg-secondary Desconocido
               td
                 //- Aquí puedes agregar acciones como editar/cancelar el turno
-                a.btn.btn-primary.btn-sm(href=`turno?dni=${turno.paciente.persona.dni}`) Ver/Editar
+                a.btn.btn-primary.btn-sm(href=`turno?dni=${turno.paciente.persona.dni}`) Ver turnos del paciente
     else
       .alert.alert-info No hay turnos registrados.

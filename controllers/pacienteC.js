@@ -5,6 +5,7 @@ const {
   Admision,
   Turno,
   Medico,
+  HorarioTurno,
 } = require("../models/init");
 const sequelize = require("../models/db");
 const { Op } = require("sequelize");
@@ -406,10 +407,20 @@ async function busquedaApi(req, res) {
 async function listaTurnos(req, res) {
   try {
     const turnos = await Turno.findAll({
+      attributes: [
+        "id_turno",
+        "id_paciente",
+        "id_medico",
+        "id_horario_turno",
+        "fecha",
+        "estado",
+      ],
       include: [
         {
           model: Paciente,
           as: "paciente",
+          attributes: ["id_persona"],
+
           include: [
             {
               model: Persona,
@@ -421,6 +432,7 @@ async function listaTurnos(req, res) {
         {
           model: Medico,
           as: "medico",
+          attributes: ["id_persona"],
           include: [
             {
               model: Persona,
@@ -428,6 +440,11 @@ async function listaTurnos(req, res) {
               attributes: ["nombre", "apellido"],
             },
           ],
+        },
+        {
+          model: HorarioTurno,
+          as: "horarioTurno",
+          attributes: ["hora"],
         },
       ],
     });

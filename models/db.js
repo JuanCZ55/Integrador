@@ -11,7 +11,7 @@ const sequelize = new Sequelize(
     timezone: "-03:00",
     logging: false,
     pool: {
-      max: 3, // <= Cambia esto a 3 o incluso 2 para Clever Cloud
+      max: 2,
       min: 0,
       acquire: 30000,
       idle: 10000,
