@@ -9,10 +9,7 @@ mixin navbarAdmision()
           a.dropdown-item(href="/admision/crearPaciente ") Gestion 
         li
           a.dropdown-item(href="/admision/listarPacientes") Lista
-        li
-          a.dropdown-item(href="/admision/listaTurnos") Ver Turnos
-        li
-          a.dropdown-item(href="/admision/turno") Gestion Turno
+        
     li.nav-item.dropdown
       a.nav-link.dropdown-toggle.text-primary-emphasis(href="#", role="button", data-bs-toggle="dropdown") Admision
       ul.dropdown-menu
@@ -33,15 +30,13 @@ mixin navbarAdmision()
           a.dropdown-item(href="#") Gestion Habitaciones 
         //-li
           a.dropdown-item(href="#") Gestion Camas                 
-    //-li.nav-item.dropdown
+    li.nav-item.dropdown
       a.nav-link.dropdown-toggle.text-primary-emphasis(href="#", role="button", data-bs-toggle="dropdown") Turnos
       ul.dropdown-menu
         li
-          a.dropdown-item(href="#") Crear turno
+          a.dropdown-item(href="/admision/listaTurnos") Ver Turnos
         li
-          a.dropdown-item(href="#") Modificar turno 
-        li
-          a.dropdown-item(href="#") Ver turnos
+          a.dropdown-item(href="/admision/turno") Gestion Turno
 
 mixin navbarMedico()
   ul.nav.nav-underline.fs-4.ms-auto 
