@@ -17,7 +17,6 @@ function validarDatos({ dni, id_medico, fecha, hora, medicos }) {
     fecha,
     hora,
   };
-  console.log(id_medico);
 
   const nombresVisibles = {
     dni: "DNI",
@@ -210,7 +209,6 @@ async function postModificarTurno(req, res) {
 //- GET para obtener turnos por DNI|
 async function getTurnos(req, res) {
   const { dni } = req.query;
-  console.log("GET Turnos por DNI:", dni);
 
   const regexDni = /^\d{7,8}$/;
   try {
