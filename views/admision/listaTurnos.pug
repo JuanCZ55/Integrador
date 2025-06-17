@@ -38,6 +38,7 @@ block main
                   span.badge.bg-secondary Desconocido
               td
                 //- Aquí puedes agregar acciones como editar/cancelar el turno
-                a.btn.btn-primary.btn-sm(href=`/asd`) Ver/Editar
+                a.btn.btn-primary.btn-sm(href=`turno?dni=${turno.paciente.persona.dni}`) Ver/Editar
     else
       .alert.alert-info No hay turnos registrados.
+  +debug(locals)
