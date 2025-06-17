@@ -414,7 +414,7 @@ async function listaTurnos(req, res) {
             {
               model: Persona,
               as: "persona",
-              attributes: ["nombre", "apellido"],
+              attributes: ["nombre", "apellido", "dni"],
             },
           ],
         },
