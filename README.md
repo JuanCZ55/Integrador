@@ -2,7 +2,8 @@
 
 ## Descripción
 
-Sistema de admision e internacion hospitalaria para pacientes, admisiones, camas, habitaciones y turnos. Desarrollado en Node.js con Express, Sequelize y Pug como motor de vistas.
+Sistema de admision e internacion hospitalaria para pacientes, admisiones, camas y turnos. Desarrollado en Node.js con Express, Sequelize y Pug como motor de vistas.
+Se utilizo https://www.drawdb.app/ para crear la base de datos y luego con el sql se uso sequelize-auto para crear de forma parcial los modelos.
 
 ## Requisitos previos
 
@@ -23,12 +24,12 @@ Sistema de admision e internacion hospitalaria para pacientes, admisiones, camas
 ## Variables de entorno
 
 - Se uso clever cloud para la base de datos
-  - DB_NAME=bdon6mzbw82ufclkk04i
-  - DB_USER=uyrlcmhusjr1zhfs
-  - DB_PASSWORD=Qzs2z1DUjYfYUOW7G6ZT
-  - DB_HOST=bdon6mzbw82ufclkk04i-mysql.services.clever-cloud.com
-  - DB_PORT=3306
-  - DB_DIALECT=mysql
+  -DB_NAME=bxf0y0oea6xiq3ee8gtg
+  -DB_USER=uumu6waelomvw1rp
+  -DB_PASSWORD=mixrLYxhXcJdF5hs3QdU
+  -DB_HOST=bxf0y0oea6xiq3ee8gtg-mysql.services.clever-cloud.com
+  -DB_PORT=3306
+  -DB_DIALECT=mysql
 
 ## Comandos principales
 
@@ -40,7 +41,7 @@ Sistema de admision e internacion hospitalaria para pacientes, admisiones, camas
   ```sh
   npm run dev
   ```
-- **Creara las tablas y cargara con datos**
+- **Creara las tablas y cargara con datos de los seeders**
   ```sh
   npm run build
   ```
@@ -75,13 +76,13 @@ Sistema de admision e internacion hospitalaria para pacientes, admisiones, camas
 - Admisión de pacientes (Turno,Emergencia y Derivado) aignacion de camas
 - Listado y gestión de admisiones
 - Listado de camas por habitaciones y sector
-- Motor de vistas con Pug
+- Gestion y lista de turnos
 
 ## Notas
 
-- El sistema utiliza rutas agrupadas bajo `/admision` para la mayoría de las funcionalidades.
+- El sistema utiliza rutas agrupadas bajo `/admision`.
 - La pagina de inicial (/admision/) indica brevemente que hacer cada navbar existente
 
 ---
 
-Desarrollado por JuanC
+Desarrollado por Juan Cruz Zegarra
