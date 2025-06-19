@@ -11,17 +11,6 @@ const sequelize = new Sequelize(
     dialectModule: require("mysql2"),
     timezone: "-03:00",
     logging: false,
-    pool: {
-      max: 2,
-      min: 0,
-      acquire: 30000,
-      idle: 10000,
-    },
-    dialectOptions: {
-      ssl: {
-        rejectUnauthorized: false,
-      },
-    },
   }
 );
 
