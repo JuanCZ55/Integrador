@@ -7,6 +7,7 @@ const sequelize = new Sequelize(
   {
     host: process.env.DB_HOST,
     dialect: process.env.DB_DIALECT,
+    port: process.env.DB_PORT,
     dialectModule: require("mysql2"),
     timezone: "-03:00",
     logging: false,
@@ -15,6 +16,11 @@ const sequelize = new Sequelize(
       min: 0,
       acquire: 30000,
       idle: 10000,
+    },
+    dialectOptions: {
+      ssl: {
+        rejectUnauthorized: false,
+      },
     },
   }
 );
