@@ -11,9 +11,9 @@ block main
   //- si es un paciente de emergencia
   if estado 
     if estado=="creado"
-      +alert("Paciente creado exitosamente", "alert-success")
+      +alert("Admision creada exitosamente", "alert-success")
     else if estado=="modificado"
-      +alert("Paciente modificado exitosamente", "alert-success")
+      +alert("Admision modificada exitosamente", "alert-success")
   +alert(mensajeAlert, alertClass)
   .container-md.d-flex.justify-content-center.align-items-center.mb-3(style="gap: 1rem;")
     form(method="POST", action="/admision/emergencia")

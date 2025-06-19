@@ -182,7 +182,7 @@ async function seedPersonasPacientes() {
     [
       {
         id_persona: 1,
-        contacto: 27345123,
+        contacto: 2664123456,
         direccion: "Calle Mitre 123",
         id_obra_social: 1,
         cod_os: 1001,
@@ -193,7 +193,7 @@ async function seedPersonasPacientes() {
       },
       {
         id_persona: 2,
-        contacto: 31234567,
+        contacto: 2664987654,
         direccion: "Av. San Martin 456",
         id_obra_social: 2,
         cod_os: 1002,
@@ -204,7 +204,7 @@ async function seedPersonasPacientes() {
       },
       {
         id_persona: 3,
-        contacto: 25567890,
+        contacto: 2665123456,
         direccion: "Calle Rivadavia 789",
         id_obra_social: 3,
         cod_os: 1003,
@@ -215,7 +215,7 @@ async function seedPersonasPacientes() {
       },
       {
         id_persona: 4,
-        contacto: 29876543,
+        contacto: 2665123987,
         direccion: "Av. Belgrano 101",
         id_obra_social: 4,
         cod_os: 1004,
@@ -226,7 +226,7 @@ async function seedPersonasPacientes() {
       },
       {
         id_persona: 5,
-        contacto: 32456789,
+        contacto: 2664123777,
         direccion: "Calle San Juan 202",
         id_obra_social: 5,
         cod_os: 1005,
@@ -237,7 +237,7 @@ async function seedPersonasPacientes() {
       },
       {
         id_persona: 6,
-        contacto: 28765432,
+        contacto: 2665123444,
         direccion: "Av. 9 de Julio 303",
         id_obra_social: 1,
         cod_os: 1006,
@@ -248,7 +248,7 @@ async function seedPersonasPacientes() {
       },
       {
         id_persona: 7,
-        contacto: 30011223,
+        contacto: 2665132121,
         direccion: "Calle Italia 404",
         id_obra_social: 2,
         cod_os: 1007,
@@ -259,7 +259,7 @@ async function seedPersonasPacientes() {
       },
       {
         id_persona: 8,
-        contacto: 27654321,
+        contacto: 2664123222,
         direccion: "Av. Pueyrredon 505",
         id_obra_social: 3,
         cod_os: 1008,
@@ -270,7 +270,7 @@ async function seedPersonasPacientes() {
       },
       {
         id_persona: 9,
-        contacto: 29012345,
+        contacto: 2665123555,
         direccion: "Calle Corrientes 606",
         id_obra_social: 4,
         cod_os: 1009,
@@ -281,7 +281,7 @@ async function seedPersonasPacientes() {
       },
       {
         id_persona: 10,
-        contacto: 30543210,
+        contacto: 2665123666,
         direccion: "Av. Lavalle 707",
         id_obra_social: 5,
         cod_os: 1010,
@@ -292,7 +292,7 @@ async function seedPersonasPacientes() {
       },
       {
         id_persona: 11,
-        contacto: 26543211,
+        contacto: 2664123888,
         direccion: "Calle Sarmiento 808",
         id_obra_social: 1,
         cod_os: 1011,
@@ -303,7 +303,7 @@ async function seedPersonasPacientes() {
       },
       {
         id_persona: 12,
-        contacto: 28345678,
+        contacto: 2665123999,
         direccion: "Av. Colón 909",
         id_obra_social: 2,
         cod_os: 1012,
@@ -314,7 +314,7 @@ async function seedPersonasPacientes() {
       },
       {
         id_persona: 13,
-        contacto: 29987654,
+        contacto: 2665123111,
         direccion: "Calle Rioja 112",
         id_obra_social: 3,
         cod_os: 1013,
@@ -325,7 +325,7 @@ async function seedPersonasPacientes() {
       },
       {
         id_persona: 14,
-        contacto: 27890123,
+        contacto: 2664123223,
         direccion: "Av. España 223",
         id_obra_social: 4,
         cod_os: 1014,
@@ -336,7 +336,7 @@ async function seedPersonasPacientes() {
       },
       {
         id_persona: 15,
-        contacto: 31012345,
+        contacto: 2665123333,
         direccion: "Calle Rioja 334",
         id_obra_social: 5,
         cod_os: 1015,
