@@ -29,9 +29,9 @@ app.use("/admision", admision);
 // app.use("/medico", medico);
 // app.use("/administrador", admin);
 //ruta para 404
-// app.use((req, res, next) => {
-//   res.status(404).render("notfound");
-// });
+app.use((req, res, next) => {
+  res.status(404).render("notfound");
+});
 
 // sequelize
 //   .authenticate()
