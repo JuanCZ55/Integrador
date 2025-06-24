@@ -18,7 +18,7 @@ Motivos.init(
     estado: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: 1,
+      defaultValue: true,
     },
   },
   {
