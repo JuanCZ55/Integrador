@@ -49,7 +49,7 @@ sequelize
   .authenticate()
   .then(() => {
     console.log("Conexion exitosa a la base de datos");
-    app.listen(3000, () => {
+    app.listen(3001, () => {
       console.log("Server corre en el puerto 3000");
     });
   })
