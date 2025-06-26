@@ -13,11 +13,38 @@ const Sector = require("./Sector");
 const Turno = require("./Turno");
 const MedicoEspecialidad = require("./medico_especialidad");
 const HorarioTurno = require("./HorarioTurno");
+const Usuario = require("./Usuario");
+const Rol = require("./Rol");
+// Relaciones Usuario
+Usuario.belongsTo(Persona, {
+  foreignKey: "id_persona",
+  as: "persona",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
+Usuario.belongsTo(Rol, {
+  foreignKey: "id_rol",
+  as: "rol",
+  onDelete: "RESTRICT",
+  onUpdate: "CASCADE",
+});
 
+// Relaciones Rol
+Rol.hasMany(Usuario, {
+  foreignKey: "id_rol",
+  as: "usuarios",
+  onDelete: "RESTRICT",
+  onUpdate: "CASCADE",
+});
 // Relaciones Persona
 Persona.hasOne(Paciente, { foreignKey: "id_persona", as: "paciente" });
 Persona.hasOne(Medico, { foreignKey: "id_persona", as: "medico" });
-
+Persona.hasOne(Usuario, {
+  foreignKey: "id_persona",
+  as: "usuario",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
 // Relaciones Paciente
 Paciente.belongsTo(Persona, { foreignKey: "id_persona", as: "persona" });
 Paciente.belongsTo(ObraSocial, {
@@ -113,4 +140,6 @@ module.exports = {
   Turno,
   MedicoEspecialidad,
   HorarioTurno,
+  Usuario,
+  Rol,
 };
