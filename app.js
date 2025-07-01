@@ -1,59 +1,81 @@
 const express = require("express");
-const app = express();
 const path = require("path");
+const session = require("express-session");
+const SequelizeStore = require("connect-session-sequelize")(session.Store);
 const sequelize = require("./models/db");
-//routes
+
+// rutas
 const admision = require("./routes/admisionRoutes");
-// const enfer = require("./routes/enfermeriaRoutes");
+// const enfermeria = require("./routes/enfermeriaRoutes");
 // const medico = require("./routes/medicoRoutes");
-// const admin = require("./routes/administradorRoutes");
+// const administrador = require("./routes/administradorRoutes");
 
+const app = express();
+
+// Configuración de sesiones con Sequelize y Postgres
+const store = new SequelizeStore({
+  db: sequelize,
+  tableName: "sesiones", // nombre de la tabla para sesiones
+  checkExpirationInterval: 10 * 60 * 1000, // purga cada 10 minutos
+  expiration: 24 * 60 * 60 * 1000, // TTL 24 horas
+});
+store.sync(); // crea la tabla si no existe
+
+app.use(
+  session({
+    secret: "una_clave_secreta_segura_aqui", // pon una clave segura en producción
+    store: store,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 2 * 60 * 60 * 1000, // 2 horas
+      sameSite: "lax",
+      secure: false, // pon true si usas HTTPS en producción
+    },
+  })
+);
+
+// motor de vistas
 app.set("view engine", "pug");
-app.set("views", path.join(__dirname, "./views"));
+app.set("views", path.join(__dirname, "views"));
 
+// middlewares
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
-
 app.use((req, res, next) => {
   res.locals.path = req.path;
   next();
 });
-//enrutador para el inicio
-app.get("/", (req, res) => {
-  res.render("index");
-});
 
-//rutas para los 4 roles
+// rutas principales
+app.get("/", (req, res) => res.render("index"));
 app.use("/admision", admision);
-// app.use("/enfermeria", enfer);
+// app.use("/enfermeria", enfermeria);
 // app.use("/medico", medico);
-// app.use("/administrador", admin);
-//ruta para 404
-app.use((req, res, next) => {
-  res.status(404).render("notfound");
-});
+// app.use("/administrador", administrador);
 
-// sequelize
-//   .authenticate()
-//   .then(() => {
-//     console.log("Conexion exitosa a la base de datos");
-//   })
-//   .catch((err) => {
-//     console.error("No se pudo conectar a la base de datos");
-//   });
+// 404
+app.use((req, res) => res.status(404).render("notfound"));
 
-// module.exports = app;
-//-Local
+// conexion e inicio
+async function init() {
+  try {
+    await sequelize.authenticate();
+    console.log("conexion exitosa a la base de datos");
 
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log("Conexion exitosa a la base de datos");
-    app.listen(3001, () => {
-      console.log("Server corre en el puerto 3000");
-    });
-  })
-  .catch((err) => {
-    console.error("No se pudo conectar a la base de datos");
-    process.exit(1);
-  });
+    // solo en local
+    if (require.main === module) {
+      app.listen(3001, () =>
+        console.log("servidor corriendo en el puerto http://localhost:3001")
+      );
+    }
+  } catch (err) {
+    console.error("no se pudo conectar a la base de datos", err);
+    if (require.main === module) process.exit(1);
+  }
+}
+
+init();
+
+// export para Vercel
+module.exports = app;
