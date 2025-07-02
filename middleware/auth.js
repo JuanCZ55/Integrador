@@ -1,69 +1,61 @@
 const bcrypt = require("bcrypt");
 const { Usuario } = require("../models/init");
 
-// Middleware para verificar si el usuario está autenticado
+// Middleware para requerir autenticacion
 const requireAuth = (req, res, next) => {
   if (!req.session.userId) {
-    return res.redirect("/login");
+    return res.redirect("/login?1");
   }
   next();
 };
 
-// Middleware para verificar credenciales de login
+// Middleware para login por usuario y password
 const authenticateUser = async (req, res, next) => {
   try {
-    const { dni, password } = req.body;
+    const { username, password } = req.body;
 
-    // Validar que se proporcionaron credenciales
-    if (!dni || !password) {
+    if (!username || !password) {
       return res.render("login", {
-        error: "DNI y contraseña son requeridos",
+        mensajeAlert: ["Completa usuario y contraseña"],
+        alertClass: "alert-danger",
       });
     }
 
-    // Buscar usuario por DNI
-    const usuario = await Usuario.findOne({
-      where: { dni: dni },
+    const user = await Usuario.findOne({
+      where: { usuario: username },
+      include: ["rol", "persona"],
     });
 
-    if (!usuario) {
+    if (!user || !(await user.validarPassword(password))) {
       return res.render("login", {
-        error: "DNI o contraseña incorrectos",
+        mensajeAlert: ["Usuario o contraseña incorrectos"],
+        alertClass: "alert-danger",
       });
     }
 
-    // Verificar contraseña
-    const passwordValida = await usuario.validarPassword(password);
+    // guardo en sesion
+    req.session.userId = user.id_usuario;
+    req.session.id_rol = user.id_rol;
 
-    if (!passwordValida) {
-      return res.render("login", {
-        error: "DNI o contraseña incorrectos",
-      });
-    }
-
-    // Login exitoso - guardar información en la sesión
-    req.session.userId = usuario.id;
-    req.session.dni = usuario.dni;
-    req.session.nombre = usuario.nombre;
-    req.session.rol = usuario.rol;
-
-    // Continuar al siguiente middleware o ruta
     next();
-  } catch (error) {
-    console.error("Error en autenticación:", error);
+  } catch (err) {
+    console.error("Error en autenticacion:", err);
     return res.render("login", {
-      error: "Error interno del servidor",
+      mensajeAlert: ["Error interno del servidor"],
+      alertClass: "alert-danger",
     });
   }
 };
 
-// Middleware para obtener información del usuario actual
+// Middleware para exponer usuario actual
 const getCurrentUser = async (req, res, next) => {
   if (req.session.userId) {
     try {
-      const usuario = await Usuario.findByPk(req.session.userId);
-      req.currentUser = usuario;
-      res.locals.currentUser = usuario;
+      const user = await Usuario.findByPk(req.session.userId, {
+        include: ["rol", "persona"],
+      });
+      req.user = user;
+      res.locals.user = user;
     } catch (error) {
       console.error("Error obteniendo usuario actual:", error);
     }
@@ -71,22 +63,23 @@ const getCurrentUser = async (req, res, next) => {
   next();
 };
 
-// Middleware para verificar si el usuario es administrador
-const requireAdmin = (req, res, next) => {
-  if (!req.session.userId || req.session.rol !== "1") {
-    return res.status(403).send("Acceso denegado");
+// Middleware para requerir un id_rol especifico
+const requireRoleId = (idRol) => (req, res, next) => {
+  const rol = req.session.id_rol;
+  if (!req.session.userId || (rol !== idRol && rol !== 1)) {
+    return res.status(403).render("denegado");
   }
   next();
 };
 
-// Función para logout
+// logout
 const logout = (req, res) => {
   req.session.destroy((err) => {
     if (err) {
-      console.error("Error al cerrar sesión:", err);
-      return res.status(500).send("Error al cerrar sesión");
+      console.error("Error al cerrar sesion:", err);
+      return res.status(500).send("Error al cerrar sesion");
     }
-    res.clearCookie("connect.sid"); // Nombre por defecto de la cookie de sesión
+    res.clearCookie("connect.sid");
     res.redirect("/login");
   });
 };
@@ -95,6 +88,6 @@ module.exports = {
   requireAuth,
   authenticateUser,
   getCurrentUser,
+  requireRoleId,
   logout,
-  requireAdmin,
 };
