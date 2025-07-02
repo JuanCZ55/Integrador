@@ -5,12 +5,17 @@ const seedMotivos = require("./seeders/seedMotivos");
 const seedPersonasPacientes = require("./seeders/seedPP");
 const seedSectoresHabitacionesCamas = require("./seeders/seedInfra");
 const seedTurnos = require("./seeders/seedTurnos");
+const seedRolesUsuarios = require("./seeders/seedRU");
 
 //crear las tablas
 sequelize
   .sync({ force: true })
   .then(() => {
     console.log("Tablas creadas exitosamente");
+    return seedRolesUsuarios();
+  })
+  .then(() => {
+    console.log("Roles y usuarios seed ejecutado correctamente");
     return seedObraSocial();
   })
   .then(() => {
