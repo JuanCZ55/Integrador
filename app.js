@@ -3,34 +3,40 @@ const path = require("path");
 const session = require("express-session");
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
 const sequelize = require("./models/db");
+const {
+  getCurrentUser,
+  requireAuth,
+  requireRoleId,
+} = require("./middleware/auth");
 
 // rutas
 const admision = require("./routes/admisionRoutes");
 // const enfermeria = require("./routes/enfermeriaRoutes");
 // const medico = require("./routes/medicoRoutes");
-// const administrador = require("./routes/administradorRoutes");
+// const administrador = require("./routes/adminRoutes");
+const login = require("./routes/loginRoutes");
 
 const app = express();
 
-// Configuración de sesiones con Sequelize y Postgres
+// Configuración de sesiones con Sequelize y Postgres en BD
 const store = new SequelizeStore({
   db: sequelize,
-  tableName: "sesiones", // nombre de la tabla para sesiones
+  tableName: "sesiones",
   checkExpirationInterval: 10 * 60 * 1000, // purga cada 10 minutos
-  expiration: 24 * 60 * 60 * 1000, // TTL 24 horas
+  expiration: 2 * 60 * 60 * 1000 + 300000, // TTL 2 horas y 5minutos
 });
 store.sync(); // crea la tabla si no existe
 
 app.use(
   session({
-    secret: "una_clave_secreta_segura_aqui", // pon una clave segura en producción
+    secret: "asi",
     store: store,
     resave: false,
     saveUninitialized: false,
     cookie: {
       maxAge: 2 * 60 * 60 * 1000, // 2 horas
       sameSite: "lax",
-      secure: false, // pon true si usas HTTPS en producción
+      secure: false, // true si HTTPS
     },
   })
 );
@@ -46,10 +52,12 @@ app.use((req, res, next) => {
   res.locals.path = req.path;
   next();
 });
+// middleware para obtener el usuario actual
+app.use(getCurrentUser);
 
-// rutas principales
-app.get("/", (req, res) => res.render("index"));
-app.use("/admision", admision);
+// rutas principales---------------------------------------------------------
+app.use("/", login);
+app.use("/admision", requireAuth, requireRoleId(2), admision);
 // app.use("/enfermeria", enfermeria);
 // app.use("/medico", medico);
 // app.use("/administrador", administrador);
