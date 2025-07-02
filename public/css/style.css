@@ -59,6 +59,10 @@ body {
   font-size: 300px;
   color: #07568e;
 }
+.denegado {
+  font-size: 100px;
+  color: #ff0000;
+}
 
 .checkdni {
   backdrop-filter: blur(5px);
