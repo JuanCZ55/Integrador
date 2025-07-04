@@ -11,9 +11,9 @@ const {
 
 // rutas
 const admision = require("./routes/admisionRoutes");
-// const enfermeria = require("./routes/enfermeriaRoutes");
-// const medico = require("./routes/medicoRoutes");
-// const administrador = require("./routes/adminRoutes");
+const enfermeria = require("./routes/enfermeriaRoutes");
+const medico = require("./routes/medicoRoutes");
+const administrador = require("./routes/adminRoutes");
 const login = require("./routes/loginRoutes");
 
 const app = express();
@@ -58,9 +58,9 @@ app.use(getCurrentUser);
 // rutas principales---------------------------------------------------------
 app.use("/", login);
 app.use("/admision", requireAuth, requireRoleId(2), admision);
-// app.use("/enfermeria", enfermeria);
-// app.use("/medico", medico);
-// app.use("/administrador", administrador);
+app.use("/enfermeria", requireAuth, requireRoleId(4), enfermeria);
+app.use("/medico", requireAuth, requireRoleId(3), medico);
+app.use("/admin", requireAuth, requireRoleId(1), administrador);
 
 // 404
 app.use((req, res) => res.status(404).render("notfound"));
