@@ -1,7 +1,7 @@
 // models/Usuario.js
 const { Model, DataTypes } = require("sequelize");
 const sequelize = require("./db");
-const Persona = require("./Persona");
+const Empleado = require("./Empleado");
 const Rol = require("./Rol");
 const bcrypt = require("bcrypt");
 
@@ -24,12 +24,12 @@ Usuario.init(
       primaryKey: true,
       unique: true,
     },
-    id_persona: {
+    id_empleado: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: Persona,
-        key: "id_persona",
+        model: Empleado,
+        key: "id_empleado",
       },
     },
     usuario: {
