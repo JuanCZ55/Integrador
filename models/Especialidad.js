@@ -19,6 +19,12 @@ Especialidad.init(
       type: DataTypes.STRING(255),
       allowNull: true,
     },
+    tipo_profesional: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 1, // 1 = médico, 2 = enfermero, 3 = ambos
+      comment: "1: médico, 2: enfermero, 3: ambos",
+    },
   },
   {
     sequelize,
