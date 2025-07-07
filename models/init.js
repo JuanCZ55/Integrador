@@ -15,10 +15,13 @@ const MedicoEspecialidad = require("./medico_especialidad");
 const HorarioTurno = require("./HorarioTurno");
 const Usuario = require("./Usuario");
 const Rol = require("./Rol");
+const Empleado = require("./Empleado");
+const Enfermero = require("./Enfermero");
+const EnfermeroEspecialidad = require("./enfermero_especialidad");
 // Relaciones Usuario
-Usuario.belongsTo(Persona, {
-  foreignKey: "id_persona",
-  as: "persona",
+Usuario.belongsTo(Empleado, {
+  foreignKey: "id_empleado",
+  as: "empleado",
   onDelete: "CASCADE",
   onUpdate: "CASCADE",
 });
@@ -36,12 +39,28 @@ Rol.hasMany(Usuario, {
   onDelete: "RESTRICT",
   onUpdate: "CASCADE",
 });
+Rol.hasMany(Empleado, {
+  foreignKey: "id_rol",
+  as: "empleados",
+  onDelete: "RESTRICT",
+  onUpdate: "CASCADE",
+});
+
+// Relaciones Empleado
+Empleado.hasOne(Usuario, {
+  foreignKey: "id_empleado",
+  as: "usuario",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
+
 // Relaciones Persona
 Persona.hasOne(Paciente, { foreignKey: "id_persona", as: "paciente" });
 Persona.hasOne(Medico, { foreignKey: "id_persona", as: "medico" });
-Persona.hasOne(Usuario, {
+
+Persona.hasOne(Empleado, {
   foreignKey: "id_persona",
-  as: "usuario",
+  as: "empleado",
   onDelete: "CASCADE",
   onUpdate: "CASCADE",
 });
@@ -124,6 +143,34 @@ Habitacion.hasMany(Cama, { foreignKey: "id_habitacion", as: "camas" });
 // Relaciones Sector
 Sector.hasMany(Habitacion, { foreignKey: "id_sector", as: "habitaciones" });
 
+// Relaciones Empleado
+Empleado.belongsTo(Persona, {
+  foreignKey: "id_persona",
+  as: "persona",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
+Empleado.belongsTo(Rol, {
+  foreignKey: "id_rol",
+  as: "rol",
+  onDelete: "RESTRICT",
+  onUpdate: "CASCADE",
+});
+
+// Relaciones Enfermero-Especialidad (muchos a muchos)
+Enfermero.belongsToMany(Especialidad, {
+  through: EnfermeroEspecialidad,
+  foreignKey: "id_enfermero",
+  otherKey: "id_especialidad",
+  as: "especialidades",
+});
+Especialidad.belongsToMany(Enfermero, {
+  through: EnfermeroEspecialidad,
+  foreignKey: "id_especialidad",
+  otherKey: "id_enfermero",
+  as: "enfermeros",
+});
+
 module.exports = {
   Admision,
   Cama,
@@ -142,4 +189,7 @@ module.exports = {
   HorarioTurno,
   Usuario,
   Rol,
+  Empleado,
+  Enfermero,
+  EnfermeroEspecialidad,
 };
