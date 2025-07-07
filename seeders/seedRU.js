@@ -1,5 +1,5 @@
 const sequelize = require("../models/db");
-const { Rol, Usuario, Persona } = require("../models/init");
+const { Rol, Usuario, Persona, Empleado } = require("../models/init");
 const bcrypt = require("bcrypt");
 
 async function seedRolesUsuarios() {
@@ -52,13 +52,52 @@ async function seedRolesUsuarios() {
     { returning: true }
   );
 
-  // 3. Crear usuarios para cada rol
+  // 3. Crear empleados para cada persona y rol
+  const empleados = [
+    {
+      id_persona: personasCreadas[0].id_persona,
+      id_rol: 1,
+      fecha_ingreso: "2020-01-01",
+      estado: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+    {
+      id_persona: personasCreadas[1].id_persona,
+      id_rol: 2,
+      fecha_ingreso: "2020-01-01",
+      estado: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+    {
+      id_persona: personasCreadas[2].id_persona,
+      id_rol: 3,
+      fecha_ingreso: "2020-01-01",
+      estado: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+    {
+      id_persona: personasCreadas[3].id_persona,
+      id_rol: 4,
+      fecha_ingreso: "2020-01-01",
+      estado: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+  ];
+  const empleadosCreados = await Empleado.bulkCreate(empleados, {
+    returning: true,
+  });
+
+  // 4. Crear usuarios para cada empleado y rol
   const passwordHash = await bcrypt.hash("1234", 10);
   const usuarios = [
     {
       usuario: "admin",
       password: passwordHash,
-      id_persona: personasCreadas[0].id_persona,
+      id_empleado: empleadosCreados[0].id_empleado,
       id_rol: 1,
       estado: true,
       createdAt: new Date(),
@@ -67,7 +106,7 @@ async function seedRolesUsuarios() {
     {
       usuario: "admision",
       password: passwordHash,
-      id_persona: personasCreadas[1].id_persona,
+      id_empleado: empleadosCreados[1].id_empleado,
       id_rol: 2,
       estado: true,
       createdAt: new Date(),
@@ -76,7 +115,7 @@ async function seedRolesUsuarios() {
     {
       usuario: "medico",
       password: passwordHash,
-      id_persona: personasCreadas[2].id_persona,
+      id_empleado: empleadosCreados[2].id_empleado,
       id_rol: 3,
       estado: true,
       createdAt: new Date(),
@@ -85,7 +124,7 @@ async function seedRolesUsuarios() {
     {
       usuario: "enfermeria",
       password: passwordHash,
-      id_persona: personasCreadas[3].id_persona,
+      id_empleado: empleadosCreados[3].id_empleado,
       id_rol: 4,
       estado: true,
       createdAt: new Date(),
