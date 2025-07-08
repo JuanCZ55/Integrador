@@ -18,6 +18,15 @@ const Rol = require("./Rol");
 const Empleado = require("./Empleado");
 const Enfermero = require("./Enfermero");
 const EnfermeroEspecialidad = require("./enfermero_especialidad");
+const HistorialMedico = require("./HistorialMedico");
+const Alergia = require("./Alergia");
+const Enfermedad = require("./Enfermedad");
+const MedicacionActual = require("./MedicacionActual");
+const CirugiaPrevia = require("./CirugiaPrevia");
+const AntecedenteFamiliar = require("./AntecedenteFamiliar");
+const EvaluacionMedica = require("./EvaluacionMedica");
+const EvaluacionEnfermeria = require("./EvaluacionEnfermeria");
+const SintomasIniciales = require("./SintomasIniciales");
 // Relaciones Usuario
 Usuario.belongsTo(Empleado, {
   foreignKey: "id_empleado",
@@ -56,7 +65,6 @@ Empleado.hasOne(Usuario, {
 
 // Relaciones Persona
 Persona.hasOne(Paciente, { foreignKey: "id_persona", as: "paciente" });
-Persona.hasOne(Medico, { foreignKey: "id_persona", as: "medico" });
 
 Persona.hasOne(Empleado, {
   foreignKey: "id_persona",
@@ -74,7 +82,8 @@ Paciente.hasMany(Admision, { foreignKey: "id_paciente", as: "admisiones" });
 Paciente.hasMany(Turno, { foreignKey: "id_paciente", as: "turnos" });
 
 // Relaciones Medico
-Medico.belongsTo(Persona, { foreignKey: "id_persona", as: "persona" });
+Medico.belongsTo(Empleado, { foreignKey: "id_empleado", as: "empleado" });
+Empleado.hasOne(Medico, { foreignKey: "id_empleado", as: "medico" });
 Medico.hasMany(Turno, { foreignKey: "id_medico", as: "turnos" });
 Medico.hasMany(Horario, { foreignKey: "id_medico", as: "horarios" });
 Medico.belongsToMany(Especialidad, {
@@ -171,6 +180,89 @@ Especialidad.belongsToMany(Enfermero, {
   as: "enfermeros",
 });
 
+// Relación Paciente 1:1 HistorialMedico
+Paciente.hasOne(HistorialMedico, {
+  foreignKey: "id_paciente",
+  as: "historialMedico",
+});
+HistorialMedico.belongsTo(Paciente, {
+  foreignKey: "id_paciente",
+  as: "paciente",
+});
+
+// Relaciones HistorialMedico 1:N con tablas hijas
+HistorialMedico.hasMany(Alergia, {
+  foreignKey: "id_historial",
+  as: "alergias",
+});
+Alergia.belongsTo(HistorialMedico, {
+  foreignKey: "id_historial",
+  as: "historialMedico",
+});
+
+HistorialMedico.hasMany(Enfermedad, {
+  foreignKey: "id_historial",
+  as: "enfermedades",
+});
+Enfermedad.belongsTo(HistorialMedico, {
+  foreignKey: "id_historial",
+  as: "historialMedico",
+});
+
+HistorialMedico.hasMany(MedicacionActual, {
+  foreignKey: "id_historial",
+  as: "medicaciones",
+});
+MedicacionActual.belongsTo(HistorialMedico, {
+  foreignKey: "id_historial",
+  as: "historialMedico",
+});
+
+HistorialMedico.hasMany(CirugiaPrevia, {
+  foreignKey: "id_historial",
+  as: "cirugias",
+});
+CirugiaPrevia.belongsTo(HistorialMedico, {
+  foreignKey: "id_historial",
+  as: "historialMedico",
+});
+
+HistorialMedico.hasMany(AntecedenteFamiliar, {
+  foreignKey: "id_historial",
+  as: "antecedentesFamiliares",
+});
+AntecedenteFamiliar.belongsTo(HistorialMedico, {
+  foreignKey: "id_historial",
+  as: "historialMedico",
+});
+
+HistorialMedico.hasMany(EvaluacionMedica, {
+  foreignKey: "id_historial",
+  as: "evaluacionesMedicas",
+});
+EvaluacionMedica.belongsTo(HistorialMedico, {
+  foreignKey: "id_historial",
+  as: "historialMedico",
+});
+
+HistorialMedico.hasMany(EvaluacionEnfermeria, {
+  foreignKey: "id_historial",
+  as: "evaluacionesEnfermeria",
+});
+EvaluacionEnfermeria.belongsTo(HistorialMedico, {
+  foreignKey: "id_historial",
+  as: "historialMedico",
+});
+
+HistorialMedico.hasMany(SintomasIniciales, {
+  foreignKey: "id_historial",
+  as: "sintomasIniciales",
+});
+SintomasIniciales.belongsTo(HistorialMedico, {
+  foreignKey: "id_historial",
+  as: "historialMedico",
+});
+
 module.exports = {
   Admision,
   Cama,
@@ -192,4 +284,13 @@ module.exports = {
   Empleado,
   Enfermero,
   EnfermeroEspecialidad,
+  HistorialMedico,
+  Alergia,
+  Enfermedad,
+  MedicacionActual,
+  CirugiaPrevia,
+  AntecedenteFamiliar,
+  EvaluacionMedica,
+  EvaluacionEnfermeria,
+  SintomasIniciales,
 };
