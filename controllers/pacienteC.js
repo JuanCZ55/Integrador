@@ -6,6 +6,7 @@ const {
   Turno,
   Medico,
   HorarioTurno,
+  Empleado,
 } = require("../models/init");
 const sequelize = require("../models/db");
 const { Op } = require("sequelize");
@@ -318,44 +319,41 @@ async function pModificarPaciente(req, res) {
 //+GET para listar todos los pacientes activos
 async function listarPacientes(req, res) {
   try {
-    const personas = await Persona.findAll({
+    const pacientes = await Paciente.findAll({
       include: [
         {
-          model: Paciente,
-          as: "paciente",
-          required: true,
-          include: [
-            {
-              model: ObraSocial,
-              as: "obraSocial",
-              required: false,
-            },
-          ],
+          model: Persona,
+          as: "persona",
+          required: false,
+        },
+        {
+          model: ObraSocial,
+          as: "obraSocial",
+          required: false,
         },
       ],
-      order: [["apellido", "ASC"]],
+      order: [[{ model: Persona, as: "persona" }, "apellido", "ASC"]],
     });
 
-    const pacientes = personas.map((persona) => ({
-      id_persona: persona.id_persona,
-      dni: persona.dni,
-      nombre: persona.nombre,
-      apellido: persona.apellido,
-      f_nacimiento: persona.f_nacimiento,
-      genero: persona.genero,
-      telefono: persona.telefono,
-      mail: persona.mail,
-      contacto: persona.paciente.contacto,
-      direccion: persona.paciente.direccion,
-      id_obra_social: persona.paciente.id_obra_social,
-      obra_social: persona.paciente.obraSocial
-        ? persona.paciente.obraSocial.nombre
-        : "",
-      cod_os: persona.paciente.cod_os,
-      detalle: persona.paciente.detalle,
+    // Solo se listan personas que tienen registro en Paciente
+    const pacientesData = pacientes.map((paciente) => ({
+      id_persona: paciente.id_persona,
+      dni: paciente.persona.dni,
+      nombre: paciente.persona.nombre,
+      apellido: paciente.persona.apellido,
+      f_nacimiento: paciente.persona.f_nacimiento,
+      genero: paciente.persona.genero,
+      telefono: paciente.persona.telefono,
+      mail: paciente.persona.mail,
+      contacto: paciente.contacto,
+      direccion: paciente.direccion,
+      id_obra_social: paciente.id_obra_social,
+      obra_social: paciente.obraSocial ? paciente.obraSocial.nombre : "",
+      cod_os: paciente.cod_os,
+      detalle: paciente.detalle,
     }));
 
-    res.render("admision/listaPaciente", { pacientes });
+    res.render("admision/listaPaciente", { pacientes: pacientesData });
   } catch (error) {
     res.render("admision/listaPaciente", {
       pacientes: [],
@@ -432,12 +430,18 @@ async function listaTurnos(req, res) {
         {
           model: Medico,
           as: "medico",
-          attributes: ["id_persona"],
           include: [
             {
-              model: Persona,
-              as: "persona",
-              attributes: ["nombre", "apellido"],
+              model: Empleado,
+              as: "empleado",
+              attributes: ["id_persona"],
+              include: [
+                {
+                  model: Persona,
+                  as: "persona",
+                  attributes: ["nombre", "apellido", "dni"],
+                },
+              ],
             },
           ],
         },
