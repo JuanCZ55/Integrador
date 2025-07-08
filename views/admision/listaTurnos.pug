@@ -5,6 +5,7 @@ block navbar
   +navbarAdmision()
 
 block main
+  +alert(mensajeAlert, alertClass)
   .container.mt-4.justify-content-center.align-items-center.tabla-pacientes
     small.text-white El boton Ver turnos del paciente muestra los turnos del paciente seleccionado.
     h2.text-center.mt-3 Lista de Turnos
@@ -26,7 +27,7 @@ block main
               td= turno.id_turno
               td= turno.paciente.persona.dni
               td #{turno.paciente && turno.paciente.persona ? turno.paciente.persona.nombre + ' ' + turno.paciente.persona.apellido : '-'}
-              td #{turno.medico && turno.medico.persona ? turno.medico.persona.nombre + ' ' + turno.medico.persona.apellido : '-'}
+              td #{turno.medico && turno.medico.empleado.persona ? turno.medico.empleado.persona.nombre + ' ' + turno.medico.empleado.persona.apellido : '-'}
               td= turno.fecha
               td= turno.horarioTurno.hora || '-'
               td
