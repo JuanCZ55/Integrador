@@ -23,7 +23,13 @@ const authenticateUser = async (req, res, next) => {
 
     const user = await Usuario.findOne({
       where: { usuario: username },
-      include: ["rol", "persona"],
+      include: [
+        "rol",
+        {
+          association: "empleado",
+          include: [{ association: "persona" }],
+        },
+      ],
     });
 
     if (!user || !(await user.validarPassword(password))) {
@@ -52,7 +58,13 @@ const getCurrentUser = async (req, res, next) => {
   if (req.session.userId) {
     try {
       const user = await Usuario.findByPk(req.session.userId, {
-        include: ["rol", "persona"],
+        include: [
+          "rol",
+          {
+            association: "empleado",
+            include: [{ association: "persona" }],
+          },
+        ],
       });
       req.user = user;
       res.locals.user = user;
