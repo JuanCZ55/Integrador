@@ -4,6 +4,7 @@ const {
   Turno,
   Medico,
   HorarioTurno,
+  Empleado,
 } = require("../models/init");
 const sequelize = require("../models/db");
 const { Op } = require("sequelize");
@@ -50,11 +51,20 @@ async function renderForm(res, vari) {
   vari = typeof vari === "object" && vari !== null ? vari : {};
 
   const medicosB = await Medico.findAll({
-    include: [{ model: Persona, as: "persona" }],
+    include: [
+      {
+        model: Empleado,
+        as: "empleado",
+        include: [{ model: Persona, as: "persona" }],
+      },
+    ],
   });
   const medicos = medicosB.map((medico) => ({
     id: medico.id_medico,
-    nombre: `${medico.persona.nombre} ${medico.persona.apellido}`,
+    nombre:
+      medico.empleado && medico.empleado.persona
+        ? `${medico.empleado.persona.nombre} ${medico.empleado.persona.apellido}`
+        : "",
   }));
 
   const datos = {
@@ -76,11 +86,20 @@ async function postTurnos(req, res) {
 
   try {
     const medicosB = await Medico.findAll({
-      include: [{ model: Persona, as: "persona" }],
+      include: [
+        {
+          model: Empleado,
+          as: "empleado",
+          include: [{ model: Persona, as: "persona" }],
+        },
+      ],
     });
     const medicos = medicosB.map((medico) => ({
       id: medico.id_medico,
-      nombre: `${medico.persona.nombre} ${medico.persona.apellido}`,
+      nombre:
+        medico.empleado && medico.empleado.persona
+          ? `${medico.empleado.persona.nombre} ${medico.empleado.persona.apellido}`
+          : "",
     }));
     const mensajeAlert = validarDatos({
       dni,
@@ -143,11 +162,20 @@ async function postModificarTurno(req, res) {
   const { id_turno, dni, id_medico, fecha, hora, estado } = req.body;
   try {
     const medicosB = await Medico.findAll({
-      include: [{ model: Persona, as: "persona" }],
+      include: [
+        {
+          model: Empleado,
+          as: "empleado",
+          include: [{ model: Persona, as: "persona" }],
+        },
+      ],
     });
     const medicos = medicosB.map((medico) => ({
       id: medico.id_medico,
-      nombre: `${medico.persona.nombre} ${medico.persona.apellido}`,
+      nombre:
+        medico.empleado && medico.empleado.persona
+          ? `${medico.empleado.persona.nombre} ${medico.empleado.persona.apellido}`
+          : "",
     }));
     const mensajeAlert = validarDatos({
       dni,
@@ -245,7 +273,13 @@ async function getTurnos(req, res) {
         {
           model: Medico,
           as: "medico",
-          include: [{ model: Persona, as: "persona" }],
+          include: [
+            {
+              model: Empleado,
+              as: "empleado",
+              include: [{ model: Persona, as: "persona" }],
+            },
+          ],
         },
         { model: HorarioTurno, as: "horarioTurno" },
       ],
@@ -258,8 +292,8 @@ async function getTurnos(req, res) {
       hora: turno.horarioTurno ? turno.horarioTurno.hora : "",
       id_horario: turno.horarioTurno ? turno.horarioTurno.id_horario_turno : "",
       medico:
-        turno.medico && turno.medico.persona
-          ? `${turno.medico.persona.nombre} ${turno.medico.persona.apellido}`
+        turno.medico && turno.medico.empleado && turno.medico.empleado.persona
+          ? `${turno.medico.empleado.persona.nombre} ${turno.medico.empleado.persona.apellido}`
           : "",
       id_medico: turno.medico ? turno.medico.id_medico : "",
       estado:
