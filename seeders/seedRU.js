@@ -15,6 +15,7 @@ async function seedRolesUsuarios() {
   // 2. Crear personas para los usuarios
   const personas = [
     {
+      id_persona: 16,
       dni: 10000001,
       nombre: "Admin",
       apellido: "Sistema",
@@ -22,6 +23,7 @@ async function seedRolesUsuarios() {
       genero: "Otro",
     },
     {
+      id_persona: 17,
       dni: 10000002,
       nombre: "Admi",
       apellido: "Admisiones",
@@ -29,6 +31,7 @@ async function seedRolesUsuarios() {
       genero: "Otro",
     },
     {
+      id_persona: 18,
       dni: 10000003,
       nombre: "Medi",
       apellido: "Medico",
@@ -36,6 +39,7 @@ async function seedRolesUsuarios() {
       genero: "Otro",
     },
     {
+      id_persona: 19,
       dni: 10000004,
       nombre: "Enfe",
       apellido: "Enfermeria",

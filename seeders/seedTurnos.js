@@ -91,52 +91,36 @@ async function seedTurnos() {
   ];
   await queryInterface.bulkInsert("personas", personasMedicos, {});
 
-  // 3. Crear médicos asociados a esas personas
-  const medicos = [
-    {
-      id_medico: 1,
-      id_persona: 1001,
-      nro_licencia: 5001,
-      estado: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      id_medico: 2,
-      id_persona: 1002,
-      nro_licencia: 5002,
-      estado: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      id_medico: 3,
-      id_persona: 1003,
-      nro_licencia: 5003,
-      estado: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      id_medico: 4,
-      id_persona: 1004,
-      nro_licencia: 5004,
-      estado: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      id_medico: 5,
-      id_persona: 1005,
-      nro_licencia: 5005,
-      estado: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-  ];
+  // 3. Crear empleados para esas personas (rol 3 = médico)
+  const empleadosMedicosData = personasMedicos.map((p) => ({
+    id_persona: p.id_persona,
+    id_rol: 3, // rol médico
+    fecha_ingreso: "2020-01-01",
+    estado: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }));
+  await queryInterface.bulkInsert("empleados", empleadosMedicosData, {});
+
+  // Obtener los empleados recién insertados
+  const empleadosMedicos = await queryInterface.sequelize.query(
+    `SELECT id_empleado, id_persona FROM empleados WHERE id_persona IN (${personasMedicos
+      .map((p) => p.id_persona)
+      .join(",")}) ORDER BY id_persona ASC`,
+    { type: sequelize.QueryTypes.SELECT }
+  );
+
+  // 4. Crear médicos asociados a esos empleados
+  const medicos = empleadosMedicos.map((e, i) => ({
+    id_empleado: e.id_empleado,
+    nro_licencia: 5001 + i,
+    estado: 1,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }));
   await queryInterface.bulkInsert("medicos", medicos, {});
 
-  // 4. Relacionar medicos con especialidades (MedicoEspecialidad)
+  // 5. Relacionar medicos con especialidades (MedicoEspecialidad)
   const medicoEspecialidades = [
     {
       id_medico: 1,
@@ -175,7 +159,7 @@ async function seedTurnos() {
     {}
   );
 
-  // 5. Crear horarios para los medicos
+  // 6. Crear horarios para los medicos
   const horarios = [];
   for (let i = 1; i <= 5; i++) {
     horarios.push({
@@ -199,7 +183,7 @@ async function seedTurnos() {
   }
   await queryInterface.bulkInsert("horarios", horarios, {});
 
-  // 6. Crear horarios_turno (horario_turno)
+  // 7. Crear horarios_turno (horario_turno)
   const horarioTurnos = [
     { id_horario_turno: 1, hora: "08:00" },
     { id_horario_turno: 2, hora: "08:30" },
@@ -231,7 +215,7 @@ async function seedTurnos() {
   ];
   await queryInterface.bulkInsert("horario_turno", horarioTurnos, {});
 
-  // 7. Crear turnos para pacientes existentes (usa los primeros 5 pacientes)
+  // 8. Crear turnos para pacientes existentes (usa los primeros 5 pacientes)
   const pacientes = await queryInterface.sequelize.query(
     "SELECT id_paciente FROM pacientes ORDER BY id_paciente ASC LIMIT 5",
     { type: sequelize.QueryTypes.SELECT }
