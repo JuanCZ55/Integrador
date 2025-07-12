@@ -40,45 +40,15 @@ mixin navbarAdmision()
     li.nav-item
       a.nav-link.text-primary-emphasis(href="/logout") Salir
 
-mixin navbarMedico()
-  ul.nav.nav-underline.fs-4.ms-auto 
+mixin navbarAdmin()
+  ul.nav.nav-underline.fs-4.ms-auto
     li.nav-item
-      a.nav-link.text-primary-emphasis(href="/admision/inicio") Inicio
-    li.nav-item.dropdown
-      a.nav-link.dropdown-toggle.text-primary-emphasis(href="#", role="button", data-bs-toggle="dropdown") Pacientes
-      ul.dropdown-menu
-        li
-          a.dropdown-item(href="/adcrearPaciente") Gestion 
-        li
-          a.dropdown-item(href="#") Busqueda 
-        li
-          a.dropdown-item(href="#") Lista
-    li.nav-item.dropdown
-      a.nav-link.dropdown-toggle.text-primary-emphasis(href="#", role="button", data-bs-toggle="dropdown") Admision
-      ul.dropdown-menu
-        li
-          a.dropdown-item(href="/paciente/check?navbar=admision") Admision  
-        li
-          a.dropdown-item(href="#") Modificacion 
-        li
-          a.dropdown-item(href="#") Lista 
-    li.nav-item.dropdown
-      a.nav-link.dropdown-toggle.text-primary-emphasis(href="#", role="button", data-bs-toggle="dropdown") Habitacion
-      ul.dropdown-menu
-        li
-          a.dropdown-item(href="#") Ver Habitaciones
-        li
-          a.dropdown-item(href="#") Buscar Camas   
-        li  
-          a.dropdown-item(href="#") Gestion Habitaciones 
-        li
-          a.dropdown-item(href="#") Gestion Camas                 
-    li.nav-item.dropdown
-      a.nav-link.dropdown-toggle.text-primary-emphasis(href="#", role="button", data-bs-toggle="dropdown") Turnos
-      ul.dropdown-menu
-        li
-          a.dropdown-item(href="#") Crear turno
-        li
-          a.dropdown-item(href="#") Modificar turno 
-        li
-          a.dropdown-item(href="#") Ver turnos
+      a.nav-link.text-primary-emphasis(href="/admin/inicio") Inicio
+    li.nav-item
+      a.nav-link.text-primary-emphasis(href="/admin/usuarios") Usuarios
+    li.nav-item
+      a.nav-link.text-primary-emphasis(href="/admin/empleado") Empleados
+    li.nav-item
+      a.nav-link.text-primary-emphasis(href="/admin/medico") Médicos
+    li.nav-item
+      a.nav-link.text-primary-emphasis(href="/admin/horariosEmpleado") Horarios
