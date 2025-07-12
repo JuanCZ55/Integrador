@@ -4,13 +4,14 @@ block scripts
 
 block navbar
   include ../mixinsNavbar.pug
+  +navbarAdmin()
 block main
   .w-75.container
     +alert(mensajeAlert, alertClass)
     div.container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box
       form.p-4(novalidate, action="/admin/medico", method="POST")
         .mb-3.d-flex.align-items-center.gap-2
-          h2.mx-auto.mb-0 Gestión de Médico
+          h2.mx-auto.mb-0 Gestión de Médico-Enfermero
         .row
           .col-6
             .mb-3
@@ -52,44 +53,7 @@ block main
               label.form-label(for="id_rol") Rol*
               select.form-select(id="id_rol", name="id_rol", required)
                 option(value="3" selected) Médico
-          .col-6 
-            .mb-3
-              label.form-label(for="lunes") Lunes
-              .row
-                .col-6
-                  label(for="lunes") Entrada
-                  input.form-control(type="time", name="time_eL", id="lunes", value=(horario && horario.lunes) || '', placeholder="08:00")
-                .col-6
-                  label(for="lunes") Salida
-                  input.form-control(type="time", name="time_sL", id="lunes", value=(horario && horario.lunes) || '', placeholder="08:00")
-            .mb-3
-              label.form-label(for="lunes") Lunes
-              .row
-                .col-6
-                  label(for="lunes") Entrada
-                  input.form-control(type="time", name="time_eL", id="lunes", value=(horario && horario.lunes) || '', placeholder="08:00")
-                .col-6
-                  label(for="lunes") Salida
-                  input.form-control(type="time", name="time_sL", id="lunes", value=(horario && horario.lunes) || '', placeholder="08:00")
-          .col-6
-            .mb-3
-              label.form-label(for="lunes") Lunes
-              .row
-                .col-6
-                  label(for="lunes") Entrada
-                  input.form-control(type="time", name="time_eL", id="lunes", value=(horario && horario.lunes) || '', placeholder="08:00")
-                .col-6
-                  label(for="lunes") Salida
-                  input.form-control(type="time", name="time_sL", id="lunes", value=(horario && horario.lunes) || '', placeholder="08:00")
-            .mb-3
-                label.form-label(for="lunes") Lunes
-                .row
-                  .col-6
-                    label(for="lunes") Entrada
-                    input.form-control(type="time", name="time_eL", id="lunes", value=(horario && horario.lunes) || '', placeholder="08:00")
-                  .col-6
-                    label(for="lunes") Salida
-                    input.form-control(type="time", name="time_sL", id="lunes", value=(horario && horario.lunes) || '', placeholder="08:00")
+          
           hr
           .col-6
             .mb-3
@@ -98,13 +62,14 @@ block main
             .mb-3
               label.form-label(for="especialidad") Especialidad*
               input.form-control.tag-input-especialidad(type="text", id="especialidad", name="especialidad", required, value=(medico && medico.especialidad) || '')
+          .col-6
             .mb-3
               label.form-label(for="estado") Estado*
               select.form-select(id="estado", name="estado", required)
                 option(value="1" selected=(medico && medico.estado==1)?true:undefined) Activo
                 option(value="0" selected=(medico && medico.estado==0)?true:undefined) Inactivo
-            .mb-3.text-center
-              button.btn.btn-primary(type="submit") Guardar Médico
+          .mb-3.text-center
+            button.btn.btn-primary(type="submit") Guardar Médico
 
     //script.
       setTimeout(() => {
