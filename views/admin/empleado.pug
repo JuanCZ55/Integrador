@@ -1,0 +1,63 @@
+extends ../layout.pug
+include ../mixins.pug
+block scripts 
+
+block navbar
+  include ../mixinsNavbar.pug
+  +navbarAdmin()
+block main
+  .w-75.container
+    +alert(mensajeAlert, alertClass)
+    div.container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box
+      form.p-4(novalidate, action="/admin/empleado", method="POST")
+        .mb-3.d-flex.align-items-center.gap-2
+          h2.mx-auto.mb-0 Gestion de Empleado de Admisión / Administrador
+        .row
+          .col-6
+            .mb-3
+              label.form-label(for="dni") DNI*
+              .input-group
+                input.form-control(type="number", id="dni", placeholder="48455713", value=(persona && persona.dni) || '', name="dni", required)
+                button.btn.btn-outline-secondary.text-light(type="button", id="btnBuscar") Buscar
+            .mb-3
+              label.form-label(for="nombre") Nombre*
+              input.form-control(type="text", id="nombre", name="nombre", required, placeholder="Juan Carlos")
+            .mb-3
+              label.form-label(for="apellido") Apellido*
+              input.form-control(type="text", id="apellido", name="apellido", required, placeholder="Pérez")
+          .col-6
+            .mb-3
+              label.form-label(for="f_nacimiento") Fecha de Nacimiento*
+              input.form-control(type="date", id="f_nacimiento", name="f_nacimiento", required, placeholder="1990-01-01")
+            .mb-3
+              label.form-label(for="genero") Género*
+              select.form-select(id="genero", name="genero", required)
+                option(value="") Seleccione
+                option(value="Masculino") Masculino
+                option(value="Femenino") Femenino
+                option(value="Otro") Otro
+            .mb-3
+              label.form-label(for="telefono") Teléfono
+              input.form-control(type="text", id="telefono", name="telefono", placeholder="1122334455")
+          .col-6
+            .mb-3
+              label.form-label(for="mail") Email
+              input.form-control(type="email", id="mail", name="mail", placeholder="correo@dominio.com")
+          .col-6
+            .mb-3
+              label.form-label(for="fecha_ingreso") Fecha de Ingreso*
+              input.form-control(type="date", id="fecha_ingreso", name="fecha_ingreso", required, placeholder="2025-07-12")
+          .col-6 
+            .mb-3
+              label.form-label(for="id_rol") Rol*
+              select.form-select(id="id_rol", name="id_rol", required)
+                option(value="1") Administrador
+                option(value="2") Admisión
+          .col-6
+            .mb-3
+              label.form-label(for="estado") Estado*
+              select.form-select(id="estado", name="estado", required)
+                option(value="1") Activo
+                option(value="0") Inactivo
+            .mb-3.text-center
+              button.btn.btn-primary(type="submit") Guardar Empleado
