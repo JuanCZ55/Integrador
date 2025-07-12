@@ -1,6 +1,8 @@
 extends ../layout
 include ../mixins
-
+block navbar
+  include ../mixinsNavbar.pug
+  +navbarAdmin()
 block main
   .container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box.mt-5
     form.p-4.w-100(method="POST", action="/usuarios", novalidate)
