@@ -1,0 +1,70 @@
+extends ../layout.pug
+include ../mixins.pug
+block scripts 
+
+block navbar
+  include ../mixinsNavbar.pug
+block main
+  .w-75.container
+    +alert(mensajeAlert, alertClass)
+    div.container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box
+      form.p-4(novalidate, action="/admin/medico", method="POST")
+        .mb-3.d-flex.align-items-center.gap-2
+          h2.mx-auto.mb-0 Gestión de Horarios de Empleado
+        .row
+          .col-12
+            .mb-3
+                label.form-label(for="dni") DNI*
+                .input-group
+                  input.form-control(type="number", id="dni", placeholder="48455713", value=(persona && persona.dni) || '', name="dni")
+                  button.btn.btn-outline-secondary.text-light(type="button", id="btnBuscar") Buscar
+          .col-6 
+            .mb-3
+              label.form-label(for="nombreApellido") Nombre y Apellido
+              input.form-control(type="text", id="nombreApellido", placeholder="Juan Carlos Perez", value=(persona && persona.nombre) || '', name="nombreApellido",readonly)
+          .col-6 
+            .mb-3
+              label.form-label(for="id_rol") Rol
+              input.form-control(type="text", id="id_rol", placeholder="Médico", value=(persona && persona.id_rol) || '', name="id_rol", readonly)
+          .col-12
+            .mb-3
+              label.form-label Horarios Semanales
+              table.table.table-bordered.table-striped.table-hover.text-center.align-middle.shadow-sm
+                thead.table-dark
+                  tr
+                    th Día
+                    th Entrada
+                    th Salida
+                tbody
+                  tr
+                    td.fw-semibold Lunes
+                    td.p-2: input.form-control.form-control-sm(type="time", name="time_eL", id="lunes_e", value=(horario && horario.lunes_e) || '', placeholder="08:00")
+                    td.p-2: input.form-control.form-control-sm(type="time", name="time_sL", id="lunes_s", value=(horario && horario.lunes_s) || '', placeholder="16:00")
+                  tr
+                    td.fw-semibold Martes
+                    td.p-2: input.form-control.form-control-sm(type="time", name="time_eM", id="martes_e", value=(horario && horario.martes_e) || '', placeholder="08:00")
+                    td.p-2: input.form-control.form-control-sm(type="time", name="time_sM", id="martes_s", value=(horario && horario.martes_s) || '', placeholder="16:00")
+                  tr
+                    td.fw-semibold Miércoles
+                    td.p-2: input.form-control.form-control-sm(type="time", name="time_eX", id="miercoles_e", value=(horario && horario.miercoles_e) || '', placeholder="08:00")
+                    td.p-2: input.form-control.form-control-sm(type="time", name="time_sX", id="miercoles_s", value=(horario && horario.miercoles_s) || '', placeholder="16:00")
+                  tr
+                    td.fw-semibold Jueves
+                    td.p-2: input.form-control.form-control-sm(type="time", name="time_eJ", id="jueves_e", value=(horario && horario.jueves_e) || '', placeholder="08:00")
+                    td.p-2: input.form-control.form-control-sm(type="time", name="time_sJ", id="jueves_s", value=(horario && horario.jueves_s) || '', placeholder="16:00")
+                  tr
+                    td.fw-semibold Viernes
+                    td.p-2: input.form-control.form-control-sm(type="time", name="time_eV", id="viernes_e", value=(horario && horario.viernes_e) || '', placeholder="08:00")
+                    td.p-2: input.form-control.form-control-sm(type="time", name="time_sV", id="viernes_s", value=(horario && horario.viernes_s) || '', placeholder="16:00")
+                  tr
+                    td.fw-semibold Sábado
+                    td.p-2: input.form-control.form-control-sm(type="time", name="time_eS", id="sabado_e", value=(horario && horario.sabado_e) || '', placeholder="08:00")
+                    td.p-2: input.form-control.form-control-sm(type="time", name="time_sS", id="sabado_s", value=(horario && horario.sabado_s) || '', placeholder="12:00")
+                  tr
+                    td.fw-semibold Domingo
+                    td.p-2: input.form-control.form-control-sm(type="time", name="time_eD", id="domingo_e", value=(horario && horario.domingo_e) || '', placeholder="08:00")
+                    td.p-2: input.form-control.form-control-sm(type="time", name="time_sD", id="domingo_s", value=(horario && horario.domingo_s) || '', placeholder="12:00")
+              .mb-3.text-center
+                button.btn.btn-primary(type="submit") Guardar Horarios
+        small.text-white.text-center.mx-auto
+          | Primero busque al empleado por su DNI, luego modifique/cree los horarios y finalmente haga click en "Guardar Horarios"
