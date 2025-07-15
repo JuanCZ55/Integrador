@@ -17,69 +17,85 @@ block main
             .mb-3
               label.form-label(for="dni") DNI*
               .input-group
-                input.form-control(type="number", id="dni", placeholder="48455713", value=(persona && persona.dni) || '', name="dni", required)
+                input.form-control(type="number", id="dni", placeholder="48455713", value=(persona && persona.dni) || '', name="persona.dni", required)
                 button.btn.btn-outline-secondary.text-light(type="button", id="btnBuscar") Buscar
             .mb-3
               label.form-label(for="nombre") Nombre*
-              input.form-control(type="text", id="nombre", placeholder="Juan Carlos", value=(persona && persona.nombre) || '', name="nombre", required)
+              input.form-control(type="text", id="nombre", placeholder="Juan Carlos", value=(persona && persona.nombre) || '', name="persona.nombre", required)
             .mb-3
               label.form-label(for="apellido") Apellido*
-              input.form-control(type="text", id="apellido", placeholder="Perez", value=(persona && persona.apellido) || '', name="apellido", required)
+              input.form-control(type="text", id="apellido", placeholder="Perez", value=(persona && persona.apellido) || '', name="persona.apellido", required)
             .mb-3
               label.form-label(for="f_nacimiento") Fecha de Nacimiento*
-              input.form-control(type="date", id="f_nacimiento", value=(persona && persona.f_nacimiento) || '', name="f_nacimiento", required)
+              input.form-control(type="date", id="f_nacimiento", value=(persona && persona.f_nacimiento) || '', name="persona.f_nacimiento", required)
           .col-6
             .mb-3
               label.form-label(for="genero") Género*
-              select.form-select(id="genero", name="genero", required)
+              select.form-select(id="genero", name="persona.genero", required)
                 option(value="") Seleccione
                 option(value="Masculino" selected=(persona && persona.genero==="Masculino")?true:undefined) Masculino
                 option(value="Femenino" selected=(persona && persona.genero==="Femenino")?true:undefined) Femenino
                 option(value="Otro" selected=(persona && persona.genero==="Otro")?true:undefined) Otro
             .mb-3
-              label.form-label(for="telefono") Teléfono
-              input.form-control(type="text", id="telefono", value=(persona && persona.telefono) || '', name="telefono")
+              label.form-label(for="telefono") Teléfono*
+              input.form-control(type="text", id="telefono", value=(persona && persona.telefono) || '', name="persona.telefono")
             .mb-3
-              label.form-label(for="mail") Email
-              input.form-control(type="email", id="mail", value=(persona && persona.mail) || '', name="mail")
+              label.form-label(for="mail") Email*
+              input.form-control(type="email", id="mail", value=(persona && persona.mail) || '', name="persona.mail")
           hr
           .col-6
             .mb-3
               label.form-label(for="fecha_ingreso") Fecha de Ingreso*
-              input.form-control(type="time", id="fecha_ingreso", value=(empleado && empleado.fecha_ingreso) || '', name="fecha_ingreso", required)
+              input.form-control(type="date", id="fecha_ingreso", value=(empleado && empleado.fecha_ingreso) || '', name="empleado.fecha_ingreso", required)
           .col-6
           
             .mb-3
               label.form-label(for="id_rol") Rol*
-              select.form-select(id="id_rol", name="id_rol", required)
+              select.form-select(id="id_rol", name="empleado.id_rol", required)
                 option(value="3" selected) Médico
+                option(value="4" selected) Enfermero
+
           
           hr
+          .col-12
+            .mb-3
+              label.form-label(for="especialidad") Especialidad*
+              input(name="especialidad" class="form-control tagify--custom-dropdown" placeholder="Agregue una especialidad" value=(especialidad) || '')
           .col-6
             .mb-3
               label.form-label(for="matricula") Matrícula*
-              input.form-control(type="text", id="matricula", value=(medico && medico.matricula) || '', name="matricula", required)
-            .mb-3
-              label.form-label(for="especialidad") Especialidad*
-              input.form-control.tag-input-especialidad(type="text", id="especialidad", name="especialidad", required, value=(medico && medico.especialidad) || '')
+              input.form-control(type="text", id="matricula", value=(medico && medico.matricula) || '', name="medico.matricula", required)
           .col-6
             .mb-3
               label.form-label(for="estado") Estado*
               select.form-select(id="estado", name="estado", required)
                 option(value="1" selected=(medico && medico.estado==1)?true:undefined) Activo
-                option(value="0" selected=(medico && medico.estado==0)?true:undefined) Inactivo
+                option(value="0" selected=(medico && medico.estado==2)?true:undefined) Inactivo
           .mb-3.text-center
             button.btn.btn-primary(type="submit") Guardar Médico
 
-    //script.
-      setTimeout(() => {
-        location.reload();
-      }, 2000);
     link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css")
     script(src="https://cdn.jsdelivr.net/npm/@yaireo/tagify")
     script.
-      new Tagify(document.querySelector('.tag-input-especialidad'), {
-        whitelist: ['Cardiología','Pediatría','Clínica Médica','Traumatología','Dermatología'],
-        enforceWhitelist: true,
-        dropdown: { enabled: 1, closeOnSelect: false }
-      });
+      //const especialidades = !{JSON.stringify(especialidades)};
+      const especialidades = [
+        "Cardiología",
+        "Pediatría",
+        "Clínica Médica",
+        "Traumatología",
+        "Dermatología",
+        "Ginecología",
+        "Oftalmología",
+        "Neurología"
+      ];
+      var input = document.querySelector('input[name="input-custom-dropdown"]');
+        new Tagify(input, {
+          whitelist: especialidades,
+          maxTags: 10,
+          dropdown: {
+            maxItems: 20,
+            classname: 'tags-look',
+            enabled: 0,
+            closeOnSelect: false
+          }
+        });
