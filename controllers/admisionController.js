@@ -12,7 +12,6 @@ const {
 } = require("../models/init");
 const sequelize = require("../models/db");
 const { Op } = require("sequelize");
-const { Sequelize } = require("sequelize");
 
 async function inicio(req, res) {
   const { error } = req.query;
