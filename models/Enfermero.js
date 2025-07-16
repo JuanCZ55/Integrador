@@ -21,8 +21,8 @@ Enfermero.init(
       },
       unique: true,
     },
-    matricula: {
-      type: DataTypes.STRING(50),
+    nro_licencia: {
+      type: DataTypes.INTEGER,
       allowNull: false,
       unique: true,
     },
