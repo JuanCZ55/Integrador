@@ -1,14 +1,13 @@
 const {
-  Paciente,
-  ObraSocial,
   Persona,
-  Motivos,
-  Admision,
-  Turno,
-  MovimientoCama,
-  Cama,
-  Sector,
-  Habitacion,
+  Medico,
+  Enfermero,
+  Horario,
+  Empleado,
+  Especialidad,
+  Rol,
+  MedicoEspecialidad,
+  Usuario,
 } = require("../models/init");
 const sequelize = require("../models/db"); // transacciones
 const { Op } = require("sequelize");
@@ -28,7 +27,7 @@ function validator(persona, empleado, medico, especialidad, estado) {
     !especialidad ||
     !estado
   ) {
-    errores.push("Faltan datos obligatorios(*)");
+    errores.push("Completen los datos obligatorios(*)");
     return errores;
   }
   const regexDni = /^[0-9]{7,8}$/;
@@ -61,9 +60,15 @@ function validator(persona, empleado, medico, especialidad, estado) {
     errores.push("Email invalido, asi deberia ser jorgepower@gmail.com");
   }
   //-------------------------------------------------------------------------------
-  if (!empleado.fecha_ingreso || isNaN(new Date(empleado.fecha_ingreso))) {
+  const fechaIngreso = new Date(empleado.fecha_ingreso);
+  if (isNaN(fechaIngreso.getTime())) {
     errores.push("Fecha de ingreso no valida");
+  } else if (fechaIngreso > new Date()) {
+    errores.push(
+      "Cambia la fecha de ingreso, ¿como entraste a trabajar en el futuro?"
+    );
   }
+
   if (empleado.id_rol !== 3 && empleado.id_rol !== 4) {
     errores.push("Rol inválido");
   }
@@ -71,12 +76,97 @@ function validator(persona, empleado, medico, especialidad, estado) {
   if (!regexDni.test(medico.matricula)) {
     errores.push("Matrícula inválida");
   }
-  if (!estado || (estado !== "Activo" && estado !== "Inactivo")) {
-    errores.push("Especialidad inválida");
+  if (estado !== 1 && estado !== 2) {
+    errores.push("Estado inválido, debe ser 1 (Activo) o 2 (Inactivo)");
   }
   return errores;
 }
+async function getME(req, res) {
+  const dni = req.query.dni;
 
-async function name(params) {}
+  if (dni === undefined) {
+    return res.render("admin/medico");
+  } else if (dni === "") {
+    return res.render("admin/medico", {
+      mensajeAlert: "DNI no puede estar vacío",
+      alertClass: "alert-danger",
+    });
+  }
+  const regexDni = /^[0-9]{7,8}$/;
+  if (!regexDni.test(dni)) {
+    return res.render("admin/medico", {
+      mensajeAlert: "DNI inválido, debe tener 7 u 8 dígitos",
+      alertClass: "alert-danger",
+    });
+  }
+  try {
+    const persona = await Persona.findOne({
+      where: { dni: dni },
+      include: [
+        {
+          model: Empleado,
+          as: "empleado",
+        },
+      ],
+    });
 
-module.exports = { validator };
+    if (!persona) {
+      return res.render("admin/medico", {
+        mensajeAlert: "No se encontró un médico/enfermero con ese DNI",
+        alertClass: "alert-danger",
+      });
+    }
+    if (
+      !persona.empleado ||
+      (persona.empleado.id_rol !== 3 && persona.empleado.id_rol !== 4)
+    ) {
+      return res.render("admin/medico", {
+        mensajeAlert: "El DNI ingresado no corresponde a un médico o enfermero",
+        alertClass: "alert-danger",
+      });
+    }
+    let empleado = null;
+    if (persona.empleado.id_rol === 3) {
+      empleado = await Medico.findOne({
+        where: { id_empleado: persona.empleado.id_empleado },
+        include: [
+          {
+            model: Especialidad,
+            as: "especialidades",
+            through: { attributes: [] }, // Exclude MedicoEspecialidad attributes
+          },
+        ],
+      });
+    } else if (persona.empleado.id_rol === 4) {
+      empleado = await Enfermero.findOne({
+        where: { id_empleado: persona.empleado.id_empleado },
+        include: [
+          {
+            model: Especialidad,
+            as: "especialidades",
+            through: { attributes: [] }, // Exclude MedicoEspecialidad attributes
+          },
+        ],
+      });
+    }
+    console.log(empleado, persona);
+
+    return res.render("admin/medico", {
+      persona,
+      empleado: persona.empleado,
+      medico: empleado,
+      especialidad:
+        empleado?.especialidades?.map((e) => e.nombre).join(", ") || "",
+    });
+  } catch (error) {
+    console.error(error);
+    return res.render("admin/medico", {
+      mensajeAlert: "Ocurrió un error al buscar el médico/enfermero.",
+      alertClass: "alert-danger",
+    });
+  }
+}
+async function crearME(req, res) {}
+async function modificarME(req, res) {}
+
+module.exports = { getME, crearME, modificarME };
