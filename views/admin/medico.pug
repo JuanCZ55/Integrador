@@ -9,7 +9,7 @@ block main
   .w-75.container
     +alert(mensajeAlert, alertClass)
     div.container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box
-      form.p-4(novalidate, action="/admin/medico", method="POST")
+      form.p-4(novalidate, action="/admin/medico", method="GET")
         .mb-3.d-flex.align-items-center.gap-2
           h2.mx-auto.mb-0 Gestión de Médico-Enfermero
         .row
@@ -17,8 +17,8 @@ block main
             .mb-3
               label.form-label(for="dni") DNI*
               .input-group
-                input.form-control(type="number", id="dni", placeholder="48455713", value=(persona && persona.dni) || '', name="persona.dni", required)
-                button.btn.btn-outline-secondary.text-light(type="button", id="btnBuscar") Buscar
+                input.form-control(type="number", id="dni", placeholder="48455713", value=(persona && persona.dni) || '', name="dni", required)
+                button.btn.btn-outline-secondary.text-light(type="submit", id="btnBuscar") Buscar
             .mb-3
               label.form-label(for="nombre") Nombre*
               input.form-control(type="text", id="nombre", placeholder="Juan Carlos", value=(persona && persona.nombre) || '', name="persona.nombre", required)
@@ -52,8 +52,8 @@ block main
             .mb-3
               label.form-label(for="id_rol") Rol*
               select.form-select(id="id_rol", name="empleado.id_rol", required)
-                option(value="3" selected) Médico
-                option(value="4" selected) Enfermero
+                option(value="3" selected=(empleado && empleado.id_rol === 3) ? true : undefined) Médico
+                option(value="4" selected=(empleado && empleado.id_rol === 4) ? true : undefined) Enfermero
 
           
           hr
@@ -70,10 +70,11 @@ block main
               label.form-label(for="estado") Estado*
               select.form-select(id="estado", name="estado", required)
                 option(value="1" selected=(medico && medico.estado==1)?true:undefined) Activo
-                option(value="0" selected=(medico && medico.estado==2)?true:undefined) Inactivo
-          .mb-3.text-center
-            button.btn.btn-primary(type="submit") Guardar Médico
-
+                option(value="2" selected=(medico && medico.estado==2)?true:undefined) Inactivo
+          .d-flex.justify-content-between
+            button.btn.btn-primary(type="submit") Modificar
+            button.btn.btn-primary(type="submit") Crear
+    +debug(locals)
     link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css")
     script(src="https://cdn.jsdelivr.net/npm/@yaireo/tagify")
     script.
