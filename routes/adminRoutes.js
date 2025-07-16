@@ -1,5 +1,5 @@
 const express = require("express");
-
+const adminController = require("../controllers/adminController");
 const router = express.Router();
 router.get("/inicio", (req, res) => {
   res.render("admin/inicio");
@@ -7,9 +7,7 @@ router.get("/inicio", (req, res) => {
 router.get("/empleado", (req, res) => {
   res.render("admin/empleado");
 });
-router.get("/medico", (req, res) => {
-  res.render("admin/medico");
-});
+router.get("/medico", adminController.getME);
 router.get("/horariosEmpleado", (req, res) => {
   res.render("admin/horariosEmpleado");
 });
