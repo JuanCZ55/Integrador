@@ -96,7 +96,7 @@ async function seedTurnos() {
     id_persona: p.id_persona,
     id_rol: 3, // rol médico
     fecha_ingreso: "2020-01-01",
-    estado: true,
+    estado: 1,
     createdAt: new Date(),
     updatedAt: new Date(),
   }));
@@ -125,6 +125,12 @@ async function seedTurnos() {
     {
       id_medico: 1,
       id_especialidad: 1,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+    {
+      id_medico: 1,
+      id_especialidad: 2,
       createdAt: new Date(),
       updatedAt: new Date(),
     },

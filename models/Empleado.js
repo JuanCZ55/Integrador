@@ -33,9 +33,10 @@ Empleado.init(
       allowNull: false,
     },
     estado: {
-      type: DataTypes.BOOLEAN,
+      type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: true,
+      defaultValue: 1,
+      comment: "1: activo, 2: inactivo,3:suspendido",
     },
   },
   {
