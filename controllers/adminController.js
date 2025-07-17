@@ -81,20 +81,40 @@ function validator(persona, empleado, medico, especialidad, estado) {
   }
   return errores;
 }
+async function renderME(
+  res,
+  { persona, empleado, medico, especialidad, mensajeAlert, alertClass }
+) {
+  const espec = await Especialidad.findAll({
+    attributes: ["nombre"],
+  });
+  const especialidades = espec.map((e) => e.nombre);
+
+  res.render("admin/medico", {
+    persona,
+    empleado,
+    medico,
+    especialidad,
+    especialidades,
+    mensajeAlert,
+    alertClass,
+  });
+}
+
 async function getME(req, res) {
   const dni = req.query.dni;
 
   if (dni === undefined) {
-    return res.render("admin/medico");
+    return renderME(res, {});
   } else if (dni === "") {
-    return res.render("admin/medico", {
+    return renderME(res, {
       mensajeAlert: "DNI no puede estar vacío",
       alertClass: "alert-danger",
     });
   }
   const regexDni = /^[0-9]{7,8}$/;
   if (!regexDni.test(dni)) {
-    return res.render("admin/medico", {
+    return renderME(res, {
       mensajeAlert: "DNI inválido, debe tener 7 u 8 dígitos",
       alertClass: "alert-danger",
     });
@@ -111,7 +131,7 @@ async function getME(req, res) {
     });
 
     if (!persona) {
-      return res.render("admin/medico", {
+      return renderME(res, {
         mensajeAlert: "No se encontró un médico/enfermero con ese DNI",
         alertClass: "alert-danger",
       });
@@ -120,7 +140,7 @@ async function getME(req, res) {
       !persona.empleado ||
       (persona.empleado.id_rol !== 3 && persona.empleado.id_rol !== 4)
     ) {
-      return res.render("admin/medico", {
+      return renderME(res, {
         mensajeAlert: "El DNI ingresado no corresponde a un médico o enfermero",
         alertClass: "alert-danger",
       });
@@ -133,7 +153,7 @@ async function getME(req, res) {
           {
             model: Especialidad,
             as: "especialidades",
-            through: { attributes: [] }, // Exclude MedicoEspecialidad attributes
+            through: { attributes: [] },
           },
         ],
       });
@@ -144,14 +164,14 @@ async function getME(req, res) {
           {
             model: Especialidad,
             as: "especialidades",
-            through: { attributes: [] }, // Exclude MedicoEspecialidad attributes
+            through: { attributes: [] },
           },
         ],
       });
     }
     console.log(empleado, persona);
 
-    return res.render("admin/medico", {
+    return renderME(res, {
       persona,
       empleado: persona.empleado,
       medico: empleado,
@@ -160,7 +180,7 @@ async function getME(req, res) {
     });
   } catch (error) {
     console.error(error);
-    return res.render("admin/medico", {
+    return renderME(res, {
       mensajeAlert: "Ocurrió un error al buscar el médico/enfermero.",
       alertClass: "alert-danger",
     });
