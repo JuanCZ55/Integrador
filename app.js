@@ -17,13 +17,13 @@ const administrador = require("./routes/adminRoutes");
 const login = require("./routes/loginRoutes");
 
 const app = express();
-
+const tiempo = 12 * 60 * 60 * 1000; // 12 horas
 // Configuración de sesiones con Sequelize y Postgres en BD
 const store = new SequelizeStore({
   db: sequelize,
   tableName: "sesiones",
-  checkExpirationInterval: 10 * 60 * 1000, // purga cada 10 minutos
-  expiration: 2 * 60 * 60 * 1000 + 300000, // TTL 2 horas y 5minutos
+  checkExpirationInterval: 10 * 60 * 1000,
+  expiration: tiempo,
 });
 store.sync(); // crea la tabla si no existe
 
@@ -34,7 +34,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      maxAge: 2 * 60 * 60 * 1000, // 2 horas
+      maxAge: tiempo,
       sameSite: "lax",
       secure: false, // true si HTTPS
     },
