@@ -1,6 +1,6 @@
 const { Model, DataTypes } = require("sequelize");
 const sequelize = require("./db");
-
+const { Medico } = require("./Medico");
 class MedicoEspecialidad extends Model {}
 
 MedicoEspecialidad.init(
@@ -15,7 +15,7 @@ MedicoEspecialidad.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "medicos",
+        model: Medico,
         key: "id_medico",
       },
     },
