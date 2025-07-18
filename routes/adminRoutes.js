@@ -8,6 +8,8 @@ router.get("/empleado", (req, res) => {
   res.render("admin/empleado");
 });
 router.get("/medico", adminController.getME);
+router.post("/medico", adminController.postME);
+
 router.get("/horariosEmpleado", (req, res) => {
   res.render("admin/horariosEmpleado");
 });
