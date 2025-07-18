@@ -23,7 +23,7 @@ function validator(persona, empleado, medico, especialidad, estado) {
     !persona.mail ||
     !empleado.fecha_ingreso ||
     !empleado.id_rol ||
-    !medico.matricula ||
+    !medico.nro_licencia ||
     !especialidad ||
     !estado
   ) {
@@ -33,6 +33,8 @@ function validator(persona, empleado, medico, especialidad, estado) {
   const regexDni = /^[0-9]{7,8}$/;
   const regexNombre = /^[a-zA-Z\s]+$/;
   const regexTelefono = /^\d{10}$/;
+  const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const regexLicencia = /^\d{1,9}$/;
 
   if (!regexDni.test(persona.dni)) {
     errores.push("DNI inválido, debe tener 7 u 8 dígitos");
@@ -50,13 +52,17 @@ function validator(persona, empleado, medico, especialidad, estado) {
     errores.push("Cambia la fecha de nacimiento,¿Como naciste en el futuro?");
   }
 
-  if (genero !== "Femenino" && genero !== "Masculino" && genero !== "Otro") {
+  if (
+    persona.genero !== "Femenino" &&
+    persona.genero !== "Masculino" &&
+    persona.genero !== "Otro"
+  ) {
     errores.push("Genero invalido");
   }
   if (persona.telefono && !regexTelefono.test(persona.telefono)) {
     errores.push("Telefono debe tener 10 digitos, solo numeros");
   }
-  if (!regexEmail.test(mail)) {
+  if (!regexEmail.test(persona.mail)) {
     errores.push("Email invalido, asi deberia ser jorgepower@gmail.com");
   }
   //-------------------------------------------------------------------------------
@@ -69,14 +75,14 @@ function validator(persona, empleado, medico, especialidad, estado) {
     );
   }
 
-  if (empleado.id_rol !== 3 && empleado.id_rol !== 4) {
+  if (empleado.id_rol != 3 && empleado.id_rol != 4) {
     errores.push("Rol inválido");
-  }
+  } //-------------------------------------------------------------------------------
   //-------------------------------------------------------------------------------
-  if (!regexDni.test(medico.matricula)) {
-    errores.push("Matrícula inválida");
+  if (!regexLicencia.test(medico.nro_licencia)) {
+    errores.push("Número de licencia inválido");
   }
-  if (estado !== 1 && estado !== 2) {
+  if (estado != 1 && estado != 2 && estado != 3) {
     errores.push("Estado inválido, debe ser 1 (Activo) o 2 (Inactivo)");
   }
   return errores;
@@ -89,12 +95,18 @@ async function renderME(
     attributes: ["nombre"],
   });
   const especialidades = espec.map((e) => e.nombre);
+  console.log("renderME");
+
+  console.log(especialidad, typeof especialidad);
+  let valen = Array.isArray(especialidad)
+    ? especialidad.map((e) => e.trim()).join(", ")
+    : (especialidad ?? "").toString();
 
   res.render("admin/medico", {
     persona,
     empleado,
     medico,
-    especialidad,
+    especialidad: valen,
     especialidades,
     mensajeAlert,
     alertClass,
@@ -145,9 +157,9 @@ async function getME(req, res) {
         alertClass: "alert-danger",
       });
     }
-    let empleado = null;
-    if (persona.empleado.id_rol === 3) {
-      empleado = await Medico.findOne({
+    let profesional = null;
+    if (persona.empleado.id_rol == 3) {
+      profesional = await Medico.findOne({
         where: { id_empleado: persona.empleado.id_empleado },
         include: [
           {
@@ -157,26 +169,25 @@ async function getME(req, res) {
           },
         ],
       });
-    } else if (persona.empleado.id_rol === 4) {
-      empleado = await Enfermero.findOne({
+    } else if (persona.empleado.id_rol == 4) {
+      profesional = await Enfermero.findOne({
         where: { id_empleado: persona.empleado.id_empleado },
         include: [
           {
             model: Especialidad,
             as: "especialidades",
-            through: { attributes: [] },
+            through: { attributes: ["nombre"] },
           },
         ],
       });
     }
-    console.log(empleado, persona);
 
     return renderME(res, {
       persona,
       empleado: persona.empleado,
-      medico: empleado,
+      medico: profesional,
       especialidad:
-        empleado?.especialidades?.map((e) => e.nombre).join(", ") || "",
+        profesional?.especialidades?.map((e) => e.nombre).join(", ") || "",
     });
   } catch (error) {
     console.error(error);
@@ -186,7 +197,171 @@ async function getME(req, res) {
     });
   }
 }
-async function crearME(req, res) {}
-async function modificarME(req, res) {}
+async function postME(req, res) {
+  const { accion } = req.body;
+  if (accion === "crear") {
+    return crearME(req, res);
+  } else if (accion === "modificar") {
+    return modificarME(req, res);
+  } else {
+    return await renderME(res, {
+      mensajeAlert: "Acción no válida",
+      alertClass: "alert-danger",
+    });
+  }
+}
+async function crearME(req, res) {
+  const {
+    dni,
+    nombre,
+    apellido,
+    f_nacimiento,
+    genero,
+    telefono,
+    mail,
+    fecha_ingreso,
+    id_rol,
 
-module.exports = { getME, crearME, modificarME };
+    nro_licencia,
+    estado,
+  } = req.body;
+  const especialidad = JSON.parse(req.body.especialidad);
+
+  const persona = {
+    dni,
+    nombre,
+    apellido,
+    f_nacimiento,
+    genero,
+    telefono,
+    mail,
+  };
+  const empleado = {
+    fecha_ingreso,
+    id_rol,
+  };
+  const medico = {
+    nro_licencia,
+    estado,
+  };
+  const errores = validator(persona, empleado, medico, especialidad, estado);
+  if (errores.length > 0) {
+    return renderME(res, {
+      persona,
+      empleado,
+      medico,
+      especialidad,
+      mensajeAlert: errores,
+      alertClass: "alert-danger",
+    });
+  }
+  console.log("crear");
+
+  console.log(especialidad, typeof especialidad);
+
+  // No hay errores por ahora
+  try {
+    let personaCreada = await Persona.findOne({
+      where: { dni: persona.dni },
+    });
+    if (!personaCreada) {
+      // Si no se encontró la persona, se crea una nueva
+      personaCreada = await Persona.create(persona);
+    }
+
+    const empleadoExiste = await Empleado.findOne({});
+    if (empleadoExiste) {
+      return renderME(res, {
+        persona,
+        empleado,
+        medico,
+        especialidad,
+        mensajeAlert: "Ya existe un empleado con ese DNI",
+        alertClass: "alert-danger",
+      });
+    }
+    const empleadoCreado = await Empleado.create({
+      id_persona: personaCreada.id_persona,
+      id_rol: empleado.id_rol,
+      fecha_ingreso: empleado.fecha_ingreso,
+    });
+    // Gestion de especialidades
+    const idsEpec = await especialidadesME(especialidad);
+    let profesional = null;
+    if (id_rol == 3) {
+      profesional = await Medico.create({
+        id_empleado: empleadoCreado.id_empleado,
+        nro_licencia: medico.nro_licencia,
+        estado: medico.estado,
+      });
+    } else if (id_rol == 4) {
+      profesional = await Enfermero.create({
+        id_empleado: empleadoCreado.id_empleado,
+        nro_licencia: medico.nro_licencia,
+        estado: medico.estado,
+      });
+    }
+    if (idsEpec && idsEpec.length > 0) {
+      await profesional.addEspecialidades(idsEpec);
+    }
+    return renderME(res, {
+      mensajeAlert: "Médico/enfermero creado exitosamente",
+      alertClass: "alert-success",
+    });
+  } catch (error) {
+    console.error(error);
+    return renderME(res, {
+      persona,
+      empleado,
+      medico,
+      especialidad,
+      mensajeAlert: "Ocurrió un error al crear el médico/enfermero.",
+      alertClass: "alert-danger",
+    });
+  }
+}
+async function modificarME(req, res) {
+  const {
+    id,
+    dni,
+    nombre,
+    apellido,
+    f_nacimiento,
+    genero,
+    telefono,
+    mail,
+    fecha_ingreso,
+    id_rol,
+    especialidad,
+    nro_licencia,
+    estado,
+  } = req.body;
+}
+async function especialidadesME(especialidad) {
+  if (especialidad && especialidad.length > 0) {
+    // 1. Traer todas las especialidades existentes
+    const especialidadesBD = await Especialidad.findAll({
+      attributes: ["id_especialidad", "nombre"],
+    });
+    const nombresExistentes = especialidadesBD.map((e) => e.nombre);
+
+    // 2. Filtrar las nuevas (no existen en la BD)
+    const nuevas = especialidad.filter((e) => !nombresExistentes.includes(e));
+
+    // 3. Crear las nuevas especialidades
+    for (const nombre of nuevas) {
+      await Especialidad.create({ nombre });
+    }
+
+    // 4. Buscar todas las especialidades (viejas y nuevas) por nombre
+    const todas = await Especialidad.findAll({
+      where: { nombre: especialidad },
+      attributes: ["id_especialidad", "nombre"],
+    });
+
+    // 5. Devolver solo los IDs
+    return todas.map((e) => e.id_especialidad);
+  }
+  return [];
+}
+module.exports = { getME, crearME, modificarME, postME };
