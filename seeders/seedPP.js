@@ -8,7 +8,6 @@ async function seedPersonasPacientes() {
     "personas",
     [
       {
-        id_persona: 1,
         dni: 27345123,
         nombre: "Juan",
         apellido: "Perez",
@@ -20,7 +19,6 @@ async function seedPersonasPacientes() {
         updatedAt: new Date(),
       },
       {
-        id_persona: 2,
         dni: 31234567,
         nombre: "Maria",
         apellido: "Gomez",
@@ -32,7 +30,6 @@ async function seedPersonasPacientes() {
         updatedAt: new Date(),
       },
       {
-        id_persona: 3,
         dni: 25567890,
         nombre: "Carlos",
         apellido: "Diaz",
@@ -44,7 +41,6 @@ async function seedPersonasPacientes() {
         updatedAt: new Date(),
       },
       {
-        id_persona: 4,
         dni: 29876543,
         nombre: "Lucia",
         apellido: "Fernandez",
@@ -56,7 +52,6 @@ async function seedPersonasPacientes() {
         updatedAt: new Date(),
       },
       {
-        id_persona: 5,
         dni: 32456789,
         nombre: "Mateo",
         apellido: "Sanchez",
@@ -68,7 +63,6 @@ async function seedPersonasPacientes() {
         updatedAt: new Date(),
       },
       {
-        id_persona: 6,
         dni: 28765432,
         nombre: "Sofia",
         apellido: "Alvarez",
@@ -80,7 +74,6 @@ async function seedPersonasPacientes() {
         updatedAt: new Date(),
       },
       {
-        id_persona: 7,
         dni: 30011223,
         nombre: "Diego",
         apellido: "Torres",
@@ -92,7 +85,6 @@ async function seedPersonasPacientes() {
         updatedAt: new Date(),
       },
       {
-        id_persona: 8,
         dni: 27654321,
         nombre: "Valentina",
         apellido: "Ruiz",
@@ -104,7 +96,6 @@ async function seedPersonasPacientes() {
         updatedAt: new Date(),
       },
       {
-        id_persona: 9,
         dni: 29012345,
         nombre: "Andres",
         apellido: "Ramirez",
@@ -116,7 +107,6 @@ async function seedPersonasPacientes() {
         updatedAt: new Date(),
       },
       {
-        id_persona: 10,
         dni: 30543210,
         nombre: "Camila",
         apellido: "Suarez",
@@ -128,7 +118,6 @@ async function seedPersonasPacientes() {
         updatedAt: new Date(),
       },
       {
-        id_persona: 11,
         dni: 26543211,
         nombre: "Martin",
         apellido: "Castro",
@@ -140,7 +129,6 @@ async function seedPersonasPacientes() {
         updatedAt: new Date(),
       },
       {
-        id_persona: 12,
         dni: 28345678,
         nombre: "Martina",
         apellido: "Morales",
@@ -152,7 +140,6 @@ async function seedPersonasPacientes() {
         updatedAt: new Date(),
       },
       {
-        id_persona: 13,
         dni: 29987654,
         nombre: "Lucas",
         apellido: "Herrera",
@@ -164,7 +151,6 @@ async function seedPersonasPacientes() {
         updatedAt: new Date(),
       },
       {
-        id_persona: 14,
         dni: 27890123,
         nombre: "Paula",
         apellido: "Navarro",
@@ -176,7 +162,6 @@ async function seedPersonasPacientes() {
         updatedAt: new Date(),
       },
       {
-        id_persona: 15,
         dni: 31012345,
         nombre: "Nicolas",
         apellido: "Vidal",
