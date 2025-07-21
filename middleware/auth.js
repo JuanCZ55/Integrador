@@ -58,11 +58,18 @@ const getCurrentUser = async (req, res, next) => {
   if (req.session.userId) {
     try {
       const user = await Usuario.findByPk(req.session.userId, {
+        attributes: ["id_usuario", "usuario"],
         include: [
           "rol",
           {
             association: "empleado",
-            include: [{ association: "persona" }],
+            attributes: { exclude: ["createdAt", "updatedAt"] },
+            include: [
+              {
+                association: "persona",
+                attributes: { exclude: ["createdAt", "updatedAt"] },
+              },
+            ],
           },
         ],
       });
