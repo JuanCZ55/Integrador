@@ -157,30 +157,20 @@ async function getME(req, res) {
         alertClass: "alert-danger",
       });
     }
-    let profesional = null;
-    if (persona.empleado.id_rol == 3) {
-      profesional = await Medico.findOne({
-        where: { id_empleado: persona.empleado.id_empleado },
-        include: [
-          {
-            model: Especialidad,
-            as: "especialidades",
-            through: { attributes: [] },
-          },
-        ],
-      });
-    } else if (persona.empleado.id_rol == 4) {
-      profesional = await Enfermero.findOne({
-        where: { id_empleado: persona.empleado.id_empleado },
-        include: [
-          {
-            model: Especialidad,
-            as: "especialidades",
-            through: { attributes: ["nombre"] },
-          },
-        ],
-      });
-    }
+    const Model = persona.empleado.id_rol === 3 ? Medico : Enfermero;
+    const profesional = await Model.findOne({
+      where: { id_empleado: persona.empleado.id_empleado },
+      include: [
+        {
+          model: Especialidad,
+          as: "especialidades",
+          attributes: ["nombre"],
+          through: { attributes: [] },
+        },
+      ],
+    });
+
+    console.log(profesional);
 
     return renderME(res, {
       persona,
@@ -242,7 +232,6 @@ async function crearME(req, res) {
   };
   const medico = {
     nro_licencia,
-    estado,
   };
   const errores = validator(persona, empleado, medico, especialidad, estado);
   if (errores.length > 0) {
@@ -269,7 +258,9 @@ async function crearME(req, res) {
       personaCreada = await Persona.create(persona);
     }
 
-    const empleadoExiste = await Empleado.findOne({});
+    const empleadoExiste = await Empleado.findOne({
+      where: { id_persona: personaCreada.id_persona },
+    });
     if (empleadoExiste) {
       return renderME(res, {
         persona,
