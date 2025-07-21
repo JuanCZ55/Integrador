@@ -7,38 +7,38 @@ const seedSectoresHabitacionesCamas = require("./seeders/seedInfra");
 const seedTurnos = require("./seeders/seedTurnos");
 const seedRolesUsuarios = require("./seeders/seedRU");
 
-//crear las tablas
-sequelize
-  .sync({ force: true })
-  .then(() => {
-    console.log("Tablas creadas exitosamente");
-    return seedRolesUsuarios();
-  })
-  .then(() => {
-    console.log("Roles y usuarios seed ejecutado correctamente");
-    return seedObraSocial();
-  })
-  .then(() => {
-    console.log("Obras sociales seed ejecutado correctamente");
-    return seedMotivos();
-  })
-  .then(() => {
-    console.log("Motivos seed ejecutado correctamente");
-    return seedPersonasPacientes();
-  })
-  .then(() => {
-    console.log("Personas y pacientes seed ejecutado correctamente");
-    return seedSectoresHabitacionesCamas();
-  })
-  .then(() => {
-    console.log("Infraestructura seed ejecutado correctamente");
-    return seedTurnos();
-  })
-  .then(() => {
-    console.log("Turnos seed ejecutado correctamente");
+async function buildDatabase() {
+  try {
+    // 1. Sincronizar la base de datos (borra y crea las tablas)
+    await sequelize.sync({ force: true });
+    console.log("Tablas creadas exitosamente.");
+
+    // 2. Ejecutar los seeders en orden
+    await seedObraSocial();
+    console.log("Obras sociales sembradas correctamente.");
+
+    await seedMotivos();
+    console.log("Motivos sembrados correctamente.");
+
+    await seedPersonasPacientes();
+    console.log("Personas y pacientes sembrados correctamente.");
+
+    await seedSectoresHabitacionesCamas();
+    console.log("Infraestructura sembrada correctamente.");
+
+    await seedRolesUsuarios();
+    console.log("Roles y usuarios sembrados correctamente.");
+
+    await seedTurnos();
+    console.log("Turnos sembrados correctamente.");
+
+    console.log("\nProceso de sembrado completado exitosamente.");
     process.exit(0);
-  })
-  .catch((err) => {
-    console.error("Error al crear tablas o seed:", err);
+  } catch (err) {
+    console.error("Error durante el proceso de creación o sembrado:", err);
     process.exit(1);
-  });
+  }
+}
+
+// Ejecutar la función principal
+buildDatabase();
