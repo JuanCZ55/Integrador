@@ -249,19 +249,23 @@ async function crearME(req, res) {
   console.log(especialidad, typeof especialidad);
 
   // No hay errores por ahora
+  const t = await sequelize.transaction();
   try {
     let personaCreada = await Persona.findOne({
       where: { dni: persona.dni },
+      transaction: t,
     });
     if (!personaCreada) {
       // Si no se encontró la persona, se crea una nueva
-      personaCreada = await Persona.create(persona);
+      personaCreada = await Persona.create(persona, { transaction: t });
     }
 
     const empleadoExiste = await Empleado.findOne({
       where: { id_persona: personaCreada.id_persona },
+      transaction: t,
     });
     if (empleadoExiste) {
+      await t.rollback();
       return renderME(res, {
         persona,
         empleado,
@@ -271,35 +275,38 @@ async function crearME(req, res) {
         alertClass: "alert-danger",
       });
     }
-    const empleadoCreado = await Empleado.create({
-      id_persona: personaCreada.id_persona,
-      id_rol: empleado.id_rol,
-      fecha_ingreso: empleado.fecha_ingreso,
-    });
+    const empleadoCreado = await Empleado.create(
+      {
+        id_persona: personaCreada.id_persona,
+        id_rol: empleado.id_rol,
+        fecha_ingreso: empleado.fecha_ingreso,
+      },
+      { transaction: t }
+    );
     // Gestion de especialidades
     const idsEpec = await especialidadesME(especialidad);
-    let profesional = null;
-    if (id_rol == 3) {
-      profesional = await Medico.create({
+    const Modele = empleado.id_rol === 3 ? Medico : Enfermero;
+
+    const profesional = await Modele.create(
+      {
         id_empleado: empleadoCreado.id_empleado,
         nro_licencia: medico.nro_licencia,
-        estado: medico.estado,
-      });
-    } else if (id_rol == 4) {
-      profesional = await Enfermero.create({
-        id_empleado: empleadoCreado.id_empleado,
-        nro_licencia: medico.nro_licencia,
-        estado: medico.estado,
-      });
-    }
+        estado: estado,
+      },
+      { transaction: t }
+    );
+
     if (idsEpec && idsEpec.length > 0) {
-      await profesional.addEspecialidades(idsEpec);
+      await profesional.addEspecialidades(idsEpec, { transaction: t });
     }
+    await t.commit();
     return renderME(res, {
       mensajeAlert: "Médico/enfermero creado exitosamente",
       alertClass: "alert-success",
     });
   } catch (error) {
+    await t.rollback();
+
     console.error(error);
     return renderME(res, {
       persona,
