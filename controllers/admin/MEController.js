@@ -9,7 +9,6 @@ const {
   Usuario,
 } = require("../../models/init");
 const sequelize = require("../../models/db"); // transacciones
-const { Op } = require("sequelize");
 function validator(datos) {
   const errores = [];
   const camposObligatorios = {
@@ -97,7 +96,7 @@ function validator(datos) {
 
 async function renderME(
   res,
-  { datos = {}, mensajeAlert = [], alertClass = "alert-danger" }
+  { datos = {}, mensajeAlert = [], alertClass = "" }
 ) {
   const espec = await Especialidad.findAll({
     attributes: ["nombre"],
