@@ -211,9 +211,9 @@ async function getME(req, res) {
 async function postME(req, res) {
   const { accion } = req.body;
   if (accion === "crear") {
-    return crearME(req, res);
+    return await crearME(req, res);
   } else if (accion === "modificar") {
-    return modificarME(req, res);
+    return await modificarME(req, res);
   } else {
     return await renderME(res, {
       datos: {},
