@@ -76,11 +76,13 @@ function validator(datos) {
     );
   }
 
-  if (datos.id_rol != 3 && datos.id_rol != 4) {
+  if (datos.id_rol != 1 && datos.id_rol != 2) {
     errores.push("Rol inválido");
   }
   if (datos.estado != 1 && datos.estado != 2 && datos.estado != 3) {
-    errores.push("Estado inválido, debe ser 1 (Activo) - 2 (Inactivo) - ");
+    errores.push(
+      "Estado inválido, debe ser 1 (Activo) - 2 (Inactivo) - 3 (Suspendido)"
+    );
   }
   return errores;
 }
@@ -125,7 +127,7 @@ async function getAA(req, res) {
       mail: person.mail,
       fecha_ingreso: person.empleado.fecha_ingreso,
       id_rol: person.empleado.id_rol,
-      estado: person.estado,
+      estado: person.empleado.estado,
     };
     if (datos.id_rol == 3 || datos.id_rol == 4) {
       return await renderAdA(res, {
@@ -150,44 +152,24 @@ async function getAA(req, res) {
     });
   }
 }
+
 async function postAdA(req, res) {
   const datos = req.body;
-  const errores = validarDatos(datos);
-  try {
-    if (errores.length > 0) {
-      return await renderAdA(res, {
-        datos,
-        mensajeAlert: errores,
-        alertClass: "alert-danger",
-      });
-    }
-    if (datos.accion === "crear") {
-      return await crearAdA(req, res);
-    } else if (datos.accion === "modificar") {
-      return await modificarAdA(req, res);
-    } else {
-      return await renderAdA(res, {
-        datos: {},
-        mensajeAlert: ["Acción no válida"],
-        alertClass: "alert-danger",
-      });
-    }
-  } catch (error) {
-    console.error("Error al postear el empleado:", error);
+  const errores = validator(datos);
+
+  if (errores.length > 0) {
     return await renderAdA(res, {
-      datos: {},
-      mensajeAlert: ["Error al postear el empleado"],
+      datos,
+      mensajeAlert: errores,
       alertClass: "alert-danger",
     });
   }
-}
-async function crearAdA(req, res) {
-  const datos = req.body;
+
   const t = await sequelize.transaction();
   try {
-    const [persona, personaCreada] = await Persona.findOrCreate({
-      where: { dni: datos.dni },
-      defaults: {
+    // Upsert para Persona
+    const [persona, personBool] = await Persona.upsert(
+      {
         dni: datos.dni,
         nombre: datos.nombre,
         apellido: datos.apellido,
@@ -196,56 +178,42 @@ async function crearAdA(req, res) {
         telefono: datos.telefono,
         mail: datos.mail,
       },
-      transaction: t,
-    });
-    // Si la persona ya existe, no creamos una nueva, pero actualizamos sus datos
-    if (personaCreada) {
-      personaCreada.dni = datos.dni;
-      personaCreada.nombre = datos.nombre;
-      personaCreada.apellido = datos.apellido;
-      personaCreada.f_nacimiento = datos.f_nacimiento;
-      personaCreada.genero = datos.genero;
-      personaCreada.telefono = datos.telefono;
-      personaCreada.mail = datos.mail;
-      await persona.save();
-    }
-    const [empleado, empleadoCreado] = await Empleado.findOrCreate({
-      where: { id_persona: persona.id_persona },
-      defaults: {
+      { transaction: t, returning: true }
+    );
+
+    // Upsert para Empleado
+    const [empleado, empleBool] = await Empleado.upsert(
+      {
         id_persona: persona.id_persona,
         id_rol: datos.id_rol,
         fecha_ingreso: datos.fecha_ingreso,
-        estado: datos.estado ?? 1,
+        estado: datos.estado,
       },
-      transaction: t,
-    });
-
-    if (!empleadoCreado) {
-      await t.rollback();
-      return await renderAdA(res, {
-        datos,
-        mensajeAlert: ["Ya existe un empleado con ese DNI"],
-        alertClass: "alert-warning",
-      });
-    }
+      { transaction: t, returning: true }
+    );
 
     await t.commit();
+    const mensaje =
+      empleBool === true
+        ? "Empleado creado exitosamente"
+        : "Empleado actualizado exitosamente";
+    if (empleBool == true) {
+    }
     return await renderAdA(res, {
       datos: {},
-      mensajeAlert: ["Empleado creado exitosamente"],
+      mensajeAlert: [mensaje],
       alertClass: "alert-success",
     });
   } catch (error) {
     await t.rollback();
-    console.error("Error al crear persona/empleado:", error);
+    console.error("Error al guardar persona/empleado:", error);
     return await renderAdA(res, {
       datos,
-      mensajeAlert: ["Error al crear persona/empleado"],
+      mensajeAlert: ["Error al guardar persona/empleado"],
       alertClass: "alert-danger",
     });
   }
 }
-async function modificarAdA(req, res) {}
 
 module.exports = {
   getAA,

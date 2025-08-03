@@ -7,6 +7,7 @@ router.get("/inicio", (req, res) => {
 });
 //ruta para empleado de AA(Adminstacion-Admision)
 router.get("/empleado", empleadoController.getAA);
+router.post("/empleado", empleadoController.postAdA);
 
 //ruta para ME(Medico-Enfermero)
 router.get("/medico", MEController.getME);

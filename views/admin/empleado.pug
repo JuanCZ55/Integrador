@@ -51,8 +51,8 @@ block main
             .mb-3
               label.form-label(for="id_rol") Rol*
               select.form-select(id="id_rol", name="id_rol", required)
-                option(value="3" selected=(datos && datos.id_rol === 1) ? true : undefined) Administrador
-                option(value="4" selected=(datos && datos.id_rol === 2) ? true : undefined) Admisión
+                option(value="1" selected=(datos && datos.id_rol === 1) ? true : undefined) Administrador
+                option(value="2" selected=(datos && datos.id_rol === 2) ? true : undefined) Admisión
           .col-6
             .mb-3
               label.form-label(for="estado") Estado*
@@ -60,6 +60,5 @@ block main
                 option(value="1" selected=(datos && datos.estado==1)?true:undefined) Activo
                 option(value="2" selected=(datos && datos.estado==2)?true:undefined) Inactivo
                 option(value="3" selected=(datos && datos.estado==3)?true:undefined) Suspendido
+            button.btn.btn-primary(type="submit",name="accion",value="guardar",formmethod="POST") Guardar Empleado
           .d-flex.justify-content-between
-            button.btn.btn-primary(type="submit",name="accion",value="modificar",formmethod="POST") Modificar
-            button.btn.btn-primary(type="submit",name="accion",value="crear",formmethod="POST") Crear
