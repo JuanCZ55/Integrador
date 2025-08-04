@@ -5,24 +5,27 @@ block navbar
   +navbarAdmin()
 block main
   .container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box.mt-5
-    form.p-4.w-100(method="POST", action="/usuarios", novalidate)
+    form.p-4.w-100(method="GET", action="usuarios", novalidate)
       h2.text-center.mb-4 Iniciar Sesión
       if mensajeAlert
         +alert(mensajeAlert, alertClass)
       .mb-3  
-        label.form-label(for="dni") DNI*
+        label.form-label(for="dni") DNI
         .input-group
           input.form-control(type="number", id="dni", placeholder="48455713", value= dni || "", name="dni")
-          button.btn.btn-outline-info.text-light(type="button", id="btnBuscar") Buscar
+          button.btn.btn-outline-info.text-light(type="submit", id="btnBuscar") Buscar
       .mb-3
-        label.form-label(for="username") Usuario
-        input.form-control(type="text",id="username",name="username", placeholder="Ingrese su usuario")
+        label.form-label(for="username") Usuario 
+          small.text-muted.mx-2 3–20 letras o números ( . _ - )
+        input.form-control(type="text",id="username",name="username", placeholder="Ingrese su usuario",value=username || "")
 
       .mb-3
         label.form-label(for="password") Contraseña
-        input.form-control(type="password", id="password",name="password", placeholder="Ingrese su contraseña")
+          small.text-muted.mx-2 8+ caracteres, con letra, número y (- _ .)
 
-      .d-flex.justify-content-between.align-items-center.mt-4
-        button.btn.btn-primary(type="submit") Crear 
-        button.btn.btn-primary(type="submit") Modificar
+        input.form-control(type="password", id="password",name="password", placeholder="Ingrese su contraseña",value=password || "")
 
+      .d-flex.justify-content-between
+            button.btn.btn-primary(type="submit",name="accion",value="modificar",formmethod="POST") Modificar
+            button.btn.btn-primary(type="submit",name="accion",value="crear",formmethod="POST") Crear
+  +debug(locals)

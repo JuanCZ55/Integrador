@@ -1,6 +1,7 @@
 const express = require("express");
 const MEController = require("../controllers/admin/MEController");
 const empleadoController = require("../controllers/admin/empleadoController");
+const usuarioController = require("../controllers/admin/usuariosController");
 const router = express.Router();
 router.get("/inicio", (req, res) => {
   res.render("admin/inicio");
@@ -17,8 +18,6 @@ router.get("/horariosEmpleado", (req, res) => {
   res.render("admin/horariosEmpleado");
 });
 
-router.get("/usuarios", (req, res) => {
-  res.render("admin/usuarios");
-});
+router.get("/usuarios", usuarioController.getUser);
 
 module.exports = router;
