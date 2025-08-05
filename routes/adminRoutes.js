@@ -2,6 +2,7 @@ const express = require("express");
 const MEController = require("../controllers/admin/MEController");
 const empleadoController = require("../controllers/admin/empleadoController");
 const usuarioController = require("../controllers/admin/usuariosController");
+const cambioRolController = require("../controllers/admin/cambioRolController");
 const router = express.Router();
 router.get("/inicio", (req, res) => {
   res.render("admin/inicio");
@@ -18,6 +19,7 @@ router.get("/horariosEmpleado", (req, res) => {
   res.render("admin/horariosEmpleado");
 });
 
+router.get("/cambioRol", cambioRolController.getCR);
 router.get("/usuarios", usuarioController.getUser);
 
 module.exports = router;
