@@ -27,9 +27,10 @@ Enfermero.init(
       unique: true,
     },
     estado: {
-      type: DataTypes.BOOLEAN,
+      type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: true,
+      defaultValue: 1,
+      comment: "1:activo\r\n2:no activo\r\n3:suspendido\r\n",
     },
   },
   {

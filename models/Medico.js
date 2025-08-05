@@ -29,7 +29,7 @@ Medico.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 1,
-      comment: "1:activo\r\n2:suspendido\r\n3:no activo\r\n",
+      comment: "1:activo\r\n2:no activo\r\n3:suspendido\r\n",
     },
   },
   {
