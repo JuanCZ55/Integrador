@@ -1,0 +1,34 @@
+extends ../layout.pug
+include ../mixins.pug
+block scripts 
+
+block navbar
+  include ../mixinsNavbar.pug
+  +navbarAdmin()
+block main
+  .w-75.container
+    +alert(mensajeAlert, alertClass)
+    div.container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box
+      form.p-4(novalidate, action="/admin/cambioRol", method="GET" )
+        .mb-3.d-flex.align-items-center.gap-2
+          h2.mx-auto.mb-0 Cambio de Rol de Empleados
+        .mb-3
+          label.form-label(for="dni") DNI*
+          .input-group
+            input.form-control(type="number", id="dni", placeholder="48455713", value=(dni) || '', name="dni", required)
+            button.btn.btn-outline-secondary.text-light(type="submit", id="btnBuscar") Buscar
+        .mb-3   
+          label.form-label(for="nombre") Nombre Completo
+          input.form-control(type="text", id="nombre", name="nombre", readonly, value=(nombre) || '',placeholder="Anita Gonzalez")
+        .mb-3
+          label.form-label(for="rolActual") Rol Actual
+          input.form-control(type="text", id="rolActual", name="rolActual", readonly, value=(rolActual) || '',placeholder="Administrador")
+        .mb-3
+          label.form-label(for="nuevoRol") Nuevo Rol*
+          select.form-select(id="nuevoRol", name="nuevoRol", required)
+            option(value="0") Seleccione
+            option(value="1" selected=(nuevoRol === 1) ? true : undefined) Administrador
+            option(value="2" selected=(nuevoRol === 2) ? true : undefined) Admisión
+            option(value="3" selected=(nuevoRol === 3) ? true : undefined) Médico
+            option(value="4" selected=(nuevoRol === 4) ? true : undefined) Enfermero
+        button.btn.btn-primary(type="submit",name="accion",value="guardar",formmethod="POST") Guardar
