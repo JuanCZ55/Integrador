@@ -41,7 +41,6 @@ function renderCambioRol(
     alertClass,
   });
 }
-
 async function getCR(req, res) {
   const dni = req.query.dni;
   const errores = validator(dni, null, "GET");
@@ -104,7 +103,7 @@ async function postCR(req, res) {
         as: "empleado",
       },
     });
-    if (!person) {
+    if (!person || !person.empleado) {
       return renderCambioRol(res, {
         dni,
         nuevoRol,
@@ -123,17 +122,43 @@ async function postCR(req, res) {
         alertClass: "alert-warning",
       });
     }
-    if (rolito == 3 || rolito == 4) {
+    if ((rolito <= 2 && nuevoRol <= 2) || (rolito >= 3 && nuevoRol >= 3)) {
+      return renderCambioRol(res, {
+        dni,
+        nombre: `${person.nombre} ${person.apellido}`,
+        rolActual: rolito,
+        nuevoRol,
+        mensajeAlert: ["Cambio de rol no permitido dentro del mismo grupo"],
+        alertClass: "alert-danger",
+      });
+    }
+
+    const t = await sequelize.transaction();
+    if (rolito >= 3 && nuevoRol <= 2) {
+      // si es medico o enfermero y quiere ser admin o admision
       const profesional = rolito === 3 ? Medico : Enfermero;
       const existeProfesional = await profesional.findOne({
         where: { id_empleado: person.empleado.id_empleado },
       });
+
       if (existeProfesional) {
-        existeProfesional.estado = 2;
-        await existeProfesional.save();
+        existeProfesional.estado = 2; //da de baja su tabla profesional
+        await existeProfesional.save({ transaction: t });
       }
     }
-    const t = await sequelize.transaction();
+    person.empleado.id_rol = nuevoRol; //asigno su nuevo rol
+    await person.empleado.save({ transaction: t });
+
+    await t.commit();
+
+    return renderCambioRol(res, {
+      dni,
+      nombre: `${person.nombre} ${person.apellido}`,
+      rolActual: nuevoRol,
+      nuevoRol,
+      mensajeAlert: ["Rol cambiado con éxito"],
+      alertClass: "alert-success",
+    });
   } catch (error) {
     console.error("Error al cambiar el rol del empleado:", error);
     return renderCambioRol(res, {
