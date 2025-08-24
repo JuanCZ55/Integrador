@@ -44,15 +44,15 @@ function renderCambioRol(
 async function getCR(req, res) {
   const dni = req.query.dni;
   const errores = validator(dni, null, "GET");
+  if (dni === undefined) {
+    return renderCambioRol(res, {});
+  }
   if (errores.length > 0) {
     return renderCambioRol(res, {
       dni,
       mensajeAlert: errores,
       alertClass: "alert-danger",
     });
-  }
-  if (dni === undefined) {
-    return renderCambioRol(res, {});
   }
   try {
     const person = await Persona.findOne({
@@ -171,4 +171,5 @@ async function postCR(req, res) {
 }
 module.exports = {
   getCR,
+  postCR,
 };

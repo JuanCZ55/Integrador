@@ -20,6 +20,7 @@ router.get("/horariosEmpleado", (req, res) => {
 });
 
 router.get("/cambioRol", cambioRolController.getCR);
+router.post("/cambioRol", cambioRolController.postCR);
 router.get("/usuarios", usuarioController.getUser);
 
 module.exports = router;

@@ -12,6 +12,7 @@ block main
       form.p-4(novalidate, action="/admin/cambioRol", method="GET" )
         .mb-3.d-flex.align-items-center.gap-2
           h2.mx-auto.mb-0 Cambio de Rol de Empleados
+        small.text-white Permite cambio de rol administrativa (Administrador/Admision) a profesional (Medico/Enfermeria) y viceversa.
         .mb-3
           label.form-label(for="dni") DNI*
           .input-group
@@ -26,9 +27,39 @@ block main
         .mb-3
           label.form-label(for="nuevoRol") Nuevo Rol*
           select.form-select(id="nuevoRol", name="nuevoRol", required)
-            option(value="0") Seleccione
-            option(value="1" selected=(nuevoRol === 1) ? true : undefined) Administrador
-            option(value="2" selected=(nuevoRol === 2) ? true : undefined) Admisión
-            option(value="3" selected=(nuevoRol === 3) ? true : undefined) Médico
-            option(value="4" selected=(nuevoRol === 4) ? true : undefined) Enfermero
+            option(value="0") Primero busque por DNI
         button.btn.btn-primary(type="submit",name="accion",value="guardar",formmethod="POST") Guardar
+      script.
+        const actualRol = document.getElementById("rolActual").value;
+        const nuevoRol = document.getElementById("nuevoRol")
+        if(actualRol!=""&&actualRol){
+          nuevoRol.innerHTML = '';
+          nuevoRol.append(new Option("Seleccione el nuevo rol", "0"));
+        }
+        if (actualRol&& (actualRol==1||actualRol==2)) {
+          nuevoRol.append(new Option("Medico", "3"));
+          nuevoRol.append(new Option("Enfermero", "4"));
+        }else if (actualRol&&(actualRol == 3||actualRol == 4)) {
+          nuevoRol.append(new Option("Administrador", "1"));
+          nuevoRol.append(new Option("Admisión", "2"));
+        }
+        actualRol.innerHTML = '';
+        const actual= document.getElementById("rolActual");
+        switch (actualRol) {
+          case "1":
+            actual.value = "1-Administrador";
+            break;
+          case "2":
+            actual.value = "2-Admisión";
+            break;
+          case "3":
+            actual.value = "3-Médico";
+            break;
+          case "4":
+            actual.value = "4-Enfermería";
+            break;
+          default:
+            actual.value = "Rol no válido";
+        }
+
+
