@@ -27,6 +27,7 @@ Usuario.init(
     id_empleado: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      unique: true,
       references: {
         model: Empleado,
         key: "id_empleado",
