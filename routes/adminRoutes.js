@@ -18,9 +18,11 @@ router.post("/medico", MEController.postME);
 router.get("/horariosEmpleado", (req, res) => {
   res.render("admin/horariosEmpleado");
 });
+//comentario
 
 router.get("/cambioRol", cambioRolController.getCR);
 router.post("/cambioRol", cambioRolController.postCR);
 router.get("/usuarios", usuarioController.getUser);
+router.post("/usuarios", usuarioController.postUser);
 
 module.exports = router;
