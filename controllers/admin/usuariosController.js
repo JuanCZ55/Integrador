@@ -1,5 +1,7 @@
 const { Persona, Empleado, Usuario } = require("../../models/init");
 const sequelize = require("../../models/db"); // transacciones
+const bcrypt = require("bcrypt");
+
 function validator(dni, username, password) {
   const errores = [];
   if (!dni || dni.trim().length === 0) {
@@ -50,6 +52,13 @@ async function getUser(req, res) {
   if (dni === undefined) {
     return renderUser(res, {});
   }
+  if (!/^\d{7,8}$/.test(dni)) {
+    return renderUser(res, {
+      dni,
+      mensajeAlert: ["El DNI debe contener entre 7 y 8 dígitos."],
+      alertClass: "alert-warning",
+    });
+  }
   try {
     const usuario = await Persona.findOne({
       where: { dni },
@@ -59,10 +68,12 @@ async function getUser(req, res) {
         include: { model: Usuario, as: "usuario" },
       },
     });
-    if (!usuario) {
+    if (!usuario || !usuario.empleado) {
       return renderUser(res, {
         dni,
-        mensajeAlert: ["No se encontró el usuario con el DNI proporcionado."],
+        mensajeAlert: [
+          "Primero cree al empleado/profesional. Luego podra crear al usuario",
+        ],
         alertClass: "alert-warning",
       });
     }
@@ -78,6 +89,56 @@ async function getUser(req, res) {
     });
   }
 }
+async function postUser(req, res) {
+  const { dni, username, password } = req.body;
+  const errores = validator(dni, username, password);
+  if (errores.length > 0) {
+    return renderUser(res, {
+      dni,
+      username,
+      mensajeAlert: errores,
+      alertClass: "alert-danger",
+    });
+  }
+  try {
+    const empleado = await Persona.findOne({
+      where: { dni },
+      include: { model: Empleado, as: "empleado" },
+    });
+    const id = empleado.empleado.id_empleado;
+    const rol = empleado.empleado.id_rol;
+    if (!empleado || !id) {
+      return renderUser(res, {
+        dni,
+        mensajeAlert: [
+          "Primero cree al empleado/profesional. Luego podra crear al usuario",
+        ],
+        alertClass: "alert-warning",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const usuario = await Usuario.upsert({
+      id_empleado: id,
+      id_rol: rol,
+      usuario: username,
+      password: hashedPassword,
+      estado: true,
+    });
+
+    return renderUser(res, {
+      mensajeAlert: ["Usuario creado exitosamente."],
+      alertClass: "alert-success",
+    });
+  } catch (error) {
+    console.error("error en postUser", error);
+    return renderUser(res, {
+      mensajeAlert: ["Error al crear el usuario."],
+      alertClass: "alert-danger",
+    });
+  }
+}
 module.exports = {
   getUser,
+  postUser,
 };
