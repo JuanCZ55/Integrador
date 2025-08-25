@@ -7,6 +7,7 @@ block main
   .container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box.mt-5
     form.p-4.w-100(method="GET", action="usuarios", novalidate)
       h2.text-center.mb-4 Iniciar Sesión
+      small.text-white Primero busque por dni para verificar si se puede crear el usuario
       if mensajeAlert
         +alert(mensajeAlert, alertClass)
       .mb-3  
@@ -24,8 +25,7 @@ block main
           small.text-muted.mx-2 8+ caracteres, con letra, número y (- _ .)
 
         input.form-control(type="password", id="password",name="password", placeholder="Ingrese su contraseña",value=password || "")
-
-      .d-flex.justify-content-between
-            button.btn.btn-primary(type="submit",name="accion",value="modificar",formmethod="POST") Modificar
-            button.btn.btn-primary(type="submit",name="accion",value="crear",formmethod="POST") Crear
+        br
+        button.btn.btn-primary(type="submit",name="accion",value="modificar",formmethod="POST") Guardar
+            
   +debug(locals)
