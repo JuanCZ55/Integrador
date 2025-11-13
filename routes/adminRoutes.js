@@ -3,6 +3,7 @@ const MEController = require("../controllers/admin/MEController");
 const empleadoController = require("../controllers/admin/empleadoController");
 const usuarioController = require("../controllers/admin/usuariosController");
 const cambioRolController = require("../controllers/admin/cambioRolController");
+const horarioController = require("../controllers/admin/horariosController");
 const router = express.Router();
 router.get("/inicio", (req, res) => {
   res.render("admin/inicio");
@@ -15,9 +16,9 @@ router.post("/empleado", empleadoController.postAdA);
 router.get("/medico", MEController.getME);
 router.post("/medico", MEController.postME);
 
-router.get("/horariosEmpleado", (req, res) => {
-  res.render("admin/horariosEmpleado");
-});
+router.get("/horarios", horarioController.getHorarios);
+router.post("/horarios", horarioController.postHorarios);
+
 //comentario
 
 router.get("/cambioRol", cambioRolController.getCR);
