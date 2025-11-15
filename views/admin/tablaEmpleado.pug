@@ -1,0 +1,37 @@
+extends ../layout.pug
+include ../mixins.pug
+
+block scripts
+
+block navbar
+	include ../mixinsNavbar.pug
+	+navbarAdmin()
+
+block main
+	.w-75.container
+		if mensajeAlert
+			+alert(mensajeAlert, alertClass)
+		h2.text-center.mt-4 Lista de Empleados
+		.form-group.text-end.mb-3
+			form(action="/admin/empleado" method="get" style="display:inline;")
+				button.btn.btn-success(type="submit")
+					i.fas.fa-plus.me-1
+					| Agregar
+		table.table.table-striped.table-bordered.mt-4
+			thead
+				tr
+					th DNI
+					th Nombre
+					th Apellido
+					th Cargo
+			tbody
+				if empleados.length === 0
+					tr
+						td(colspan="4") No hay empleados registrados
+				else
+					each empleado in empleados
+						tr
+							td= empleado.dni
+							td= empleado.nombre
+							td= empleado.apellido
+							td= empleado.cargo

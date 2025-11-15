@@ -215,7 +215,47 @@ async function postAdA(req, res) {
   }
 }
 
+async function tablaEmpleado(req, res) {
+  try {
+    // Traer todos los empleados con sus datos de persona y rol
+    const empleados = await Empleado.findAll({
+      include: [
+        {
+          model: Persona,
+          as: "persona",
+          attributes: ["dni", "nombre", "apellido"],
+        },
+        {
+          model: Rol,
+          as: "rol",
+          attributes: ["nombre"],
+        },
+      ],
+    });
+
+    // Mapear los datos para la vista
+    const empleadosData = empleados.map((e) => ({
+      dni: e.persona?.dni || "",
+      nombre: e.persona?.nombre || "",
+      apellido: e.persona?.apellido || "",
+      cargo: e.rol?.nombre || "",
+    }));
+
+    return res.render("admin/tablaEmpleado", {
+      empleados: empleadosData,
+    });
+  } catch (error) {
+    console.error("Error al obtener empleados:", error);
+    return res.render("admin/tablaEmpleado", {
+      empleados: [],
+      mensajeAlert: ["Error al obtener empleados"],
+      alertClass: "alert-danger",
+    });
+  }
+}
+
 module.exports = {
   getAA,
   postAdA,
+  tablaEmpleado,
 };
