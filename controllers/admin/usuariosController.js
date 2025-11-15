@@ -1,4 +1,4 @@
-const { Persona, Empleado, Usuario } = require("../../models/init");
+const { Persona, Empleado, Usuario, Rol } = require("../../models/init");
 const sequelize = require("../../models/db"); // transacciones
 const bcrypt = require("bcrypt");
 
@@ -138,7 +138,38 @@ async function postUser(req, res) {
     });
   }
 }
+async function tablaUsuario(req, res) {
+  try {
+    // Buscar todos los usuarios con su rol
+    const usuarios = await Usuario.findAll({
+      include: [
+        {
+          model: Rol,
+          as: "rol",
+          attributes: ["nombre"],
+        },
+      ],
+      attributes: ["usuario", "estado"],
+    });
+    const usuariosData = usuarios.map((u) => ({
+      username: u.usuario,
+      rol: u.rol?.nombre || "",
+      estado: u.estado ? "Activo" : "Inactivo",
+    }));
+    return res.render("admin/tablaUsuario", {
+      usuarios: usuariosData,
+    });
+  } catch (error) {
+    console.error("Error al obtener usuarios:", error);
+    return res.render("admin/tablaUsuario", {
+      usuarios: [],
+      mensajeAlert: ["Error al obtener usuarios"],
+      alertClass: "alert-danger",
+    });
+  }
+}
 module.exports = {
   getUser,
   postUser,
+  tablaUsuario,
 };
