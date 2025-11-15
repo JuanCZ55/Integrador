@@ -166,6 +166,10 @@ Empleado.belongsTo(Rol, {
   onUpdate: "CASCADE",
 });
 
+// Relaciones Enfermero
+Enfermero.belongsTo(Empleado, { foreignKey: "id_empleado", as: "empleado" });
+Empleado.hasOne(Enfermero, { foreignKey: "id_empleado", as: "enfermero" });
+
 // Relaciones Enfermero-Especialidad (muchos a muchos)
 Enfermero.belongsToMany(Especialidad, {
   through: EnfermeroEspecialidad,

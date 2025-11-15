@@ -414,4 +414,88 @@ async function especialidadesME(especialidad) {
   }
   return [];
 }
-module.exports = { getME, crearME, modificarME, postME };
+async function tablaProfesional(req, res) {
+  try {
+    // Buscar médicos y enfermeros con sus datos de persona y especialidad
+    const medicos = await Medico.findAll({
+      include: [
+        {
+          model: Empleado,
+          as: "empleado",
+          include: [
+            {
+              model: Persona,
+              as: "persona",
+              attributes: ["dni", "nombre", "apellido"],
+            },
+          ],
+        },
+        {
+          model: Especialidad,
+          as: "especialidades",
+          attributes: ["nombre"],
+          through: { attributes: [] },
+        },
+      ],
+    });
+    const enfermeros = await Enfermero.findAll({
+      include: [
+        {
+          model: Empleado,
+          as: "empleado",
+          include: [
+            {
+              model: Persona,
+              as: "persona",
+              attributes: ["dni", "nombre", "apellido"],
+            },
+          ],
+        },
+        {
+          model: Especialidad,
+          as: "especialidades",
+          attributes: ["nombre"],
+          through: { attributes: [] },
+        },
+      ],
+    });
+
+    // Unificar y mapear datos
+    const profesionales = [
+      ...medicos.map((m) => ({
+        dni: m.empleado?.persona?.dni || "",
+        nombre: m.empleado?.persona?.nombre || "",
+        apellido: m.empleado?.persona?.apellido || "",
+        tipo: "Médico",
+        especialidad:
+          m.especialidades && m.especialidades.length > 0
+            ? m.especialidades.map((es) => es.nombre).join(", ")
+            : "",
+        matricula: m.matricula || "",
+      })),
+      ...enfermeros.map((e) => ({
+        dni: e.empleado?.persona?.dni || "",
+        nombre: e.empleado?.persona?.nombre || "",
+        apellido: e.empleado?.persona?.apellido || "",
+        tipo: "Enfermero",
+        especialidad:
+          e.especialidades && e.especialidades.length > 0
+            ? e.especialidades.map((es) => es.nombre).join(", ")
+            : "",
+        matricula: e.matricula || "",
+      })),
+    ];
+
+    return res.render("admin/tablaProfesional", {
+      profesionales,
+    });
+  } catch (error) {
+    console.error("Error al obtener profesionales:", error);
+    return res.render("admin/tablaProfesional", {
+      profesionales: [],
+      mensajeAlert: ["Error al obtener profesionales"],
+      alertClass: "alert-danger",
+    });
+  }
+}
+module.exports = { getME, crearME, modificarME, postME, tablaProfesional };

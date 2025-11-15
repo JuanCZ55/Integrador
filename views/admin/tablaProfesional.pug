@@ -1,0 +1,40 @@
+extends ../layout.pug
+include ../mixins.pug
+
+block scripts
+
+block navbar
+	include ../mixinsNavbar.pug
+	+navbarAdmin()
+
+block main
+	.w-75.container
+		if mensajeAlert
+			+alert(mensajeAlert, alertClass)
+		h2.text-center.mt-4 Lista de Médicos y Enfermeros
+		.form-group.text-end.mb-3
+			form(action="/admin/profesional" method="get" style="display:inline;")
+				button.btn.btn-success(type="submit")
+					i.fas.fa-plus.me-1
+					| Agregar
+		table.table.table-striped.table-bordered.mt-4
+			thead
+        
+				tr
+					th DNI
+					th Nombre
+					th Apellido
+					th Tipo
+					th Especialidad
+			tbody
+				if profesionales.length === 0
+					tr
+						td(colspan="5") No hay profesionales registrados
+				else
+					each profesional in profesionales
+						tr
+							td= profesional.dni
+							td= profesional.nombre
+							td= profesional.apellido
+							td= profesional.tipo
+							td= profesional.especialidad
