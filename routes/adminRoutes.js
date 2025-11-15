@@ -11,10 +11,12 @@ router.get("/inicio", (req, res) => {
 //ruta para empleado de AA(Adminstacion-Admision)
 router.get("/empleado", empleadoController.getAA);
 router.post("/empleado", empleadoController.postAdA);
+router.get("/empleado/tabla", empleadoController.tablaEmpleado);
 
 //ruta para ME(Medico-Enfermero)
 router.get("/profesional", MEController.getME);
 router.post("/profesional", MEController.postME);
+router.get("/profesional/tabla", MEController.tablaProfesional);
 
 router.get("/horarios", horarioController.getHorarios);
 router.post("/horarios", horarioController.postHorarios);
@@ -23,7 +25,9 @@ router.post("/horarios", horarioController.postHorarios);
 
 router.get("/cambioRol", cambioRolController.getCR);
 router.post("/cambioRol", cambioRolController.postCR);
+
 router.get("/usuarios", usuarioController.getUser);
 router.post("/usuarios", usuarioController.postUser);
+router.get("/usuarios/tabla", usuarioController.tablaUsuario);
 
 module.exports = router;
