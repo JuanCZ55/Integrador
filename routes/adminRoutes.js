@@ -13,8 +13,8 @@ router.get("/empleado", empleadoController.getAA);
 router.post("/empleado", empleadoController.postAdA);
 
 //ruta para ME(Medico-Enfermero)
-router.get("/medico", MEController.getME);
-router.post("/medico", MEController.postME);
+router.get("/profesional", MEController.getME);
+router.post("/profesional", MEController.postME);
 
 router.get("/horarios", horarioController.getHorarios);
 router.post("/horarios", horarioController.postHorarios);
