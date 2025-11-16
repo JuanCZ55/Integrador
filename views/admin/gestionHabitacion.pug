@@ -1,0 +1,38 @@
+extends ../layout.pug
+include ../mixins.pug
+
+block scripts
+
+block navbar
+	include ../mixinsNavbar.pug
+	+navbarAdmin()
+
+block main
+	.container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box.mt-5
+		form.p-4.w-100(method="GET", action="/admin/habitacion", novalidate)
+			h2.text-center.mb-4 Gestión de Habitación
+			if mensajeAlert
+				+alert(mensajeAlert, alertClass)
+			.mb-3
+				label.form-label(for="id_habitacion") ID Habitación*
+				.input-group
+					input.form-control(type="number", id="id_habitacion", placeholder="Ingrese ID de habitación", value=id_habitacion || '', name="id_habitacion")
+					button.btn.btn-outline-secondary.text-light(type="submit", id="btnBuscar") Buscar
+			.mb-3
+				label.form-label(for="id_sector") ID Sector
+				input.form-control(type="number", id="id_sector" name="id_sector" value=id_sector required)
+			.mb-3
+				label.form-label(for="numero") Número
+				input.form-control(type="number", id="numero" name="numero" value=numero required)
+			.mb-3
+				label.form-label(for="capacidad") Capacidad
+				input.form-control(type="number", id="capacidad" name="capacidad" value=capacidad required)
+			.mb-3
+				label.form-label(for="genero") Género
+				select.form-control(id="genero" name="genero")
+					option(value="" selected= !genero) Seleccionar
+					option(value="Masculino" selected= genero === "Masculino") Masculino
+					option(value="Femenino" selected= genero === "Femenino") Femenino
+					option(value="Otro" selected= genero === "Otro") Otro
+			.mb-3
+				button.btn.btn-primary(type="submit", name="accion", value="guardar", formmethod="POST") Guardar

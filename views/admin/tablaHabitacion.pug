@@ -1,0 +1,50 @@
+extends ../layout.pug
+include ../mixins.pug
+
+block scripts
+	script.
+		function confirmDelete(id) {
+			if (confirm('¿Estás seguro de eliminar la habitación con ID ' + id + '?')) {
+				document.getElementById('deleteForm-' + id).submit();
+			}
+		}
+
+block navbar
+	include ../mixinsNavbar.pug
+	+navbarAdmin()
+
+block main
+	.w-75.container
+		if mensajeAlert
+			+alert(mensajeAlert, alertClass)
+		h2.text-center.mt-4 Lista de Habitaciones
+		.form-group.text-end.mb-3
+			form(action="/admin/habitacion" method="get" style="display:inline;")
+				button.btn.btn-success(type="submit")
+					i.fas.fa-plus.me-1
+					| Agregar
+		table.table.table-striped.table-bordered.mt-4
+			thead
+				tr
+					th ID
+					th Sector
+					th Número
+					th Capacidad
+					th Acciones
+			tbody
+				if habitaciones.length === 0
+					tr
+						td(colspan="5") No hay habitaciones registradas
+				else
+					each habitacion in habitaciones
+						tr
+							td= habitacion.id_habitacion
+							td= habitacion.sector
+							td= habitacion.numero
+							td= habitacion.capacidad
+							td
+								a.btn.btn-primary.btn-sm(href=`/admin/habitacion?id_habitacion=${habitacion.id_habitacion}`) Editar
+								a.btn.btn-success.btn-sm(href=`/admin/cama?id_habitacion=${habitacion.id_habitacion}`) Agregar Cama
+								form(id=`deleteForm-${habitacion.id_habitacion}` action="/admin/habitacion/delete" method="post" style="display:inline;")
+									input(type="hidden" name="id_habitacion" value=habitacion.id_habitacion)
+								button.btn.btn-danger.btn-sm(type="button" onclick=`confirmDelete(${habitacion.id_habitacion})`) Eliminar
