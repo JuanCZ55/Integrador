@@ -1,0 +1,22 @@
+extends ../layout.pug
+include ../mixins.pug
+
+block scripts
+
+block navbar
+	include ../mixinsNavbar.pug
+	+navbarAdmin()
+
+block main
+	.container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box.mt-5
+		form.p-4.w-100(method="GET", action="/admin/sector", novalidate)
+			h2.text-center.mb-4 Gestión de Sector
+			if mensajeAlert
+				+alert(mensajeAlert, alertClass)
+			.mb-3
+				label.form-label(for="nombre") Nombre del Sector*
+				.input-group
+					input.form-control(type="text", id="nombre", placeholder="Ingrese nombre del sector", value=nombre || '', name="nombre")
+					button.btn.btn-outline-secondary.text-light(type="submit", id="btnBuscar") Buscar
+			.mb-3
+				button.btn.btn-primary(type="submit", name="accion", value="guardar", formmethod="POST") Guardar
