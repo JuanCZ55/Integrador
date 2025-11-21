@@ -1,11 +1,11 @@
 const { Model, DataTypes } = require("sequelize");
 const sequelize = require("./db");
 
-class EvaluacionMedica extends Model {}
+class DiagnosticosEpisodio extends Model {}
 
-EvaluacionMedica.init(
+DiagnosticosEpisodio.init(
   {
-    id_evaluacion: {
+    id_diag_episodio: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
@@ -14,23 +14,27 @@ EvaluacionMedica.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    fecha_eval: {
-      type: DataTypes.DATE,
+    id_medico: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     diagnostico: {
       type: DataTypes.TEXT,
     },
-    indicaciones: {
-      type: DataTypes.TEXT,
+    tipo: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    fecha_hora: {
+      type: DataTypes.DATE,
     },
   },
   {
     sequelize,
-    modelName: "EvaluacionMedica",
-    tableName: "evaluacion_medica",
+    modelName: "DiagnosticosEpisodio",
+    tableName: "diagnosticos_episodio",
     timestamps: false,
   }
 );
 
-module.exports = EvaluacionMedica;
+module.exports = DiagnosticosEpisodio;

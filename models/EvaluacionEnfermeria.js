@@ -10,7 +10,7 @@ EvaluacionEnfermeria.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    id_historial: {
+    id_admision: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
