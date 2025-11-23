@@ -42,6 +42,10 @@ const authenticateUser = async (req, res, next) => {
     // guardo en sesion
     req.session.userId = user.id_usuario;
     req.session.id_rol = user.id_rol;
+    req.session.nombreCompleto =
+      user.empleado.persona.nombre + " " + user.empleado.persona.apellido;
+    req.session.dni = user.empleado.persona.dni;
+    req.session.usuario = user.usuario;
 
     next();
   } catch (err) {
