@@ -37,8 +37,7 @@ mixin navbarAdmision()
           a.dropdown-item(href="/admision/listaTurnos") Ver Turnos
         li
           a.dropdown-item(href="/admision/turno") Gestion Turno
-    li.nav-item
-      a.nav-link.text-primary-emphasis(href="/logout") Salir
+    +usuarioDropdown()
 
 mixin navbarAdmin()
   ul.nav.nav-underline.fs-4.ms-auto
@@ -66,5 +65,18 @@ mixin navbarAdmin()
           a.dropdown-item(href="/admin/cama/tabla") Camas
     li.nav-item
       a.nav-link.text-primary-emphasis(href="/admin/horarios") Horarios
-    li.nav-item
-      a.nav-link.text-primary-emphasis(href="/logout") Salir
+    +usuarioDropdown()
+
+mixin usuarioDropdown()
+  li.nav-item.dropdown
+    a.nav-link.dropdown-toggle.d-flex.align-items-center(href="#", role="button", data-bs-toggle="dropdown")
+      .bg-primary.text-white.rounded-circle.d-flex.align-items-center.justify-content-center(style="width: 40px; height: 40px; font-size: 18px; font-weight: bold;")
+        = user.nombreCompleto.charAt(0).toUpperCase()
+      span.ms-2= user.nombreCompleto
+    ul.dropdown-menu.dropdown-menu-end
+      li
+        a.dropdown-item(href="/perfil") Perfil
+      li
+        hr.dropdown-divider
+      li
+        a.dropdown-item(href="/logout") Cerrar Sesión

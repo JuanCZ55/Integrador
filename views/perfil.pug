@@ -1,0 +1,54 @@
+extends layout.pug
+include mixins.pug
+block navbar
+  include mixinsNavbar.pug
+  if user.id_rol == 1
+    +navbarAdmin()
+  else if user.id_rol == 2
+    +navbarAdmision()
+  else
+    // Agregar otros navbars si es necesario
+block main
+  +alert(mensajeAlert, alertClass)
+  .w-75.container
+    div.container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box
+      .p-4
+        .mb-3.d-flex.align-items-center.gap-2
+          h2.mx-auto.mb-0 Perfil de Usuario
+        .row
+          .col-md-6
+            .card.bg-transparent
+              .card-header.bg-transparent
+                h5 Datos del Usuario
+              .card-body.bg-transparent
+                form(method="POST", action="/perfil/cambiarUsuario")
+                  .mb-3
+                    label.form-label Usuario
+                    input.form-control(type="text", name="newUsuario", value=user.usuario, required)
+                  button.btn.btn-primary(type="submit") Cambiar Usuario
+                .mb-3
+                  label.form-label Nombre Completo
+                  input.form-control(type="text", value=user.nombreCompleto, readonly)
+                .mb-3
+                  label.form-label DNI
+                  input.form-control(type="text", value=user.dni, readonly)
+                .mb-3
+                  label.form-label Rol
+                  - var roles = {1: 'Administrador', 2: 'Admision', 3: 'Medico', 4: 'Enfermeria'}
+                  input.form-control(type="text", value=roles[user.id_rol], readonly)
+          .col-md-6
+            .card.bg-transparent
+              .card-header.bg-transparent
+                h5 Cambiar Contraseña
+              .card-body.bg-transparent
+                form(method="POST", action="/perfil/cambiarPassword")
+                  .mb-3
+                    label.form-label(for="currentPassword") Contraseña Actual *
+                    input.form-control(type="password", name="currentPassword", id="currentPassword", required)
+                  .mb-3
+                    label.form-label(for="newPassword") Nueva Contraseña *
+                    input.form-control(type="password", name="newPassword", id="newPassword", required)
+                  .mb-3
+                    label.form-label(for="confirmPassword") Confirmar Nueva Contraseña *
+                    input.form-control(type="password", name="confirmPassword", id="confirmPassword", required)
+                  button.btn.btn-primary(type="submit") Cambiar Contraseña

@@ -15,6 +15,7 @@ const enfermeria = require("./routes/enfermeriaRoutes");
 const medico = require("./routes/medicoRoutes");
 const administrador = require("./routes/adminRoutes");
 const login = require("./routes/loginRoutes");
+const perfil = require("./routes/perfilRoutes");
 
 const app = express();
 const tiempo = 12 * 60 * 60 * 1000; // 12 horas
@@ -61,6 +62,7 @@ app.use("/admision", requireAuth, requireRoleId(2), admision);
 app.use("/enfermeria", requireAuth, requireRoleId(4), enfermeria);
 app.use("/medico", requireAuth, requireRoleId(3), medico);
 app.use("/admin", requireAuth, requireRoleId(1), administrador);
+app.use("/perfil", perfil);
 
 // 404
 app.use((req, res) => res.status(404).render("notfound"));
