@@ -58,30 +58,18 @@ const authenticateUser = async (req, res, next) => {
 };
 
 // Middleware para exponer usuario actual
-const getCurrentUser = async (req, res, next) => {
+const getCurrentUser = (req, res, next) => {
   if (req.session.userId) {
-    try {
-      const user = await Usuario.findByPk(req.session.userId, {
-        attributes: ["id_usuario", "usuario"],
-        include: [
-          "rol",
-          {
-            association: "empleado",
-            attributes: { exclude: ["createdAt", "updatedAt"] },
-            include: [
-              {
-                association: "persona",
-                attributes: { exclude: ["createdAt", "updatedAt"] },
-              },
-            ],
-          },
-        ],
-      });
-      req.user = user;
-      res.locals.user = user;
-    } catch (error) {
-      console.error("Error obteniendo usuario actual:", error);
-    }
+    // Construir el objeto user directamente desde los datos de la sesión
+    const user = {
+      id_usuario: req.session.userId,
+      id_rol: req.session.id_rol,
+      usuario: req.session.usuario,
+      nombreCompleto: req.session.nombreCompleto,
+      dni: req.session.dni,
+    };
+    req.user = user;
+    res.locals.user = user;
   }
   next();
 };
