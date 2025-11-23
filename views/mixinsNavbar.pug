@@ -44,12 +44,17 @@ mixin navbarAdmin()
   ul.nav.nav-underline.fs-4.ms-auto
     li.nav-item
       a.nav-link.text-primary-emphasis(href="/admin/inicio") Inicio
-    li.nav-item
-      a.nav-link.text-primary-emphasis(href="/admin/usuarios/tabla") Usuarios
-    li.nav-item
-      a.nav-link.text-primary-emphasis(href="/admin/empleado/tabla") Empleados
-    li.nav-item
-      a.nav-link.text-primary-emphasis(href="/admin/profesional/tabla") Profesional 
+    li.nav-item.dropdown
+      a.nav-link.dropdown-toggle.text-primary-emphasis(href="#", role="button", data-bs-toggle="dropdown") Gestión de Personal
+      ul.dropdown-menu
+        li
+          a.dropdown-item(href="/admin/usuarios/tabla") Usuarios
+        li
+          a.dropdown-item(href="/admin/empleado/tabla") Empleados
+        li
+          a.dropdown-item(href="/admin/profesional/tabla") Profesionales
+        li
+          a.dropdown-item(href="/admin/cambioRol") Cambio de Rol 
     li.nav-item.dropdown
       a.nav-link.dropdown-toggle.text-primary-emphasis(href="#", role="button", data-bs-toggle="dropdown") Infraestructura
       ul.dropdown-menu
@@ -61,7 +66,5 @@ mixin navbarAdmin()
           a.dropdown-item(href="/admin/cama/tabla") Camas
     li.nav-item
       a.nav-link.text-primary-emphasis(href="/admin/horarios") Horarios
-    li.nav-item
-      a.nav-link.text-primary-emphasis(href="/admin/cambioRol") Cambio de Rol
     li.nav-item
       a.nav-link.text-primary-emphasis(href="/logout") Salir
