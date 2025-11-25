@@ -243,7 +243,12 @@ async function pCrearPaciente(req, res) {
     );
 
     await t.commit();
-    return res.redirect("/admision/check?etapa=crear&navbar=gestionPaciente");
+    return renderForm(res, {
+      mensajeAlert: ["Paciente creado exitosamente"],
+      alertClass: "alert-success",
+      paciente: {},
+      modificar: false,
+    });
   } catch (e) {
     await t.rollback();
 
