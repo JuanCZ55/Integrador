@@ -27,6 +27,14 @@ Admision.init(
         key: "id_motivo",
       },
     },
+    id_medico: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: "medicos",
+        key: "id_medico",
+      },
+    },
     derivado: {
       type: DataTypes.STRING(255),
       allowNull: true,

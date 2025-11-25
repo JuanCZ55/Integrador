@@ -9,6 +9,8 @@ const {
   Cama,
   Sector,
   Habitacion,
+  Medico,
+  Empleado,
 } = require("../models/init");
 const sequelize = require("../models/db");
 const { Op } = require("sequelize");
@@ -113,6 +115,7 @@ async function admision(req, res) {
       id_admision: "",
       id_paciente: "",
       id_motivo: "",
+      id_medico: "",
       derivado: "",
       fecha_ingreso: "",
       fecha_egreso: "",
@@ -167,6 +170,24 @@ async function admision(req, res) {
             id_paciente: persona.paciente.id_paciente,
             estado: "1",
           },
+          include: [
+            {
+              model: Medico,
+              as: "medico",
+              include: [
+                {
+                  model: Empleado,
+                  as: "empleado",
+                  include: [
+                    {
+                      model: Persona,
+                      as: "persona",
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
         });
         const obraS = await ObraSocial.findOne({
           where: {
@@ -278,6 +299,7 @@ async function pAdmision(req, res) {
       id_admision: "",
       id_paciente: "",
       id_motivo: "",
+      id_medico: "",
       derivado: "",
       fecha_ingreso: "",
       fecha_egreso: "",
@@ -333,7 +355,13 @@ async function pAdmision(req, res) {
       return res.render("admision/gestionarAdmision", {
         mensajeAlert: "Paciente no existe",
         alertClass: "alert-danger",
-        admision: { id_admision, id_paciente, id_motivo, derivado },
+        admision: {
+          id_admision,
+          id_paciente,
+          id_motivo,
+          id_medico: "",
+          derivado,
+        },
         motivos: motivosArray,
         sectores: secArray,
         camaSeleccionada: {},
@@ -370,6 +398,7 @@ async function pAdmision(req, res) {
           id_admision,
           id_paciente,
           id_motivo,
+          id_medico: "",
           derivado,
         },
         sectores: secArray,
@@ -386,7 +415,13 @@ async function pAdmision(req, res) {
         return res.render("admision/gestionarAdmision", {
           mensajeAlert: "La cama seleccionada no existe",
           alertClass: "alert-danger",
-          admision: { id_admision, id_paciente, id_motivo, derivado },
+          admision: {
+            id_admision,
+            id_paciente,
+            id_motivo,
+            id_medico: "",
+            derivado,
+          },
           motivos: motivosArray,
           sectores: secArray,
           camaSeleccionada,
@@ -401,7 +436,13 @@ async function pAdmision(req, res) {
       return res.render("admision/gestionarAdmision", {
         mensajeAlert: "Ingrese un motivo de admision valido",
         alertClass: "alert-danger",
-        admision: { id_admision, id_paciente, id_motivo, derivado },
+        admision: {
+          id_admision,
+          id_paciente,
+          id_motivo,
+          id_medico: "",
+          derivado,
+        },
         motivos: motivosArray,
         sectores: secArray,
         camaSeleccionada,
@@ -413,7 +454,13 @@ async function pAdmision(req, res) {
       return res.render("admision/gestionarAdmision", {
         mensajeAlert: "No hay turno para hoy",
         alertClass: "alert-danger",
-        admision: { id_admision, id_paciente, id_motivo, derivado },
+        admision: {
+          id_admision,
+          id_paciente,
+          id_motivo,
+          id_medico: "",
+          derivado,
+        },
         motivos: motivosArray,
         sectores: secArray,
         camaSeleccionada,
@@ -425,7 +472,13 @@ async function pAdmision(req, res) {
       return res.render("admision/gestionarAdmision", {
         mensajeAlert: "Indique derivado",
         alertClass: "alert-danger",
-        admision: { id_admision, id_paciente, id_motivo, derivado },
+        admision: {
+          id_admision,
+          id_paciente,
+          id_motivo,
+          id_medico: "",
+          derivado,
+        },
         motivos: motivosArray,
         sectores: secArray,
         camaSeleccionada,
@@ -472,6 +525,11 @@ async function pAdmision(req, res) {
         },
         { transaction: t }
       );
+    }
+
+    if (motivo.nombre === "Turno" && turno) {
+      admision.id_medico = turno.id_medico;
+      await admision.save({ transaction: t });
     }
 
     if (id_cama) {
@@ -534,6 +592,22 @@ async function listaAdmisiones(req, res) {
           model: Motivos,
           as: "motivo",
         },
+        {
+          model: Medico,
+          as: "medico",
+          include: [
+            {
+              model: Empleado,
+              as: "empleado",
+              include: [
+                {
+                  model: Persona,
+                  as: "persona",
+                },
+              ],
+            },
+          ],
+        },
       ],
       order: [["fecha_ingreso", "DESC"]],
     });
@@ -549,6 +623,13 @@ async function listaAdmisiones(req, res) {
             }
           : null,
       motivo: adm.motivo ? { nombre: adm.motivo.nombre } : null,
+      medico:
+        adm.medico && adm.medico.empleado && adm.medico.empleado.persona
+          ? {
+              nombre: adm.medico.empleado.persona.nombre,
+              apellido: adm.medico.empleado.persona.apellido,
+            }
+          : null,
       fecha_ingreso: adm.fecha_ingreso,
       fecha_egreso: adm.fecha_egreso,
       estado: adm.estado,

@@ -92,6 +92,7 @@ Medico.belongsTo(Empleado, { foreignKey: "id_empleado", as: "empleado" });
 Empleado.hasOne(Medico, { foreignKey: "id_empleado", as: "medico" });
 Medico.hasMany(Turno, { foreignKey: "id_medico", as: "turnos" });
 Medico.hasMany(Horario, { foreignKey: "id_medico", as: "horarios" });
+Medico.hasMany(Admision, { foreignKey: "id_medico", as: "admisiones" });
 Medico.belongsToMany(Especialidad, {
   through: MedicoEspecialidad,
   foreignKey: "id_medico",
@@ -154,6 +155,7 @@ Horario.belongsTo(Medico, { foreignKey: "id_medico", as: "medico" });
 // Relaciones Admision
 Admision.belongsTo(Paciente, { foreignKey: "id_paciente", as: "paciente" });
 Admision.belongsTo(Motivos, { foreignKey: "id_motivo", as: "motivo" });
+Admision.belongsTo(Medico, { foreignKey: "id_medico", as: "medico" });
 Admision.hasMany(MovimientoCama, {
   foreignKey: "id_admision",
   as: "movimientosCama",
