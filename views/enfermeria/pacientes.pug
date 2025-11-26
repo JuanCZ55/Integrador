@@ -11,20 +11,23 @@ block main
         th(scope="col") Cama
         th(scope="col") DNI
         th(scope="col") Nombre
-        th(scope="col") Edad
         th(scope="col") Médico Responsable
         th(scope="col") Ultima Revision
+        th(scope="col") Medicamento
         th(scope="col") Acciones
+        th(scope="col") Ver 
     tbody
       each paciente in pacientes
         tr
           td #{paciente.cama}
           td #{paciente.dni}
           td #{paciente.nombre}
-          td #{paciente.edad}
           td #{paciente.medicoResponsable}
           td #{paciente.ultimaRevision}
+          td #{paciente.medicamento}//-muestra el tiempo del futuro medicamento
           td 
-            a.btn.btn-primary(href=`/enfermeria/atencion/${paciente.id}`) Atender
-            a.btn.btn-primary(href=`/enfermeria/historial/${paciente.id}`) Ver Historial
-            a.btn.btn-primary(href=`/enfermeria/revisiones/${paciente.id}`) Revisiones
+            a.btn.btn-primary(href=`/enfermeria/atencion/${paciente.id}`) Singos Vitales
+            a.btn.btn-primary(href=`/enfermeria/evaluacion/${paciente.id}`) Evaluación
+          td
+            a.btn.btn-info(href=`/enfermeria/historial/${paciente.id}`) Historial
+            a.btn.btn-info(href=`/enfermeria/preescripciones/${paciente.id}`) Preescripciones
