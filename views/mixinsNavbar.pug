@@ -67,6 +67,27 @@ mixin navbarAdmin()
       a.nav-link.text-primary-emphasis(href="/admin/horarios") Horarios
     +usuarioDropdown()
 
+mixin navbarEnfermeria()
+  ul.nav.nav-underline.fs-4.ms-auto
+    li.nav-item
+      a.nav-link.text-primary-emphasis(href="/enfermeria") Inicio
+    li.nav-item
+      a.nav-link.text-primary-emphasis(href="/enfermeria/pacientes") Pacientes
+      
+    +usuarioDropdown()
+
+mixin navbarMedico()
+  ul.nav.nav-underline.fs-4.ms-auto
+    li.nav-item
+      a.nav-link.text-primary-emphasis(href="/medico") Inicio
+    li.nav-item
+      a.nav-link.text-primary-emphasis(href="/medico/sinAsignar") Sin asignar
+    li.nav-item
+      a.nav-link.text-primary-emphasis(href="/medico/misPacientes") Mis pacientes
+    li.nav-item
+      a.nav-link.text-primary-emphasis(href="/medico/reasignar") Reasignar
+    +usuarioDropdown()
+
 mixin usuarioDropdown()
   li.nav-item.dropdown
     a.nav-link.dropdown-toggle.d-flex.align-items-center(href="#", role="button", data-bs-toggle="dropdown")

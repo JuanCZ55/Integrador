@@ -1,0 +1,30 @@
+extends ../layout.pug
+include ../mixins.pug
+block navbar
+  include ../mixinsNavbar.pug
+  +navbarEnfermeria
+block main 
+  +alert(mensajeAlert, alertClass)
+  table table.table.table-striped.mt-3
+    thead
+      tr
+        th(scope="col") Cama
+        th(scope="col") DNI
+        th(scope="col") Nombre
+        th(scope="col") Edad
+        th(scope="col") Médico Responsable
+        th(scope="col") Ultima Revision
+        th(scope="col") Acciones
+    tbody
+      each paciente in pacientes
+        tr
+          td #{paciente.cama}
+          td #{paciente.dni}
+          td #{paciente.nombre}
+          td #{paciente.edad}
+          td #{paciente.medicoResponsable}
+          td #{paciente.ultimaRevision}
+          td 
+            a.btn.btn-primary(href=`/enfermeria/atencion/${paciente.id}`) Atender
+            a.btn.btn-primary(href=`/enfermeria/historial/${paciente.id}`) Ver Historial
+            a.btn.btn-primary(href=`/enfermeria/revisiones/${paciente.id}`) Revisiones
