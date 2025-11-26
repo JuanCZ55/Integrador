@@ -26,7 +26,6 @@ const CirugiaPrevia = require("./CirugiaPrevia");
 const AntecedenteFamiliar = require("./AntecedenteFamiliar");
 const EvaluacionMedica = require("./EvaluacionMedica");
 const EvaluacionEnfermeria = require("./EvaluacionEnfermeria");
-const SintomasIniciales = require("./SintomasIniciales");
 const SignosVitales = require("./SignosVitales");
 const DiagnosticosEpisodio = require("./DiagnosticosEpisodio");
 const Prescripciones = require("./Prescripciones");
@@ -92,7 +91,10 @@ Medico.belongsTo(Empleado, { foreignKey: "id_empleado", as: "empleado" });
 Empleado.hasOne(Medico, { foreignKey: "id_empleado", as: "medico" });
 Medico.hasMany(Turno, { foreignKey: "id_medico", as: "turnos" });
 Medico.hasMany(Horario, { foreignKey: "id_medico", as: "horarios" });
-Medico.hasMany(Admision, { foreignKey: "id_medico", as: "admisiones" });
+Medico.hasMany(Admision, {
+  foreignKey: "id_medico",
+  as: "pacientesInternados",
+});
 Medico.belongsToMany(Especialidad, {
   through: MedicoEspecialidad,
   foreignKey: "id_medico",
@@ -155,7 +157,10 @@ Horario.belongsTo(Medico, { foreignKey: "id_medico", as: "medico" });
 // Relaciones Admision
 Admision.belongsTo(Paciente, { foreignKey: "id_paciente", as: "paciente" });
 Admision.belongsTo(Motivos, { foreignKey: "id_motivo", as: "motivo" });
-Admision.belongsTo(Medico, { foreignKey: "id_medico", as: "medico" });
+Admision.belongsTo(Medico, {
+  foreignKey: "id_medico",
+  as: "medicoResponsable",
+});
 Admision.hasMany(MovimientoCama, {
   foreignKey: "id_admision",
   as: "movimientosCama",
@@ -342,15 +347,6 @@ AntecedenteFamiliar.belongsTo(HistorialMedico, {
   as: "historialMedico",
 });
 
-HistorialMedico.hasMany(SintomasIniciales, {
-  foreignKey: "id_historial",
-  as: "sintomasIniciales",
-});
-SintomasIniciales.belongsTo(HistorialMedico, {
-  foreignKey: "id_historial",
-  as: "historialMedico",
-});
-
 module.exports = {
   Admision,
   Cama,
@@ -380,7 +376,6 @@ module.exports = {
   AntecedenteFamiliar,
   EvaluacionMedica,
   EvaluacionEnfermeria,
-  SintomasIniciales,
   SignosVitales,
   DiagnosticosEpisodio,
   Prescripciones,
