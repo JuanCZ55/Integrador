@@ -14,6 +14,10 @@ EvaluacionEnfermeria.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    id_enfermero: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
     fecha_eval: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -26,7 +30,8 @@ EvaluacionEnfermeria.init(
     sequelize,
     modelName: "EvaluacionEnfermeria",
     tableName: "evaluacion_enfermeria",
-    timestamps: false,
+    timestamps: true,
+    paranoid: true,
   }
 );
 

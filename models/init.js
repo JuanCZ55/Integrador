@@ -167,12 +167,16 @@ Admision.hasMany(EvaluacionMedica, {
   as: "evolucionesMedicas",
 });
 EvaluacionMedica.belongsTo(Admision, { foreignKey: "id_admision" });
+Medico.hasMany(EvaluacionMedica, { foreignKey: "id_medico" });
+EvaluacionMedica.belongsTo(Medico, { foreignKey: "id_medico" });
 
 Admision.hasMany(EvaluacionEnfermeria, {
   foreignKey: "id_admision",
   as: "evolucionesEnfermeria",
 });
 EvaluacionEnfermeria.belongsTo(Admision, { foreignKey: "id_admision" });
+Enfermero.hasMany(EvaluacionEnfermeria, { foreignKey: "id_enfermero" });
+EvaluacionEnfermeria.belongsTo(Enfermero, { foreignKey: "id_enfermero" });
 
 Admision.hasMany(SignosVitales, {
   foreignKey: "id_admision",
