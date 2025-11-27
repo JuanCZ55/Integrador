@@ -22,10 +22,11 @@ EvaluacionEnfermeria.init(
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
     },
-    presion: { type: DataTypes.STRING },
+    sistolica: { type: DataTypes.INTEGER },
+    diastolica: { type: DataTypes.INTEGER },
     frecuenciaCardiaca: { type: DataTypes.INTEGER },
     frecuenciaRespiratoria: { type: DataTypes.INTEGER },
-    temperatura: { type: DataTypes.DECIMAL(3, 1) },
+    temperatura: { type: DataTypes.DECIMAL(2, 1) },
     observaciones: {
       type: DataTypes.TEXT,
     },
