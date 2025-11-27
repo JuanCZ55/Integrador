@@ -20,8 +20,12 @@ EvaluacionEnfermeria.init(
     },
     fecha_eval: {
       type: DataTypes.DATE,
-      allowNull: false,
+      defaultValue: DataTypes.NOW,
     },
+    presion: { type: DataTypes.STRING },
+    frecuenciaCardiaca: { type: DataTypes.INTEGER },
+    frecuenciaRespiratoria: { type: DataTypes.INTEGER },
+    temperatura: { type: DataTypes.DECIMAL(3, 1) },
     observaciones: {
       type: DataTypes.TEXT,
     },

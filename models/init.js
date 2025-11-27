@@ -26,7 +26,6 @@ const CirugiaPrevia = require("./CirugiaPrevia");
 const AntecedenteFamiliar = require("./AntecedenteFamiliar");
 const EvaluacionMedica = require("./EvaluacionMedica");
 const EvaluacionEnfermeria = require("./EvaluacionEnfermeria");
-const SignosVitales = require("./SignosVitales");
 const DiagnosticosEpisodio = require("./DiagnosticosEpisodio");
 const Prescripciones = require("./Prescripciones");
 const SolicitudEstudios = require("./SolicitudEstudios");
@@ -181,13 +180,10 @@ Admision.hasMany(EvaluacionEnfermeria, {
 });
 EvaluacionEnfermeria.belongsTo(Admision, { foreignKey: "id_admision" });
 Enfermero.hasMany(EvaluacionEnfermeria, { foreignKey: "id_enfermero" });
-EvaluacionEnfermeria.belongsTo(Enfermero, { foreignKey: "id_enfermero" });
-
-Admision.hasMany(SignosVitales, {
-  foreignKey: "id_admision",
-  as: "signosVitales",
+EvaluacionEnfermeria.belongsTo(Enfermero, {
+  foreignKey: "id_enfermero",
+  as: "enfermero",
 });
-SignosVitales.belongsTo(Admision, { foreignKey: "id_admision" });
 
 Admision.hasMany(DiagnosticosEpisodio, {
   foreignKey: "id_admision",
@@ -265,12 +261,6 @@ Enfermero.belongsTo(Empleado, { foreignKey: "id_empleado", as: "empleado" });
 Empleado.hasOne(Enfermero, { foreignKey: "id_empleado", as: "enfermero" });
 
 // Nuevas relaciones con Enfermero
-Enfermero.hasMany(SignosVitales, {
-  foreignKey: "id_enfermero",
-  as: "signosVitales",
-});
-SignosVitales.belongsTo(Enfermero, { foreignKey: "id_enfermero" });
-
 Enfermero.hasMany(AdministracionMedicamentos, {
   foreignKey: "id_enfermero",
   as: "administracionesMedicamentos",
@@ -376,7 +366,6 @@ module.exports = {
   AntecedenteFamiliar,
   EvaluacionMedica,
   EvaluacionEnfermeria,
-  SignosVitales,
   DiagnosticosEpisodio,
   Prescripciones,
   SolicitudEstudios,
