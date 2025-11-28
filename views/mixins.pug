@@ -33,30 +33,30 @@ mixin tabla(thead, tbody)
 mixin debug(vars)
   pre= JSON.stringify(vars, null, 2)
 
-mixin navbar(op, paciente)
+mixin navbar(op, paciente,id_admision)
     nav
       ul.nav.nav-pills(role="tablist")
         if op === 0
           li.nav-item
-            a.nav-link.active(href="./evaluacion") Evaluacion
+            a.nav-link.active(href=`./evaluacion?id_admision=${id_admision}`) Evaluacion
           li.nav-item
-            a.nav-link(href="./medicacion") Medicacion
+            a.nav-link(href=`./medicacion?id_admision=${id_admision}`) Medicacion
           li.nav-item
-            a.nav-link(href="./historia") Historia
+            a.nav-link(href=`./historia?id_admision=${id_admision}`) Historia
         else if op === 1
           li.nav-item
-            a.nav-link(href="./evaluacion") Evaluacion
+            a.nav-link(href=`./evaluacion?id_admision=${id_admision}`) Evaluacion
           li.nav-item
-            a.nav-link.active(href="./medicacion") Medicacion
+            a.nav-link.active(href=`./medicacion?id_admision=${id_admision}`) Medicacion
           li.nav-item
-            a.nav-link(href="./historia") Historia
+            a.nav-link(href=`./historia?id_admision=${id_admision}`) Historia
         else 
           li.nav-item
-            a.nav-link(href="./evaluacion") Evaluacion
+            a.nav-link(href=`./evaluacion?id_admision=${id_admision}`) Evaluacion
           li.nav-item
-            a.nav-link(href="./medicacion") Medicacion
+            a.nav-link(href=`./medicacion?id_admision=${id_admision}`) Medicacion
           li.nav-item
-            a.nav-link.active(href="./historia") Historia
+            a.nav-link.active(href=`./historia?id_admision=${id_admision}`) Historia
         if paciente && paciente.persona
           li.nav-item.ms-auto
-            span.nav-link.disabled Paciente: #{paciente.persona.nombre} #{paciente.persona.apellido} - DNI: #{paciente.persona.dni}
+            span.nav.fw-bold Paciente: #{paciente.persona.nombre} #{paciente.persona.apellido} - DNI: #{paciente.persona.dni}
