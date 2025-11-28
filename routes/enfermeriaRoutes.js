@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const enfermeriaController = require("../controllers/enfermeria/enfermeriaController");
 const evaluacionController = require("../controllers/enfermeria/evaluacionController");
 //const historiaController = require("../controllers/enfermeria/historiaController");
 //const medicacionController = require("../controllers/enfermeria/medicacionController");
@@ -11,6 +12,8 @@ router.get("/", (req, res) => {
 router.get("/inicio", (req, res) => {
   res.render("enfermeria/inicio");
 });
+
+router.get("/pacientes", enfermeriaController.getPacientes);
 
 router.get("/evaluacion", evaluacionController.getEvaluacion);
 router.post("/evaluacion", evaluacionController.postEvaluacion);

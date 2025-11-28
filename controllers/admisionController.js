@@ -410,10 +410,30 @@ async function pAdmision(req, res) {
     }
 
     if (id_cama) {
-      const cama = await Cama.findByPk(id_cama);
+      const cama = await Cama.findByPk(id_cama, {
+        include: [{ model: Habitacion, as: "habitacion" }],
+      });
       if (!cama) {
         return res.render("admision/gestionarAdmision", {
           mensajeAlert: "La cama seleccionada no existe",
+          alertClass: "alert-danger",
+          admision: {
+            id_admision,
+            id_paciente,
+            id_motivo,
+            id_medico: "",
+            derivado,
+          },
+          motivos: motivosArray,
+          sectores: secArray,
+          camaSeleccionada,
+          paciente,
+          f_turno: turno ? turno.fecha : "",
+        });
+      }
+      if (cama.habitacion.genero && cama.habitacion.genero !== persona.genero) {
+        return res.render("admision/gestionarAdmision", {
+          mensajeAlert: `La habitación es para ${cama.habitacion.genero}, pero el paciente es ${persona.genero}`,
           alertClass: "alert-danger",
           admision: {
             id_admision,

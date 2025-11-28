@@ -5,29 +5,33 @@ block navbar
   +navbarEnfermeria
 block main 
   +alert(mensajeAlert, alertClass)
-  table table.table.table-striped.mt-3
-    thead
-      tr
-        th(scope="col") Cama
-        th(scope="col") DNI
-        th(scope="col") Nombre
-        th(scope="col") Médico Responsable
-        th(scope="col") Ultima Revision
-        th(scope="col") Medicamento
-        th(scope="col") Acciones
-        th(scope="col") Ver 
-    tbody
-      each paciente in pacientes
-        tr
-          td #{paciente.cama}
-          td #{paciente.dni}
-          td #{paciente.nombre}
-          td #{paciente.medicoResponsable}
-          td #{paciente.ultimaRevision}
-          td #{paciente.medicamento}//-muestra el tiempo del futuro medicamento
-          td 
-            a.btn.btn-primary(href=`/enfermeria/atencion/${paciente.id}`) Singos Vitales
-            a.btn.btn-primary(href=`/enfermeria/evaluacion/${paciente.id}`) Evaluación
-          td
-            a.btn.btn-info(href=`/enfermeria/historial/${paciente.id}`) Historial
-            a.btn.btn-info(href=`/enfermeria/preescripciones/${paciente.id}`) Preescripciones
+  .w-75.container
+    .panel-blur.border.border-2.border-dark.rounded.p-3.mt-3
+      h2.text-center.mb-4 Pacientes Admitidos
+      .table-responsive
+        table.table.table-striped.table-hover.table-bordered
+          thead.table-dark
+            tr
+              th(scope="col") Lugar
+              th(scope="col") DNI
+              th(scope="col") Nombre
+              th(scope="col") Médico Responsable
+              th(scope="col") Última Evaluación
+              th(scope="col") Acciones
+          tbody
+            if pacientes && pacientes.length > 0
+              each paciente in pacientes
+                tr
+                  td #{paciente.lugar}
+                  td #{paciente.dni}
+                  td #{paciente.nombre}
+                  td #{paciente.medicoResponsable}
+                  td #{paciente.ultimaEvaluacion}
+                  td
+                    .btn-group(role="group")
+                      a.btn.btn-sm.btn-outline-primary(href=`./evaluacion/${paciente.id_admision}`) Evaluación
+                      a.btn.btn-sm.btn-outline-success(href=`./medicacion/${paciente.id_admision}`) Medicación
+                      a.btn.btn-sm.btn-outline-info(href=`./historial/${paciente.id_admision}`) Historial
+            else
+              tr
+                td(colspan="6" class="text-center text-muted") No hay pacientes admitidos actualmente.
