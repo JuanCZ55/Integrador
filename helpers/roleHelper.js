@@ -1,14 +1,14 @@
 const { Enfermero, Medico, Admision } = require("../models/init");
 
 async function getRoleId(req) {
-  const { id_empleado, rol } = req.user;
-  if (rol === "enfermero") {
+  const { id_empleado, id_rol } = req.user;
+  if (id_rol === 4) {
     const enfermero = await Enfermero.findOne({ where: { id_empleado } });
     return enfermero ? enfermero.id_enfermero : null;
-  } else if (rol === "medico") {
+  } else if (id_rol === 3) {
     const medico = await Medico.findOne({ where: { id_empleado } });
     return medico ? medico.id_medico : null;
-  } else if (rol === "admision") {
+  } else if (id_rol === 2) {
     const admision = await Admision.findOne({ where: { id_empleado } });
     return admision ? admision.id_admision : null;
   }
