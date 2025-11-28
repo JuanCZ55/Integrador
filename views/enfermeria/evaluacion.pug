@@ -1,0 +1,59 @@
+extends ../layout.pug
+include ../mixins.pug
+block navbar
+  include ../mixinsNavbar.pug
+  +navbarEnfermeria
+block main
+  +alert(mensajeAlert, alertClass)
+  .w-75.container
+    +navbar(0, paciente)
+    .panel-blur.border.border-2.border-dark.rounded.p-3.mt-3
+      h1 Evaluación de Enfermería
+      form(action="/enfermeria/evaluacion" method="POST")
+        input(type="hidden" name="id_evaluacion" value=evaluacion ? evaluacion.id_evaluacion : (id_evaluacion || ''))
+        input(type="hidden" name="id_admision" value=id_admision)
+        .row
+          .col-md-6.mb-3
+            label(for="sistolica" class="form-label") Presión Sistólica
+            input(type="number" class="form-control" id="sistolica" name="sistolica" placeholder="Ej: 120" value=evaluacion ? evaluacion.sistolica : (sistolica || '') required)
+          .col-md-6.mb-3
+            label(for="diastolica" class="form-label") Presión Diastólica
+            input(type="number" class="form-control" id="diastolica" name="diastolica" placeholder="Ej: 80" value=evaluacion ? evaluacion.diastolica : (diastolica || '') required)
+        .row
+          .col-md-4.mb-3
+            label(for="frecuenciaCardiaca" class="form-label") Frecuencia Cardíaca
+            input(type="number" class="form-control" id="frecuenciaCardiaca" name="frecuenciaCardiaca" placeholder="Ej: 70" value=evaluacion ? evaluacion.frecuenciaCardiaca : (frecuenciaCardiaca || '') required)
+          .col-md-4.mb-3
+            label(for="frecuenciaRespiratoria" class="form-label") Frecuencia Respiratoria
+            input(type="number" class="form-control" id="frecuenciaRespiratoria" name="frecuenciaRespiratoria" placeholder="Ej: 16" value=evaluacion ? evaluacion.frecuenciaRespiratoria : (frecuenciaRespiratoria || '') required)
+          .col-md-4.mb-3
+            label(for="temperatura" class="form-label") Temperatura
+            input(type="number" step="0.1" class="form-control" id="temperatura" name="temperatura" placeholder="Ej: 36.5" value=evaluacion ? evaluacion.temperatura : (temperatura || '') required)          
+        .mb-3
+          label(for="observaciones" class="form-label") Observaciones
+          textarea(class="form-control" id="observaciones" name="observaciones" rows="3" placeholder="Ingrese observaciones aquí")= evaluacion ? evaluacion.observaciones : (observaciones || '')
+        button(type="submit" class="btn btn-primary") Guardar Evaluación
+      hr
+      h2 Registro de Evaluaciones
+      table.table.table-striped
+        thead
+          tr
+            th ID
+            th Fecha
+            th Presión
+            th Frecuencia Cardíaca
+            th Frecuencia Respiratoria
+            th Temperatura
+            th Acciones
+        tbody
+          each eval in evaluaciones
+            tr
+              td= eval.id_evaluacion
+              td= eval.fecha_eval ? new Date(eval.fecha_eval).toLocaleDateString() : ''
+              td= `${eval.sistolica}/${eval.diastolica}`
+              td= eval.frecuenciaCardiaca
+              td= eval.frecuenciaRespiratoria
+              td= eval.temperatura
+              td
+                a(href=`?id_evaluacion=${eval.id_evaluacion}` class="btn btn-sm btn-warning") Modificar
+  +debug(locals)

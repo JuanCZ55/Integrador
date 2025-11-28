@@ -32,3 +32,31 @@ mixin tabla(thead, tbody)
             
 mixin debug(vars)
   pre= JSON.stringify(vars, null, 2)
+
+mixin navbar(op, paciente)
+    nav
+      ul.nav.nav-pills(role="tablist")
+        if op === 0
+          li.nav-item
+            a.nav-link.active(href="./evaluacion") Evaluacion
+          li.nav-item
+            a.nav-link(href="./medicacion") Medicacion
+          li.nav-item
+            a.nav-link(href="./historia") Historia
+        else if op === 1
+          li.nav-item
+            a.nav-link(href="./evaluacion") Evaluacion
+          li.nav-item
+            a.nav-link.active(href="./medicacion") Medicacion
+          li.nav-item
+            a.nav-link(href="./historia") Historia
+        else 
+          li.nav-item
+            a.nav-link(href="./evaluacion") Evaluacion
+          li.nav-item
+            a.nav-link(href="./medicacion") Medicacion
+          li.nav-item
+            a.nav-link.active(href="./historia") Historia
+        if paciente && paciente.persona
+          li.nav-item.ms-auto
+            span.nav-link.disabled Paciente: #{paciente.persona.nombre} #{paciente.persona.apellido} - DNI: #{paciente.persona.dni}
