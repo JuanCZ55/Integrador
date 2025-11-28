@@ -1,5 +1,12 @@
 const sequelize = require("../models/db");
-const { Rol, Usuario, Persona, Empleado } = require("../models/init");
+const {
+  Rol,
+  Usuario,
+  Persona,
+  Empleado,
+  Enfermero,
+  Medico,
+} = require("../models/init");
 const bcrypt = require("bcrypt");
 
 async function seedRolesUsuarios() {
@@ -91,7 +98,17 @@ async function seedRolesUsuarios() {
     returning: true,
   });
 
-  // 4. Crear usuarios para cada empleado y rol
+  // 4. Crear enfermero y medico
+  await Enfermero.create({
+    id_empleado: empleadosCreados[3].id_empleado,
+    nro_licencia: 6001,
+  });
+  await Medico.create({
+    id_empleado: empleadosCreados[2].id_empleado,
+    nro_licencia: 5001,
+  });
+
+  // 5. Crear usuarios para cada empleado y rol
   const passwordHash = await bcrypt.hash("1234", 10);
   const usuarios = [
     {
