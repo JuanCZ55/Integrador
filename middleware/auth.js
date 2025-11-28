@@ -46,6 +46,7 @@ const authenticateUser = async (req, res, next) => {
       user.empleado.persona.nombre + " " + user.empleado.persona.apellido;
     req.session.dni = user.empleado.persona.dni;
     req.session.usuario = user.usuario;
+    req.session.id_empleado = user.empleado.id_empleado;
 
     next();
   } catch (err) {
@@ -67,6 +68,7 @@ const getCurrentUser = (req, res, next) => {
       usuario: req.session.usuario,
       nombreCompleto: req.session.nombreCompleto,
       dni: req.session.dni,
+      id_empleado: req.session.id_empleado,
     };
     req.user = user;
     res.locals.user = user;
