@@ -173,7 +173,7 @@ async function admision(req, res) {
           include: [
             {
               model: Medico,
-              as: "medico",
+              as: "medicoResponsable",
               include: [
                 {
                   model: Empleado,
@@ -594,7 +594,7 @@ async function listaAdmisiones(req, res) {
         },
         {
           model: Medico,
-          as: "medico",
+          as: "medicoResponsable",
           include: [
             {
               model: Empleado,
@@ -624,10 +624,12 @@ async function listaAdmisiones(req, res) {
           : null,
       motivo: adm.motivo ? { nombre: adm.motivo.nombre } : null,
       medico:
-        adm.medico && adm.medico.empleado && adm.medico.empleado.persona
+        adm.medicoResponsable &&
+        adm.medicoResponsable.empleado &&
+        adm.medicoResponsable.empleado.persona
           ? {
-              nombre: adm.medico.empleado.persona.nombre,
-              apellido: adm.medico.empleado.persona.apellido,
+              nombre: adm.medicoResponsable.empleado.persona.nombre,
+              apellido: adm.medicoResponsable.empleado.persona.apellido,
             }
           : null,
       fecha_ingreso: adm.fecha_ingreso,
