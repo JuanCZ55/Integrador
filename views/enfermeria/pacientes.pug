@@ -29,9 +29,9 @@ block main
                   td #{paciente.ultimaEvaluacion}
                   td
                     .btn-group(role="group")
-                      a.btn.btn-sm.btn-outline-primary(href=`./evaluacion/${paciente.id_admision}`) Evaluación
-                      a.btn.btn-sm.btn-outline-success(href=`./medicacion/${paciente.id_admision}`) Medicación
-                      a.btn.btn-sm.btn-outline-info(href=`./historial/${paciente.id_admision}`) Historial
+                      a.btn.btn-sm.btn-outline-primary(href=`./evaluacion?id_admision=${paciente.id_admision}`) Evaluación
+                      a.btn.btn-sm.btn-outline-success(href=`./medicacion?id_admision=${paciente.id_admision}`) Medicación
+                      a.btn.btn-sm.btn-outline-info(href=`./historial?id_admision=${paciente.id_admision}`) Historial
             else
               tr
                 td(colspan="6" class="text-center text-muted") No hay pacientes admitidos actualmente.

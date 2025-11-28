@@ -6,7 +6,7 @@ block navbar
 block main
   +alert(mensajeAlert, alertClass)
   .w-75.container
-    +navbar(0, paciente)
+    +navbar(0, paciente, id_admision)
     .panel-blur.border.border-2.border-dark.rounded.p-3.mt-3
       h1 Evaluación de Enfermería
       form(action="/enfermeria/evaluacion" method="POST")
@@ -40,20 +40,22 @@ block main
           tr
             th ID
             th Fecha
-            th Presión
-            th Frecuencia Cardíaca
-            th Frecuencia Respiratoria
-            th Temperatura
+            th.text-center Presión
+            th.text-center Frecuencia Cardíaca
+            th.text-center Frecuencia Respiratoria
+            th.text-center Temperatura
+            th Observaciones
             th Acciones
         tbody
           each eval in evaluaciones
             tr
               td= eval.id_evaluacion
-              td= eval.fecha_eval ? new Date(eval.fecha_eval).toLocaleDateString() : ''
-              td= `${eval.sistolica}/${eval.diastolica}`
-              td= eval.frecuenciaCardiaca
-              td= eval.frecuenciaRespiratoria
-              td= eval.temperatura
+              td(style="width: 170px")= eval.updatedAt ? new Date(eval.updatedAt).toLocaleString() : ''
+              td.text-center= `${eval.sistolica}/${eval.diastolica}`
+              td.text-center= eval.frecuenciaCardiaca
+              td.text-center= eval.frecuenciaRespiratoria
+              td.text-center= eval.temperatura
+              td.text-truncate(data-bs-toggle="tooltip" title=eval.observaciones style="max-width: 350px")= eval.observaciones
               td
                 a(href=`?id_evaluacion=${eval.id_evaluacion}` class="btn btn-sm btn-warning") Modificar
   +debug(locals)
