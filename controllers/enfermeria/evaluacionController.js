@@ -54,7 +54,7 @@ function validator(
   return errors;
 }
 
-async function renderEvaluacionPage(
+async function renderEva(
   res,
   mensajeAlert = null,
   alertClass = null,
@@ -109,23 +109,12 @@ async function getEvaluacion(req, res) {
   try {
     const { id_evaluacion, id_admision } = req.query;
 
-    if (!id_admision) {
-      return renderEvaluacionPage(
-        res,
-        ["ID de admisión requerido"],
-        "alert-danger",
-        {},
-        null,
-        null
-      );
-    }
-
     let evaluacion = null;
 
     if (id_evaluacion) {
       evaluacion = await EvaluacionEnfermeria.findByPk(id_evaluacion);
       if (!evaluacion) {
-        return renderEvaluacionPage(
+        return renderEva(
           res,
           ["Evaluación no encontrada"],
           "alert-warning",
@@ -135,14 +124,25 @@ async function getEvaluacion(req, res) {
         );
       }
     } else {
-      // Cargar la evaluación más reciente de la admisión
-      evaluacion = await EvaluacionEnfermeria.findOne({
-        where: { id_admision },
-        order: [["fecha_eval", "DESC"]],
-      });
+      if (!id_admision) {
+        return renderEva(
+          res,
+          ["ID de admisión requerido"],
+          "alert-danger",
+          {},
+          null,
+          null
+        );
+      }
     }
-
-    renderEvaluacionPage(res, null, null, {}, evaluacion, id_admision);
+    renderEva(
+      res,
+      null,
+      null,
+      {},
+      evaluacion,
+      id_admision || evaluacion.id_admision
+    );
   } catch (error) {
     console.error("Error al obtener evaluación:", error);
     res.status(500).send("Error interno del servidor");
@@ -164,7 +164,7 @@ async function postEvaluacion(req, res) {
   const id_enfermero = await getRoleId(req);
 
   if (!id_enfermero) {
-    return renderEvaluacionPage(
+    return renderEva(
       res,
       ["Usuario no autorizado o enfermero no encontrado"],
       "alert-danger",
@@ -183,7 +183,7 @@ async function postEvaluacion(req, res) {
       temperatura
     );
     if (errores.length > 0) {
-      return renderEvaluacionPage(
+      return renderEva(
         res,
         errores,
         "alert-danger",
@@ -210,7 +210,7 @@ async function postEvaluacion(req, res) {
 
     await EvaluacionEnfermeria.upsert(data);
 
-    return renderEvaluacionPage(
+    return renderEva(
       res,
       ["Evaluación guardada exitosamente"],
       "alert-success",
@@ -220,7 +220,7 @@ async function postEvaluacion(req, res) {
     );
   } catch (error) {
     console.error("Error al guardar evaluación:", error);
-    return renderEvaluacionPage(
+    return renderEva(
       res,
       ["Error al guardar la evaluación"],
       "alert-danger",

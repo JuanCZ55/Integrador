@@ -26,7 +26,7 @@ EvaluacionEnfermeria.init(
     diastolica: { type: DataTypes.INTEGER },
     frecuenciaCardiaca: { type: DataTypes.INTEGER },
     frecuenciaRespiratoria: { type: DataTypes.INTEGER },
-    temperatura: { type: DataTypes.DECIMAL(2, 1) },
+    temperatura: { type: DataTypes.DECIMAL(4, 1) },
     observaciones: {
       type: DataTypes.TEXT,
     },
