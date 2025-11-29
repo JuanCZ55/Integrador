@@ -6,6 +6,54 @@ block navbar
 block main
   +alert(mensajeAlert, alertClass)
   .w-75.container
-    +navbar(1, null)
+    +navbar(1, null, id_admision)
     .panel-blur.border.border-2.border-dark.rounded.p-3.mt-3
       h1 Medicación
+      if prescripciones && prescripciones.length
+        .table-responsive
+          table.table.table-striped.table-hover
+            thead
+              tr
+                th Medicamento
+                th Dosis
+                th Frecuencia
+                th Vía
+                th Última Administración
+                th Próxima Dosis
+                th Acciones
+            tbody
+              each p in prescripciones
+                tr
+                  td= p.medicamento
+                  td= p.dosis
+                  td= p.frecuencia
+                  td= p.via
+                  td= p.ultAdminStr
+                  td= p.proxDosisStr
+                  td
+                    form(action="/enfermeria/medicacion?id_admision=" + id_admision method="POST" style="display:inline;")
+                      input(type="hidden" name="id_prescripcion" value=p.id_prescripcion)
+                      button(type="submit" class="btn btn-success btn-sm") Administrar
+      else
+        p.text-muted No hay prescripciones activas.
+      hr
+      h2 Historial de Administraciones
+      if historial && historial.length
+        .table-responsive
+          table.table.table-striped
+            thead
+              tr
+                th Medicamento
+                th Dosis
+                th Fecha y Hora
+                th Enfermero
+            tbody
+              each h in historial
+                tr
+                  td= h.medicamento
+                  td= h.dosis
+                  td= h.fecha_hora
+                  td= h.enfermero
+      else
+        p.text-muted No hay administraciones registradas.
+  +debug(locals)
