@@ -31,7 +31,7 @@ block main
                   td= p.ultAdminStr
                   td= p.proxDosisStr
                   td
-                    form(action="/enfermeria/medicacion?id_admision=" + id_admision method="POST" style="display:inline;")
+                    form(action="/enfermeria/medicacion?id_admision=" + id_admision method="POST" )
                       input(type="hidden" name="id_prescripcion" value=p.id_prescripcion)
                       button(type="submit" class="btn btn-success btn-sm") Administrar
       else
@@ -47,6 +47,7 @@ block main
                 th Dosis
                 th Fecha y Hora
                 th Enfermero
+                th Acciones
             tbody
               each h in historial
                 tr
@@ -54,6 +55,9 @@ block main
                   td= h.dosis
                   td= h.fecha_hora
                   td= h.enfermero
+                  td
+                    form(action="/enfermeria/medicacion/delete?id_admision=" + id_admision method="POST" )
+                      input(type="hidden" name="id_administracion" value=h.id_administracion)
+                      button(type="submit" class="btn btn-danger btn-sm") Eliminar
       else
         p.text-muted No hay administraciones registradas.
-  +debug(locals)
