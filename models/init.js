@@ -265,7 +265,10 @@ Enfermero.hasMany(AdministracionMedicamentos, {
   foreignKey: "id_enfermero",
   as: "administracionesMedicamentos",
 });
-AdministracionMedicamentos.belongsTo(Enfermero, { foreignKey: "id_enfermero" });
+AdministracionMedicamentos.belongsTo(Enfermero, {
+  foreignKey: "id_enfermero",
+  as: "enfermero",
+});
 
 // Relaciones Enfermero-Especialidad (muchos a muchos)
 Enfermero.belongsToMany(Especialidad, {

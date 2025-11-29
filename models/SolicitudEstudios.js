@@ -25,7 +25,7 @@ SolicitudEstudios.init(
       type: DataTypes.TEXT,
     },
     estado: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
   },

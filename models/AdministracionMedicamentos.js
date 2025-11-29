@@ -22,7 +22,7 @@ AdministracionMedicamentos.init(
       type: DataTypes.DATE,
     },
     estado: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
   },
