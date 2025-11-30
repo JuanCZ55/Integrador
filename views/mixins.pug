@@ -1,6 +1,7 @@
-mixin alert(message, alertClass)
+mixin alert(message, alertClass, timeout = 5000)
   if message && message !== ""&&message !== null&&message !== undefined  && (!Array.isArray(message) || message.length > 0)
-    .alert(class=`${alertClass}` role="alert")
+    - var alertId = 'alert-' + Math.random().toString(36).substr(2, 9)
+    .alert(class=`${alertClass}` role="alert" id=alertId)
       if Array.isArray(message)
         each msg, i in message
           | #{msg}
@@ -8,6 +9,13 @@ mixin alert(message, alertClass)
             br
       else
         = message
+      script.
+        setTimeout(() => {
+          const alert = document.getElementById('#{alertId}');
+          if (alert) {
+            alert.style.display = 'none';
+          }
+        }, #{timeout});
   
 mixin select(lName,array, selectedValue,nombre)
   label.form-label(for=lName) #{nombre}*
@@ -42,21 +50,21 @@ mixin navbar(op, paciente,id_admision)
           li.nav-item
             a.nav-link(href=`./medicacion?id_admision=${id_admision}`) Medicacion
           li.nav-item
-            a.nav-link(href=`./historia?id_admision=${id_admision}`) Historia
+            a.nav-link(href=`./historial?id_admision=${id_admision}`) Historial
         else if op === 1
           li.nav-item
             a.nav-link(href=`./evaluacion?id_admision=${id_admision}`) Evaluacion
           li.nav-item
             a.nav-link.active(href=`./medicacion?id_admision=${id_admision}`) Medicacion
           li.nav-item
-            a.nav-link(href=`./historia?id_admision=${id_admision}`) Historia
+            a.nav-link(href=`./historial?id_admision=${id_admision}`) Historial
         else 
           li.nav-item
             a.nav-link(href=`./evaluacion?id_admision=${id_admision}`) Evaluacion
           li.nav-item
             a.nav-link(href=`./medicacion?id_admision=${id_admision}`) Medicacion
           li.nav-item
-            a.nav-link.active(href=`./historia?id_admision=${id_admision}`) Historia
+            a.nav-link.active(href=`./historial?id_admision=${id_admision}`) Historial
         if paciente && paciente.persona
           li.nav-item.ms-auto
             span.nav.fw-bold Paciente: #{paciente.persona.nombre} #{paciente.persona.apellido} - DNI: #{paciente.persona.dni}
