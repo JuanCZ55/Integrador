@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const enfermeriaController = require("../controllers/enfermeria/enfermeriaController");
 const evaluacionController = require("../controllers/enfermeria/evaluacionController");
-//const historiaController = require("../controllers/enfermeria/historiaController");
+const historialController = require("../controllers/enfermeria/historialController");
 const medicacionController = require("../controllers/enfermeria/medicacionController");
 
 router.get("/", (req, res) => {
@@ -22,7 +22,7 @@ router.get("/medicacion", medicacionController.getMedicacion);
 router.post("/medicacion", medicacionController.postMedicacion);
 router.post("/medicacion/delete", medicacionController.deleteMedicacion);
 
-// router.get("/historia", historiaController.renderHistoria);
-// router.post("/historia", historiaController.postHistoria);
+router.get("/historial", historialController.getHistoria);
+router.post("/historial", historialController.postHistoria);
 
 module.exports = router;
