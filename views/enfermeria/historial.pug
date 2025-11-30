@@ -1,0 +1,169 @@
+extends ../layout.pug
+include ../mixins.pug
+block navbar
+  include ../mixinsNavbar.pug
+  +navbarEnfermeria
+block main
+  +alert(mensajeAlert, alertClass)
+  .w-75.container
+    +navbar(2, paciente, id_admision)
+    .panel-blur.border.border-2.border-dark.rounded.p-3.mt-3
+      form(action=`/enfermeria/historial?id_admision=${id_admision}` method="POST")
+        // Pestañas para Alergias, Enfermedades, Medicación, Cirugías y Antecedentes
+        ul.nav.nav-tabs.mb-3(id="myTab" role="tablist")
+          li.nav-item(role="presentation")
+            button.nav-link.active(id="alergias-tab" data-bs-toggle="tab" data-bs-target="#alergias" type="button" role="tab" aria-controls="alergias" aria-selected="true") Alergias
+          li.nav-item(role="presentation")
+            button.nav-link(id="enfermedades-tab" data-bs-toggle="tab" data-bs-target="#enfermedades" type="button" role="tab" aria-controls="enfermedades" aria-selected="false") Enfermedades
+          li.nav-item(role="presentation")
+            button.nav-link(id="medicacion-tab" data-bs-toggle="tab" data-bs-target="#medicacion" type="button" role="tab" aria-controls="medicacion" aria-selected="false") Medicación Actual
+          li.nav-item(role="presentation")
+            button.nav-link(id="cirugias-tab" data-bs-toggle="tab" data-bs-target="#cirugias" type="button" role="tab" aria-controls="cirugias" aria-selected="false") Cirugías Previas
+          li.nav-item(role="presentation")
+            button.nav-link(id="antecedentes-tab" data-bs-toggle="tab" data-bs-target="#antecedentes" type="button" role="tab" aria-controls="antecedentes" aria-selected="false") Antecedentes Familiares
+
+        .tab-content(id="myTabContent")
+          // Contenido de Alergias
+          .tab-pane.fade.show.active(id="alergias" role="tabpanel" aria-labelledby="alergias-tab")
+            .d-flex.justify-content-between.align-items-center.mb-3
+              h4.m-0 Gestión de Alergias
+              button.btn.btn-primary.btn-sm(type="button" id="btn-agregar-alergia") + Agregar Alergia
+            .overflow-auto.pb-3
+              .d-flex.flex-nowrap.gap-3(id="contenedor-alergias" data-id-historial=historial.id_historial data-existing-alergias=historial.alergias.length)
+                each alergia, index in historial.alergias
+                  div.card.flex-shrink-0.shadow-sm.position-relative(style="width: 280px; border-radius: 15px;")
+                    button.btn.btn-outline-danger.btn-sm.position-absolute.top-0.end-0.m-1(type="button" onclick="this.closest('.card').remove()") &times;
+                    .card-body
+                      input(type="hidden" name=`alergias[${index}][id_alergia]` value=alergia.id_alergia)
+                      input(type="hidden" name=`alergias[${index}][id_historial]` value=historial.id_historial)
+                      .mb-2
+                        label.form-label.fw-bold.small Tipo de Alergia *
+                        input.form-control.form-control-sm(type="text" name=`alergias[${index}][tipo]` placeholder="Ej: Penicilina" value=alergia.tipo required)
+                      .mb-2
+                        label.form-label.small Gravedad
+                        select.form-select.form-select-sm(name=`alergias[${index}][gravedad]`)
+                          option(value="Leve" selected=alergia.gravedad === 'Leve') Leve
+                          option(value="Moderada" selected=alergia.gravedad === 'Moderada') Moderada
+                          option(value="Grave" selected=alergia.gravedad === 'Grave') Grave
+                          option(value="Muy Grave" selected=alergia.gravedad === 'Muy Grave') Muy Grave
+                      .mb-0
+                        label.form-label.small Observaciones
+                        textarea.form-control.form-control-sm(name=`alergias[${index}][observaciones]` rows="3" placeholder="Detalles extra...")= alergia.observaciones
+                if historial.alergias.length === 0
+                  .text-muted No hay alergias registradas.
+
+          // Contenido de Enfermedades
+          .tab-pane.fade(id="enfermedades" role="tabpanel" aria-labelledby="enfermedades-tab")
+            .d-flex.justify-content-between.align-items-center.mb-3
+              h4.m-0 Gestión de Enfermedades
+              button.btn.btn-primary.btn-sm(type="button" id="btn-agregar-enfermedad") + Agregar Enfermedad
+            .overflow-auto.pb-3
+              .d-flex.flex-nowrap.gap-3(id="contenedor-enfermedades" data-id-historial=historial.id_historial data-existing-enfermedades=historial.enfermedades.length)
+                each enfermedad, index in historial.enfermedades
+                  div.card.flex-shrink-0.shadow-sm.position-relative(style="width: 280px; border-radius: 15px;")
+                    button.btn.btn-outline-danger.btn-sm.position-absolute.top-0.end-0.m-1(type="button" onclick="this.closest('.card').remove()") &times;
+                    .card-body
+                      input(type="hidden" name=`enfermedades[${index}][id_enfermedad]` value=enfermedad.id_enfermedad)
+                      input(type="hidden" name=`enfermedades[${index}][id_historial]` value=historial.id_historial)
+                      .mb-2
+                        label.form-label.fw-bold.small Nombre de la Enfermedad *
+                        input.form-control.form-control-sm(type="text" name=`enfermedades[${index}][nombre]` placeholder="Ej: Gripe" value=enfermedad.nombre required)
+                      .mb-2
+                        label.form-label.small ¿Es Crónica?
+                        .form-check
+                          input.form-check-input(type="checkbox" name=`enfermedades[${index}][cronica]` value="true" checked=enfermedad.cronica)
+                          label.form-check-label.small Sí
+                      .mb-2
+                        label.form-label.small Fecha de Diagnóstico
+                        input.form-control.form-control-sm(type="date" name=`enfermedades[${index}][fecha_diagnostico]` value=enfermedad.fecha_diagnostico ? enfermedad.fecha_diagnostico.toISOString().split('T')[0] : '' required)
+                      .mb-0
+                        label.form-label.small Observaciones
+                        textarea.form-control.form-control-sm(name=`enfermedades[${index}][observaciones]` rows="3" placeholder="Detalles extra...")= enfermedad.observaciones
+                if historial.enfermedades.length === 0
+                  .text-muted No hay enfermedades registradas.
+
+          // Contenido de Medicación Actual
+          .tab-pane.fade(id="medicacion" role="tabpanel" aria-labelledby="medicacion-tab")
+            .d-flex.justify-content-between.align-items-center.mb-3
+              h4.m-0 Medicación Actual
+              button.btn.btn-primary.btn-sm(type="button" id="btn-agregar-medicacion") + Agregar Medicamento
+            .overflow-auto.pb-3
+              .d-flex.flex-nowrap.gap-3(id="contenedor-medicacion" data-id-historial=historial.id_historial data-existing-medicacion=historial.medicaciones.length)
+                each medicacion, index in historial.medicaciones
+                  div.card.flex-shrink-0.shadow-sm.position-relative(style="width: 280px; border-radius: 15px;")
+                    button.btn.btn-outline-danger.btn-sm.position-absolute.top-0.end-0.m-1(type="button" onclick="this.closest('.card').remove()") &times;
+                    .card-body
+                      input(type="hidden" name=`medicacion[${index}][id_medicacion]` value=medicacion.id_medicacion)
+                      input(type="hidden" name=`medicacion[${index}][id_historial]` value=historial.id_historial)
+                      .mb-2
+                        label.form-label.fw-bold.small Nombre del Medicamento *
+                        input.form-control.form-control-sm(type="text" name=`medicacion[${index}][nombre]` placeholder="Ej: Paracetamol" value=medicacion.nombre required)
+                      .mb-2
+                        label.form-label.small Dosis
+                        input.form-control.form-control-sm(type="text" name=`medicacion[${index}][dosis]` placeholder="Ej: 500mg" value=medicacion.dosis required)
+                      .mb-2
+                        label.form-label.small Frecuencia
+                        input.form-control.form-control-sm(type="text" name=`medicacion[${index}][frecuencia]` placeholder="Ej: Cada 8 horas" value=medicacion.frecuencia required)
+                      .mb-0
+                        label.form-label.small Observaciones
+                        textarea.form-control.form-control-sm(name=`medicacion[${index}][observaciones]` rows="3" placeholder="Detalles extra...")= medicacion.observaciones
+                if historial.medicaciones.length === 0
+                  .text-muted No hay medicación registrada.
+
+          // Contenido de Cirugías Previas
+          .tab-pane.fade(id="cirugias" role="tabpanel" aria-labelledby="cirugias-tab")
+            .d-flex.justify-content-between.align-items-center.mb-3
+              h4.m-0 Cirugías Previas
+              button.btn.btn-primary.btn-sm(type="button" id="btn-agregar-cirugia") + Agregar Cirugía
+            .overflow-auto.pb-3
+              .d-flex.flex-nowrap.gap-3(id="contenedor-cirugias" data-id-historial=historial.id_historial data-existing-cirugias=historial.cirugias.length)
+                each cirugia, index in historial.cirugias
+                  div.card.flex-shrink-0.shadow-sm.position-relative(style="width: 280px; border-radius: 15px;")
+                    button.btn.btn-outline-danger.btn-sm.position-absolute.top-0.end-0.m-1(type="button" onclick="this.closest('.card').remove()") &times;
+                    .card-body
+                      input(type="hidden" name=`cirugias[${index}][id_cirugia]` value=cirugia.id_cirugia)
+                      input(type="hidden" name=`cirugias[${index}][id_historial]` value=historial.id_historial)
+                      .mb-2
+                        label.form-label.fw-bold.small Nombre de la Cirugía *
+                        input.form-control.form-control-sm(type="text" name=`cirugias[${index}][nombre]` placeholder="Ej: Apendicectomía" value=cirugia.nombre required)
+                      .mb-2
+                        label.form-label.small Fecha
+                        input.form-control.form-control-sm(type="date" name=`cirugias[${index}][fecha]` value=cirugia.fecha ? cirugia.fecha.toISOString().split('T')[0] : '' required)
+                      .mb-0
+                        label.form-label.small Observaciones
+                        textarea.form-control.form-control-sm(name=`cirugias[${index}][observaciones]` rows="3" placeholder="Detalles extra...")= cirugia.observaciones
+                if historial.cirugias.length === 0
+                  .text-muted No hay cirugías registradas.
+
+          // Contenido de Antecedentes Familiares
+          .tab-pane.fade(id="antecedentes" role="tabpanel" aria-labelledby="antecedentes-tab")
+            .d-flex.justify-content-between.align-items-center.mb-3
+              h4.m-0 Antecedentes Familiares
+              button.btn.btn-primary.btn-sm(type="button" id="btn-agregar-antecedente") + Agregar Antecedente
+            .overflow-auto.pb-3
+              .d-flex.flex-nowrap.gap-3(id="contenedor-antecedentes" data-id-historial=historial.id_historial data-existing-antecedentes=historial.antecedentesFamiliares.length)
+                each antecedente, index in historial.antecedentesFamiliares
+                  div.card.flex-shrink-0.shadow-sm.position-relative(style="width: 280px; border-radius: 15px;")
+                    button.btn.btn-outline-danger.btn-sm.position-absolute.top-0.end-0.m-1(type="button" onclick="this.closest('.card').remove()") &times;
+                    .card-body
+                      input(type="hidden" name=`antecedentes[${index}][id_antecedente]` value=antecedente.id_antecedente)
+                      input(type="hidden" name=`antecedentes[${index}][id_historial]` value=historial.id_historial)
+                      .mb-2
+                        label.form-label.fw-bold.small Familiar *
+                        input.form-control.form-control-sm(type="text" name=`antecedentes[${index}][familiar]` placeholder="Ej: Padre" value=antecedente.familiar required)
+                      .mb-2
+                        label.form-label.fw-bold.small Enfermedad *
+                        input.form-control.form-control-sm(type="text" name=`antecedentes[${index}][enfermedad]` placeholder="Ej: Diabetes" value=antecedente.enfermedad required)
+                      .mb-0
+                        label.form-label.small Observaciones
+                        textarea.form-control.form-control-sm(name=`antecedentes[${index}][observaciones]` rows="3" placeholder="Detalles extra...")= antecedente.observaciones
+                if historial.antecedentesFamiliares.length === 0
+                  .text-muted No hay antecedentes familiares registrados.
+
+
+        button.btn.btn-success.mt-3.w-100(type="submit") Guardar Cambios
+        small.text-secondary Antes de guardar, asegúrese de completar todas las tarjetas agregadas o elimínelas si no son necesarias.
+
+      script(src="/script/historial.js")
+      
+
