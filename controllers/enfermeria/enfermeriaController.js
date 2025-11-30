@@ -81,7 +81,11 @@ async function getPacientes(req, res) {
       };
     });
 
-    res.render("enfermeria/pacientes", { pacientes });
+    res.render("enfermeria/pacientes", {
+      pacientes,
+      mensajeAlert: req.query.mensajeAlert || "",
+      alertClass: req.query.alertClass || "",
+    });
   } catch (error) {
     console.error("Error al obtener pacientes:", error);
     res.status(500).send("Error interno del servidor");
