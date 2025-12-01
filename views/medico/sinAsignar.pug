@@ -1,0 +1,218 @@
+extends ../layout.pug
+include ../mixins.pug
+block navbar
+  include ../mixinsNavbar.pug
+  +navbarMedico()
+block main 
+  +alert(mensajeAlert, alertClass)
+  div.container.mt-3.p-3.panel-blur.rounded-5
+    .d-flex.align-items-center
+      h1.me-auto Pacientes sin medico asignado
+      button.btn.btn-info(type="button" data-bs-toggle="modal" data-bs-target="#reasignarModal") Reasignar
+
+    table.table.table-striped
+      thead
+        tr
+          th Lugar
+          th Nombre 
+          th DNI
+          th Edad
+          th Accion
+      tbody
+        if pacientes && pacientes.length
+          each paciente, i in pacientes
+            tr
+              td #{paciente.lugar}
+              td #{paciente.nombre}
+              td #{paciente.dni}
+              td #{paciente.edad}
+              td
+                button.btn.btn-primary(type="button" data-bs-toggle="modal" data-bs-target="#asignarModal" data-id_admision=`${paciente.id_admision}` data-lugar=`${paciente.lugar}` data-nombre=`${paciente.nombre}` data-dni=`${paciente.dni}` data-edad=`${paciente.edad}`) Asignar
+        else
+          tr
+            td(colspan="5") No hay pacientes sin asignar.
+
+  div.modal.fade(id="asignarModal" tabindex="-1")
+    .modal-dialog.modal-lg
+      .modal-content
+        .modal-header
+          h5.modal-title Asignar Paciente
+          button.btn-close(type="button" data-bs-dismiss="modal")
+        form(method="POST" action="/medico/asignarPaciente")
+          .modal-body
+            .row
+              .col-md-6
+                h6 Datos del Paciente
+                p Lugar: <span id="modal-lugar"></span>
+                p Nombre: <span id="modal-nombre"></span>
+                p DNI: <span id="modal-dni"></span>
+                p Edad: <span id="modal-edad"></span>
+              .col-md-6
+                h6 Seleccionar Médico
+                label.form-label(for="especialidad") Especialidad
+                select.form-select(id="especialidad" name="especialidad")
+                  option(value="") Seleccione una especialidad
+                  each especialidad in especialidades
+                    option(value=`${especialidad.id_especialidad}`)= especialidad.nombre
+                label.form-label(for="medico") Médico
+                select.form-select(id="medico" name="id_medico" required)
+                  option(value="") Seleccione un médico
+            input(type="hidden" name="id_admision" id="modal-id_admision")
+          .modal-footer
+            button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Cancelar
+            button.btn.btn-primary(type="button" id="btnAsignar") Asignar
+
+  script.
+    const asignarModal = document.getElementById('asignarModal');
+    asignarModal.addEventListener('show.bs.modal', function (event) {
+      const button = event.relatedTarget;
+      const id_admision = button.getAttribute('data-id_admision');
+      const lugar = button.getAttribute('data-lugar');
+      const nombre = button.getAttribute('data-nombre');
+      const dni = button.getAttribute('data-dni');
+      const edad = button.getAttribute('data-edad');
+
+      document.getElementById('modal-id_admision').value = id_admision;
+      document.getElementById('modal-lugar').textContent = lugar;
+      document.getElementById('modal-nombre').textContent = nombre;
+      document.getElementById('modal-dni').textContent = dni;
+      document.getElementById('modal-edad').textContent = edad;
+    });
+
+    document.getElementById('especialidad').addEventListener('change', async function () {
+      const especialidadId = this.value;
+      const medicoSelect = document.getElementById('medico');
+      medicoSelect.innerHTML = '<option value="">Seleccione un médico</option>';
+      if (especialidadId) {
+        try {
+          const response = await fetch(`/medico/api/medicos?especialidadId=${especialidadId}`);
+          const medicos = await response.json();
+          medicos.forEach(medico => {
+            const option = document.createElement('option');
+            option.value = medico.id;
+            option.textContent = medico.nombre;
+            medicoSelect.appendChild(option);
+          });
+        } catch (error) {
+          console.error('Error al cargar médicos:', error);
+        }
+      }
+    });
+
+    document.getElementById('btnAsignar').addEventListener('click', function () {
+      const idMedico = document.getElementById('medico').value;
+      if (!idMedico) {
+        alert('Seleccione un médico');
+        return;
+      }
+      document.querySelector('#asignarModal form').submit();
+    });
+
+  div.modal.fade(id="reasignarModal" tabindex="-1")
+    .modal-dialog.modal-lg
+      .modal-content
+        .modal-header
+          h5.modal-title Reasignar Paciente
+          button.btn-close(type="button" data-bs-dismiss="modal")
+        .modal-body
+          .mb-3
+            label.form-label(for="buscarDni") Buscar por DNI
+            input.form-control(type="text" id="buscarDni" placeholder="Ingrese DNI")
+            button.btn.btn-primary.mt-2(type="button" id="btnBuscar") Buscar
+          .row(id="datosPaciente" style="display: none;")
+            .col-md-6
+              h6 Datos del Paciente
+              p Lugar: <span id="reasignar-lugar"></span>
+              p Nombre: <span id="reasignar-nombre"></span>
+              p DNI: <span id="reasignar-dni"></span>
+              p Edad: <span id="reasignar-edad"></span>
+            .col-md-6
+              h6 Seleccionar Médico
+              label.form-label(for="reasignar-especialidad") Especialidad
+              select.form-select(id="reasignar-especialidad" name="especialidad")
+                option(value="") Seleccione una especialidad
+                each especialidad in especialidades
+                  option(value=`${especialidad.id_especialidad}`)= especialidad.nombre
+              label.form-label(for="reasignar-medico") Médico
+              select.form-select(id="reasignar-medico" name="id_medico" required)
+                option(value="") Seleccione un médico
+          input(type="hidden" name="id_admision" id="reasignar-id_admision")
+        .modal-footer
+          button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Cancelar
+          button.btn.btn-primary(type="submit" id="btnReasignar" style="display: none;") Reasignar
+
+  script.
+    document.getElementById('btnBuscar').addEventListener('click', async function () {
+      const dni = document.getElementById('buscarDni').value.trim();
+      if (!dni) {
+        alert('Ingrese un DNI');
+        return;
+      }
+      try {
+        const response = await fetch(`/medico/api/buscarPaciente?dni=${dni}`);
+        const data = await response.json();
+        if (data.error) {
+          alert(data.error);
+          document.getElementById('datosPaciente').style.display = 'none';
+          document.getElementById('btnReasignar').style.display = 'none';
+          return;
+        }
+        document.getElementById('reasignar-id_admision').value = data.id_admision;
+        document.getElementById('reasignar-lugar').textContent = data.lugar;
+        document.getElementById('reasignar-nombre').textContent = data.nombre;
+        document.getElementById('reasignar-dni').textContent = data.dni;
+        document.getElementById('reasignar-edad').textContent = data.edad;
+        document.getElementById('datosPaciente').style.display = 'flex';
+        document.getElementById('btnReasignar').style.display = 'inline-block';
+      } catch (error) {
+        console.error('Error al buscar paciente:', error);
+        alert('Error al buscar paciente');
+      }
+    });
+
+    document.getElementById('reasignar-especialidad').addEventListener('change', async function () {
+      const especialidadId = this.value;
+      const medicoSelect = document.getElementById('reasignar-medico');
+      medicoSelect.innerHTML = '<option value="">Seleccione un médico</option>';
+      if (especialidadId) {
+        try {
+          const response = await fetch(`/medico/api/medicos?especialidadId=${especialidadId}`);
+          const medicos = await response.json();
+          medicos.forEach(medico => {
+            const option = document.createElement('option');
+            option.value = medico.id;
+            option.textContent = medico.nombre;
+            medicoSelect.appendChild(option);
+          });
+        } catch (error) {
+          console.error('Error al cargar médicos:', error);
+        }
+      }
+    });
+
+    document.getElementById('btnReasignar').addEventListener('click', function () {
+      const idMedico = document.getElementById('reasignar-medico').value;
+      if (!idMedico) {
+        alert('Seleccione un médico');
+        return;
+      }
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = '/medico/asignarPaciente';
+      form.style.display = 'none';
+
+      const idAdmision = document.createElement('input');
+      idAdmision.type = 'hidden';
+      idAdmision.name = 'id_admision';
+      idAdmision.value = document.getElementById('reasignar-id_admision').value;
+      form.appendChild(idAdmision);
+
+      const idMedicoInput = document.createElement('input');
+      idMedicoInput.type = 'hidden';
+      idMedicoInput.name = 'id_medico';
+      idMedicoInput.value = idMedico;
+      form.appendChild(idMedicoInput);
+
+      document.body.appendChild(form);
+      form.submit();
+    });
