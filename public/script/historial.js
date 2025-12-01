@@ -237,21 +237,6 @@ function crearTarjetaAntecedente(
   return div;
 }
 
-// Inicialización de Alergias
-// (Sin placeholders iniciales)
-
-// Inicialización de Enfermedades
-// (Sin placeholders iniciales)
-
-// Inicialización de Medicación Actual
-// (Sin placeholders iniciales)
-
-// Inicialización de Cirugías Previas
-// (Sin placeholders iniciales)
-
-// Inicialización de Antecedentes Familiares
-// (Sin placeholders iniciales)
-
 // Eventos para agregar tarjetas
 btnAgregarAlergia.addEventListener("click", () => {
   contenedorAlergias.appendChild(crearTarjetaAlergia());
