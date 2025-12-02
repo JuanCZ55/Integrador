@@ -33,6 +33,7 @@ Prescripciones.init(
     estado: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      comment: "1 = Activo, 2 = Inactivo/Eliminado",
     },
   },
   {

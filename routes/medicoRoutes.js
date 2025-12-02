@@ -7,12 +7,23 @@ const {
   getMedicosByEspecialidad,
   buscarPaciente,
 } = require("../controllers/medico/sinAsingarController");
+const {
+  getPrescripcion,
+  guardarPrescripcion,
+  modificarPrescripcion,
+  eliminarPrescripcion,
+} = require("../controllers/medico/prescripcionController");
 const { getMisPacientes } = require("../controllers/medico/misPacientes");
 
 router.get("/sinAsignar", getSinAsignar);
 router.post("/asignarPaciente", postAsignacion);
 router.get("/api/medicos", getMedicosByEspecialidad);
 router.get("/api/buscarPaciente", buscarPaciente);
+
+router.get("/prescripcion", getPrescripcion);
+router.post("/guardarPrescripcion", guardarPrescripcion);
+router.post("/modificarPrescripcion", modificarPrescripcion);
+router.post("/eliminarPrescripcion", eliminarPrescripcion);
 
 router.get("/misPacientes", getMisPacientes);
 
