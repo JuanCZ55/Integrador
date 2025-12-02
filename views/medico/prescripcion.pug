@@ -1,0 +1,133 @@
+extends ../layout.pug
+include ../mixins.pug
+block navbar
+  include ../mixinsNavbar.pug
+  +navbarMedico()
+block main 
+  +alert(mensajeAlert, alertClass)
+  div.container.mt-3.p-3.panel-blur.rounded-5
+    .d-flex.align-items-center
+      h1.me-auto Prescripción Médica
+      h2.me-3 Paciente: #{paciente.nombre} (DNI: #{paciente.dni})
+    h3.mt-4 Prescripciones Anteriores
+    if prescripciones && prescripciones.length
+      each p in prescripciones
+        .card.mb-3
+          .card-body
+            .row
+              .col-md-3
+                strong Medicamento:
+                p= p.medicamento
+              .col-md-3
+                strong Dosis:
+                p= p.dosis
+              .col-md-3
+                strong Frecuencia:
+                p= p.frecuencia
+              .col-md-3
+                strong Vía de Administración:
+                p= p.via_administracion
+            .d-flex.justify-content-end
+              button.btn.btn-warning.btn-sm.me-2(type="button" data-bs-toggle="modal" data-bs-target="#modalModificar" onclick=`cargarModificar(${p.id_prescripcion}, '${p.medicamento}', '${p.dosis}', '${p.frecuencia}', '${p.via_administracion}')`) Modificar
+              form(method="POST" action="/medico/eliminarPrescripcion" style="display:inline-block; margin:0;")
+                input(type="hidden" name="id" value=p.id_prescripcion)
+                input(type="hidden" name="id_admision" value=paciente.id_admision)
+                button.btn.btn-danger.btn-sm(type="submit") Eliminar
+    else
+      p.text-muted No hay prescripciones anteriores.
+    h3.mt-4 Nueva Prescripción
+    form(method="POST" action="/medico/guardarPrescripcion")
+      input(type="hidden" name="id_admision" value=`${paciente.id_admision}`)
+      #prescripciones-container
+            label.form-label(for="medicamento") Medicamento
+            input.form-control(type="text" name="prescripciones[0][medicamento]" required)
+          .row  
+            .mb-3.col-md-4
+              label.form-label(for="dosis") Dosis
+              input.form-control(type="text" name="prescripciones[0][dosis]" required)
+            .mb-3.col-md-4
+              label.form-label(for="frecuencia") Frecuencia
+              input.form-control(type="text" name="prescripciones[0][frecuencia]" required)
+            .mb-3.col-md-4
+              label.form-label(for="duracion") Vía de Administración
+              input.form-control(type="text" name="prescripciones[0][via_administracion]" required)
+          button.btn.btn-danger.btn-sm(type="button" onclick="removerPrescripcion(this)") Remover
+      .d-flex.justify-content-between.mt-3
+        button.btn.btn-secondary(type="button" id="agregarPrescripcion") Agregar Prescripción
+        button.btn.btn-success(type="submit") Guardar Prescripciones
+
+  // Modal para modificar prescripción
+  .modal.fade(id="modalModificar" tabindex="-1")
+    .modal-dialog
+      .modal-content
+        .modal-header
+          h5.modal-title Modificar Prescripción
+          button.btn-close(type="button" data-bs-dismiss="modal")
+        .modal-body
+          form(method="POST" action="/medico/modificarPrescripcion")
+            input(type="hidden" name="id_prescripcion" id="mod_id_prescripcion")
+            input(type="hidden" name="id_admision" value=`${paciente.id_admision}`)
+            .mb-3
+              label.form-label(for="mod_medicamento") Medicamento
+              input.form-control(type="text" name="medicamento" id="mod_medicamento" required)
+            .row
+              .mb-3.col-md-4
+                label.form-label(for="mod_dosis") Dosis
+                input.form-control(type="text" name="dosis" id="mod_dosis" required)
+              .mb-3.col-md-4
+                label.form-label(for="mod_frecuencia") Frecuencia
+                input.form-control(type="text" name="frecuencia" id="mod_frecuencia" required)
+              .mb-3.col-md-4
+                label.form-label(for="mod_duracion") Vía de Administración
+                input.form-control(type="text" name="via_administracion" id="mod_duracion" required)
+            .modal-footer
+              button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Cancelar
+              button.btn.btn-primary(type="submit") Guardar Cambios
+
+  script.
+    document.getElementById('agregarPrescripcion').addEventListener('click', function() {
+      const container = document.getElementById('prescripciones-container');
+      const index = container.querySelectorAll('.prescripcion-item').length;
+      const html = `
+        <div class="prescripcion-item mb-4 p-3 border rounded">
+          <div class="mb-3">
+            <label class="form-label">Medicamento</label>
+            <input class="form-control" type="text" name="prescripciones[${index}][medicamento]" required>
+          </div>
+          <div class="row">
+            <div class="mb-3 col-md-4">
+              <label class="form-label">Dosis</label>
+              <input class="form-control" type="text" name="prescripciones[${index}][dosis]" required>
+            </div>
+            <div class="mb-3 col-md-4">
+              <label class="form-label">Frecuencia</label>
+              <input class="form-control" type="text" name="prescripciones[${index}][frecuencia]" required>
+            </div>
+            <div class="mb-3 col-md-4">
+              <label class="form-label">Vía de Administración</label>
+              <input class="form-control" type="text" name="prescripciones[${index}][via_administracion]" required>
+            </div>
+          </div>
+          <button class="btn btn-danger btn-sm" type="button" onclick="removerPrescripcion(this)">Remover</button>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', html);
+    });
+
+    function removerPrescripcion(button) {
+      const container = document.getElementById('prescripciones-container');
+      const items = container.querySelectorAll('.prescripcion-item');
+      if (items.length > 1) {
+        button.closest('.prescripcion-item').remove();
+      } else {
+        alert('Debe haber al menos una prescripción');
+      }
+    }
+
+    function cargarModificar(id, medicamento, dosis, frecuencia, via_administracion) {
+      document.getElementById('mod_id_prescripcion').value = id;
+      document.getElementById('mod_medicamento').value = medicamento;
+      document.getElementById('mod_dosis').value = dosis;
+      document.getElementById('mod_frecuencia').value = frecuencia;
+      document.getElementById('mod_duracion').value = via_administracion;
+    }
