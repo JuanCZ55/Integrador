@@ -106,25 +106,28 @@ Medico.hasMany(DiagnosticosEpisodio, {
   foreignKey: "id_medico",
   as: "diagnosticosEpisodio",
 });
-DiagnosticosEpisodio.belongsTo(Medico, { foreignKey: "id_medico" });
+DiagnosticosEpisodio.belongsTo(Medico, {
+  foreignKey: "id_medico",
+  as: "medico",
+});
 
 Medico.hasMany(Prescripciones, {
   foreignKey: "id_medico",
   as: "prescripciones",
 });
-Prescripciones.belongsTo(Medico, { foreignKey: "id_medico" });
+Prescripciones.belongsTo(Medico, { foreignKey: "id_medico", as: "medico" });
 
 Medico.hasMany(SolicitudEstudios, {
   foreignKey: "id_medico",
   as: "solicitudesEstudios",
 });
-SolicitudEstudios.belongsTo(Medico, { foreignKey: "id_medico" });
+SolicitudEstudios.belongsTo(Medico, { foreignKey: "id_medico", as: "medico" });
 
 Medico.hasMany(AltaHospitalaria, {
   foreignKey: "id_medico",
   as: "altasHospitalarias",
 });
-AltaHospitalaria.belongsTo(Medico, { foreignKey: "id_medico" });
+AltaHospitalaria.belongsTo(Medico, { foreignKey: "id_medico", as: "medico" });
 
 // Relaciones Especialidad
 Especialidad.belongsToMany(Medico, {
@@ -170,16 +173,28 @@ Admision.hasMany(EvaluacionMedica, {
   foreignKey: "id_admision",
   as: "evolucionesMedicas",
 });
-EvaluacionMedica.belongsTo(Admision, { foreignKey: "id_admision" });
-Medico.hasMany(EvaluacionMedica, { foreignKey: "id_medico" });
-EvaluacionMedica.belongsTo(Medico, { foreignKey: "id_medico" });
+EvaluacionMedica.belongsTo(Admision, {
+  foreignKey: "id_admision",
+  as: "admision",
+});
+Medico.hasMany(EvaluacionMedica, {
+  foreignKey: "id_medico",
+  as: "evaluacionesMedicas",
+});
+EvaluacionMedica.belongsTo(Medico, { foreignKey: "id_medico", as: "medico" });
 
 Admision.hasMany(EvaluacionEnfermeria, {
   foreignKey: "id_admision",
   as: "evolucionesEnfermeria",
 });
-EvaluacionEnfermeria.belongsTo(Admision, { foreignKey: "id_admision" });
-Enfermero.hasMany(EvaluacionEnfermeria, { foreignKey: "id_enfermero" });
+EvaluacionEnfermeria.belongsTo(Admision, {
+  foreignKey: "id_admision",
+  as: "admision",
+});
+Enfermero.hasMany(EvaluacionEnfermeria, {
+  foreignKey: "id_enfermero",
+  as: "evaluacionesEnfermeria",
+});
 EvaluacionEnfermeria.belongsTo(Enfermero, {
   foreignKey: "id_enfermero",
   as: "enfermero",
@@ -189,25 +204,37 @@ Admision.hasMany(DiagnosticosEpisodio, {
   foreignKey: "id_admision",
   as: "diagnosticosEpisodio",
 });
-DiagnosticosEpisodio.belongsTo(Admision, { foreignKey: "id_admision" });
+DiagnosticosEpisodio.belongsTo(Admision, {
+  foreignKey: "id_admision",
+  as: "admision",
+});
 
 Admision.hasMany(Prescripciones, {
   foreignKey: "id_admision",
   as: "prescripciones",
 });
-Prescripciones.belongsTo(Admision, { foreignKey: "id_admision" });
+Prescripciones.belongsTo(Admision, {
+  foreignKey: "id_admision",
+  as: "admision",
+});
 
 Admision.hasMany(SolicitudEstudios, {
   foreignKey: "id_admision",
   as: "solicitudesEstudios",
 });
-SolicitudEstudios.belongsTo(Admision, { foreignKey: "id_admision" });
+SolicitudEstudios.belongsTo(Admision, {
+  foreignKey: "id_admision",
+  as: "admision",
+});
 
 Admision.hasOne(AltaHospitalaria, {
   foreignKey: "id_admision",
   as: "altaHospitalaria",
 });
-AltaHospitalaria.belongsTo(Admision, { foreignKey: "id_admision" });
+AltaHospitalaria.belongsTo(Admision, {
+  foreignKey: "id_admision",
+  as: "admision",
+});
 
 // Relaciones entre Prescripciones y AdministracionMedicamentos
 Prescripciones.hasMany(AdministracionMedicamentos, {
@@ -216,6 +243,7 @@ Prescripciones.hasMany(AdministracionMedicamentos, {
 });
 AdministracionMedicamentos.belongsTo(Prescripciones, {
   foreignKey: "id_prescripcion",
+  as: "prescripcion",
 });
 
 // Relaciones Motivos
