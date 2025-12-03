@@ -1,0 +1,27 @@
+extends ../layout.pug
+include ../mixins.pug
+block navbar
+  include ../mixinsNavbar.pug
+  +navbarMedico()
+block main 
+  +alert(mensajeAlert, alertClass)
+  div.container.mt-3.p-3.bg-body-secondary.rounded-5
+    h1 Mis pacientes
+    table.table.table-striped
+      thead
+        tr
+          th Lugar
+          th Nombre 
+          th DNI
+          th Edad
+          th Accion
+      tbody
+        if pacientes && pacientes.length
+          each paciente, i in pacientes
+            tr
+              td #{paciente.lugar}
+              td #{paciente.nombre}
+              td #{paciente.dni}
+              td #{paciente.edad}
+              td 
+                a.btn.btn-primary(href=`/medico/historia/${paciente.id_admision}`) Ver paciente
