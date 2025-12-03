@@ -1,0 +1,73 @@
+extends ../layout.pug
+include ../mixins.pug
+block navbar
+  include ../mixinsNavbar.pug
+  +navbarMedico()
+block main
+  +alert(mensajeAlert, alertClass)
+  .container
+    +navbarM(0, paciente.id_admision)
+  div.container.mt-3.p-3.panel-blur.rounded-5
+    .d-flex.align-items-center.mb-3
+      h1.me-auto Evaluación Médica
+      h2.me-3 Paciente: #{paciente.nombre} (DNI: #{paciente.dni})
+
+    if evaluaciones && evaluaciones.length > 0
+      h3.mb-3 Evaluaciones Previas
+      .table-responsive
+        table.table.table-striped
+          thead
+            tr
+              th Fecha
+              th Médico
+              th Observaciones
+              th Acciones
+          tbody
+            each eval in evaluaciones
+              tr
+                td= new Date(eval.fecha_eval).toLocaleDateString('es-ES')
+                td= `${eval.medico.empleado.persona.nombre} ${eval.medico.empleado.persona.apellido}`
+                td= eval.observaciones
+                td
+                  button.btn.btn-sm.btn-outline-primary(type="button", onclick=`openEditModal(${eval.id_evaluacion}, '${eval.observaciones.replace(/'/g, "\\'")}')`) Editar
+                  form(action="/medico/evaluacion/delete", method="POST", style="display:inline")
+                    input(type="hidden", name="id_evaluacion", value=eval.id_evaluacion)
+                    input(type="hidden", name="id_admision", value=paciente.id_admision)
+                    button.btn.btn-sm.btn-outline-danger.ms-2(type="submit") Eliminar
+    else
+      p.text-muted No hay evaluaciones previas para este paciente.
+
+    h3.mt-4 Nueva Evaluación
+    form(action="/medico/evaluacion", method="POST")
+      input(type="hidden", name="id_admision", value=paciente.id_admision)
+      .mb-3
+        label.form-label(for="observaciones") Observaciones
+        textarea.form-control#observaciones(name="observaciones", rows="4", required) 
+      button.btn.btn-primary(type="submit") Guardar Evaluación
+
+  
+
+  
+  .modal.fade(id="editModal", tabindex="-1")
+    .modal-dialog
+      .modal-content
+        form(action="/medico/evaluacion", method="POST")
+          input(type="hidden", name="id_evaluacion", id="editId")
+          input(type="hidden", name="id_admision", value=paciente.id_admision)
+          .modal-header
+            h5.modal-title Editar Evaluación
+            button.btn-close(type="button", data-bs-dismiss="modal")
+          .modal-body
+            .mb-3
+              label.form-label(for="editObservaciones") Observaciones
+              textarea.form-control#editObservaciones(name="observaciones", rows="4", required)
+          .modal-footer
+            button.btn.btn-secondary(type="button", data-bs-dismiss="modal") Cancelar
+            button.btn.btn-primary(type="submit") Guardar Cambios
+
+  script.
+    function openEditModal(id, obs) {
+      document.getElementById('editId').value = id;
+      document.getElementById('editObservaciones').value = obs;
+      new bootstrap.Modal(document.getElementById('editModal')).show();
+    }
