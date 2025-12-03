@@ -33,7 +33,8 @@ DiagnosticosEpisodio.init(
     sequelize,
     modelName: "DiagnosticosEpisodio",
     tableName: "diagnosticos_episodio",
-    timestamps: false,
+    timestamps: true,
+    paranoid: true,
   }
 );
 

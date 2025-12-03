@@ -40,7 +40,7 @@ Prescripciones.init(
     sequelize,
     modelName: "Prescripciones",
     tableName: "prescripciones",
-    timestamps: false,
+    timestamps: true,
   }
 );
 

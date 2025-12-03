@@ -14,7 +14,7 @@ SolicitudEstudios.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    id_medico_solicitante: {
+    id_medico: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -33,7 +33,8 @@ SolicitudEstudios.init(
     sequelize,
     modelName: "SolicitudEstudios",
     tableName: "solicitud_estudios",
-    timestamps: false,
+    timestamps: true,
+    paranoid: true,
   }
 );
 

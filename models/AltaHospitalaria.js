@@ -25,12 +25,20 @@ AltaHospitalaria.init(
     instrucciones: {
       type: DataTypes.TEXT,
     },
+    fecha: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    medicacion: {
+      type: DataTypes.STRING,
+    },
   },
   {
     sequelize,
     modelName: "AltaHospitalaria",
     tableName: "alta_hospitalaria",
-    timestamps: false,
+    timestamps: true,
+    paranoid: true,
   }
 );
 
