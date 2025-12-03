@@ -5,6 +5,8 @@ block navbar
   +navbarMedico()
 block main 
   +alert(mensajeAlert, alertClass)
+  .container
+    +navbarM(3, paciente.id_admision)
   div.container.mt-3.p-3.panel-blur.rounded-5
     .d-flex.align-items-center
       h1.me-auto Prescripción Médica
@@ -39,19 +41,20 @@ block main
     form(method="POST" action="/medico/guardarPrescripcion")
       input(type="hidden" name="id_admision" value=`${paciente.id_admision}`)
       #prescripciones-container
-            label.form-label(for="medicamento") Medicamento
-            input.form-control(type="text" name="prescripciones[0][medicamento]" required)
-          .row  
-            .mb-3.col-md-4
-              label.form-label(for="dosis") Dosis
-              input.form-control(type="text" name="prescripciones[0][dosis]" required)
-            .mb-3.col-md-4
-              label.form-label(for="frecuencia") Frecuencia
-              input.form-control(type="text" name="prescripciones[0][frecuencia]" required)
-            .mb-3.col-md-4
-              label.form-label(for="duracion") Vía de Administración
-              input.form-control(type="text" name="prescripciones[0][via_administracion]" required)
-          button.btn.btn-danger.btn-sm(type="button" onclick="removerPrescripcion(this)") Remover
+        .mb-3
+          label.form-label(for="medicamento") Medicamento
+          input.form-control(type="text" name="prescripciones[0][medicamento]" required)
+        .row
+          .mb-3.col-md-4
+            label.form-label(for="dosis") Dosis
+            input.form-control(type="text" name="prescripciones[0][dosis]" required)
+          .mb-3.col-md-4
+            label.form-label(for="frecuencia") Frecuencia
+            input.form-control(type="text" name="prescripciones[0][frecuencia]" required)
+          .mb-3.col-md-4
+            label.form-label(for="duracion") Vía de Administración
+            input.form-control(type="text" name="prescripciones[0][via_administracion]" required)
+        button.btn.btn-danger.btn-sm(type="button" onclick="removerPrescripcion(this)") Remover
       .d-flex.justify-content-between.mt-3
         button.btn.btn-secondary(type="button" id="agregarPrescripcion") Agregar Prescripción
         button.btn.btn-success(type="submit") Guardar Prescripciones
