@@ -68,3 +68,35 @@ mixin navbar(op, paciente,id_admision)
         if paciente && paciente.persona
           li.nav-item.ms-auto
             span.nav.fw-bold Paciente: #{paciente.persona.nombre} #{paciente.persona.apellido} - DNI: #{paciente.persona.dni}
+
+mixin navbarM(op, id_admision)
+  - const active = i => (op === i ? "active" : "")
+
+  nav
+    ul.nav.nav-pills(role="tablist")
+
+      // Historia
+      li.nav-item
+        a.nav-link(class=active(5), href=`./historia?id_admision=${id_admision}`) Historia
+        
+      // Evaluacion
+      li.nav-item
+        a.nav-link(class=active(0), href=`./evaluacion?id_admision=${id_admision}`) Evaluacion
+
+      // Diagnostico
+      li.nav-item
+        a.nav-link(class=active(1), href=`./diagnostico?id_admision=${id_admision}`) Diagnostico
+
+      // Estudios
+      li.nav-item
+        a.nav-link(class=active(2), href=`./estudios?id_admision=${id_admision}`) Estudios
+
+      // Prescripcion
+      li.nav-item
+        a.nav-link(class=active(3), href=`./prescripcion?id_admision=${id_admision}`) Prescripcion
+
+      
+      // Alta
+      li.nav-item
+        a.nav-link(class=active(4), href=`./alta?id_admision=${id_admision}`) Alta
+      
