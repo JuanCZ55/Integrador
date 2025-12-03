@@ -115,10 +115,10 @@ Medico.hasMany(Prescripciones, {
 Prescripciones.belongsTo(Medico, { foreignKey: "id_medico" });
 
 Medico.hasMany(SolicitudEstudios, {
-  foreignKey: "id_medico_solicitante",
+  foreignKey: "id_medico",
   as: "solicitudesEstudios",
 });
-SolicitudEstudios.belongsTo(Medico, { foreignKey: "id_medico_solicitante" });
+SolicitudEstudios.belongsTo(Medico, { foreignKey: "id_medico" });
 
 Medico.hasMany(AltaHospitalaria, {
   foreignKey: "id_medico",
