@@ -1,0 +1,83 @@
+extends ../layout.pug
+include ../mixins.pug
+block navbar
+  include ../mixinsNavbar.pug
+  +navbarMedico()
+block main
+  +alert(mensajeAlert, alertClass)
+  if paciente
+    .container
+      +navbarM(4, paciente.id_admision)
+    div.container.mt-3.p-3.panel-blur.rounded-5
+      .d-flex.align-items-center.mb-3
+        h1.me-auto Alta Hospitalaria
+        h2.me-3 Paciente: #{paciente.nombre} (DNI: #{paciente.dni})
+
+      if alta
+        h3.mb-3 Alta Actual
+        .card
+          .card-body
+            p <strong>Motivo del Alta:</strong> #{alta.motivo_alta}
+            p <strong>Instrucciones:</strong> #{alta.instrucciones}
+            p <strong>Medicación:</strong> #{alta.medicacion}
+            p <strong>Fecha:</strong> #{new Date(alta.fecha).toLocaleDateString('es-ES')}
+            p <strong>Médico:</strong> #{alta.medico.empleado.persona.nombre} #{alta.medico.empleado.persona.apellido}
+            button.btn.btn-outline-primary.mt-2(type="button", onclick=`openEditModal('${alta.motivo_alta}', '${alta.instrucciones.replace(/'/g, "\\'")}', '${alta.medicacion}')`) Editar Alta
+
+      h3.mt-4 #{alta ? 'Editar' : 'Nueva'} Alta Hospitalaria
+      form(action="/medico/alta", method="POST")
+        input(type="hidden", name="id_admision", value=paciente.id_admision)
+        .mb-3
+          label.form-label(for="motivo_alta") Motivo del Alta
+          input.form-control#motivo_alta(name="motivo_alta", list="motivos", value=alta ? alta.motivo_alta : '', required)
+          datalist#motivos
+            option(value="Curación")
+            option(value="Traslado")
+            option(value="Muerte")
+        .mb-3
+          label.form-label(for="instrucciones") Instrucciones
+          textarea.form-control#instrucciones(name="instrucciones", rows="4", required)= alta ? alta.instrucciones : ''
+        .mb-3
+          label.form-label(for="medicacion") Medicación
+          input.form-control#medicacion(name="medicacion", value=alta ? alta.medicacion : '', required)
+        button.btn.btn-primary(type="submit") #{alta ? 'Actualizar' : 'Guardar'} Alta
+
+    
+
+    .modal.fade(id="editModal", tabindex="-1")
+      .modal-dialog
+        .modal-content
+          form(action="/medico/alta", method="POST")
+            input(type="hidden", name="id_admision", value=paciente.id_admision)
+            .modal-header
+              h5.modal-title Editar Alta Hospitalaria
+              button.btn-close(type="button", data-bs-dismiss="modal")
+            .modal-body
+              .mb-3
+                label.form-label(for="editMotivo") Motivo del Alta
+                input.form-control#editMotivo(name="motivo_alta", list="motivos", required)
+                datalist#motivos
+                  option(value="Curación")
+                  option(value="Traslado")
+                  option(value="Muerte")
+              .mb-3
+                label.form-label(for="editInstrucciones") Instrucciones
+                textarea.form-control#editInstrucciones(name="instrucciones", rows="4", required)
+              .mb-3
+                label.form-label(for="editMedicacion") Medicación
+                input.form-control#editMedicacion(name="medicacion", required)
+            .modal-footer
+              button.btn.btn-secondary(type="button", data-bs-dismiss="modal") Cancelar
+              button.btn.btn-primary(type="submit") Actualizar Alta
+
+  else
+    .container.mt-3
+      .alert.alert-warning No se encontró el paciente.
+
+  script.
+    function openEditModal(motivo, inst, med) {
+      document.getElementById('editMotivo').value = motivo;
+      document.getElementById('editInstrucciones').value = inst;
+      document.getElementById('editMedicacion').value = med;
+      new bootstrap.Modal(document.getElementById('editModal')).show();
+    }

@@ -1,0 +1,86 @@
+extends ../layout.pug
+include ../mixins.pug
+block navbar
+  include ../mixinsNavbar.pug
+  +navbarMedico()
+block main
+  +alert(mensajeAlert, alertClass)
+  if paciente
+    .container
+      +navbarM(2, paciente.id_admision)
+    div.container.mt-3.p-3.panel-blur.rounded-5
+      .d-flex.align-items-center.mb-3
+        h1.me-auto Estudios
+        h2.me-3 Paciente: #{paciente.nombre} (DNI: #{paciente.dni})
+
+      if solicitudes && solicitudes.length > 0
+        h3.mb-3 Solicitudes de Estudios Previas
+        .table-responsive
+          table.table.table-striped
+            thead
+              tr
+                th Fecha
+                th Médico
+                th Estudio
+                th Justificación
+                th Acciones
+            tbody
+              each sol in solicitudes
+                tr
+                  td= new Date(sol.createdAt).toLocaleDateString('es-ES')
+                  td= `${sol.medico.empleado.persona.nombre} ${sol.medico.empleado.persona.apellido}`
+                  td= sol.estudio
+                  td= sol.justificacion
+                  td
+                    button.btn.btn-sm.btn-outline-primary(type="button", onclick=`openEditModal(${sol.id_solicitud}, '${sol.estudio.replace(/'/g, "\\'")}', '${sol.justificacion.replace(/'/g, "\\'")}')`) Editar
+                    form(action="/medico/estudios/delete", method="POST", style="display:inline")
+                      input(type="hidden", name="id_solicitud", value=sol.id_solicitud)
+                      input(type="hidden", name="id_admision", value=paciente.id_admision)
+                      button.btn.btn-sm.btn-outline-danger.ms-2(type="submit") Eliminar
+      else
+        p.text-muted No hay solicitudes de estudios previas para este paciente.
+
+      h3.mt-4 Nueva Solicitud de Estudios
+      form(action="/medico/estudios", method="POST")
+        input(type="hidden", name="id_admision", value=paciente.id_admision)
+        .mb-3
+          label.form-label(for="estudio") Estudio
+          textarea.form-control#estudio(name="estudio", rows="2", required)
+        .mb-3
+          label.form-label(for="justificacion") Justificación
+          textarea.form-control#justificacion(name="justificacion", rows="4", required)
+        button.btn.btn-primary(type="submit") Guardar Solicitud
+
+    
+
+    .modal.fade(id="editModal", tabindex="-1")
+      .modal-dialog
+        .modal-content
+          form(action="/medico/estudios", method="POST")
+            input(type="hidden", name="id_solicitud", id="editId")
+            input(type="hidden", name="id_admision", value=paciente.id_admision)
+            .modal-header
+              h5.modal-title Editar Solicitud de Estudios
+              button.btn-close(type="button", data-bs-dismiss="modal")
+            .modal-body
+              .mb-3
+                label.form-label(for="editEstudio") Estudio
+                textarea.form-control#editEstudio(name="estudio", rows="2", required)
+              .mb-3
+                label.form-label(for="editJustificacion") Justificación
+                textarea.form-control#editJustificacion(name="justificacion", rows="4", required)
+            .modal-footer
+              button.btn.btn-secondary(type="button", data-bs-dismiss="modal") Cancelar
+              button.btn.btn-primary(type="submit") Guardar Cambios
+
+  else
+    .container.mt-3
+      .alert.alert-warning No se encontró el paciente.
+
+  script.
+    function openEditModal(id, est, just) {
+      document.getElementById('editId').value = id;
+      document.getElementById('editEstudio').value = est;
+      document.getElementById('editJustificacion').value = just;
+      new bootstrap.Modal(document.getElementById('editModal')).show();
+    }

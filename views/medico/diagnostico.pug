@@ -1,0 +1,92 @@
+extends ../layout.pug
+include ../mixins.pug
+block navbar
+  include ../mixinsNavbar.pug
+  +navbarMedico()
+block main
+  +alert(mensajeAlert, alertClass)
+  if paciente
+    .container
+      +navbarM(1, paciente.id_admision)
+    div.container.mt-3.p-3.panel-blur.rounded-5
+      .d-flex.align-items-center.mb-3
+        h1.me-auto Diagnóstico
+        h2.me-3 Paciente: #{paciente.nombre} (DNI: #{paciente.dni})
+
+      if diagnosticos && diagnosticos.length > 0
+        h3.mb-3 Diagnósticos Previos
+        .table-responsive
+          table.table.table-striped
+            thead
+              tr
+                th Fecha
+                th Médico
+                th Tipo
+                th Diagnóstico
+                th Acciones
+            tbody
+              each diag in diagnosticos
+                tr
+                  td= new Date(diag.fecha_hora).toLocaleDateString('es-ES')
+                  td= `${diag.medico.empleado.persona.nombre} ${diag.medico.empleado.persona.apellido}`
+                  td= diag.tipo
+                  td= diag.diagnostico
+                  td
+                    button.btn.btn-sm.btn-outline-primary(type="button", onclick=`openEditModal(${diag.id_diag_episodio}, '${diag.tipo}', '${diag.diagnostico.replace(/'/g, "\\'")}')`) Editar
+                    form(action="/medico/diagnostico/delete", method="POST", style="display:inline")
+                      input(type="hidden", name="id_diag_episodio", value=diag.id_diag_episodio)
+                      input(type="hidden", name="id_admision", value=paciente.id_admision)
+                      button.btn.btn-sm.btn-outline-danger.ms-2(type="submit") Eliminar
+      else
+        p.text-muted No hay diagnósticos previos para este paciente.
+
+      h3.mt-4 Nuevo Diagnóstico
+      form(action="/medico/diagnostico", method="POST")
+        input(type="hidden", name="id_admision", value=paciente.id_admision)
+        .mb-3
+          label.form-label(for="tipo") Tipo
+          input.form-control#type(name="tipo", list="tipos", required)
+        datalist#tipos
+          option(value="Sin Confirmar")
+          option(value="Confirmar")
+        .mb-3
+          label.form-label(for="diagnostico") Diagnóstico
+          textarea.form-control#diagnostico(name="diagnostico", rows="4", required)
+        button.btn.btn-primary(type="submit") Guardar Diagnóstico
+
+    
+
+    .modal.fade(id="editModal", tabindex="-1")
+      .modal-dialog
+        .modal-content
+          form(action="/medico/diagnostico", method="POST")
+            input(type="hidden", name="id_diag_episodio", id="editId")
+            input(type="hidden", name="id_admision", value=paciente.id_admision)
+            .modal-header
+              h5.modal-title Editar Diagnóstico
+              button.btn-close(type="button", data-bs-dismiss="modal")
+            .modal-body
+              .mb-3
+                label.form-label(for="editTipo") Tipo
+                input.form-control#editTipo(name="tipo", list="tipos", required)
+              datalist#tipos
+                option(value="Sin Confirmar")
+                option(value="Confirmar")
+              .mb-3
+                label.form-label(for="editDiagnostico") Diagnóstico
+                textarea.form-control#editDiagnostico(name="diagnostico", rows="4", required)
+            .modal-footer
+              button.btn.btn-secondary(type="button", data-bs-dismiss="modal") Cancelar
+              button.btn.btn-primary(type="submit") Guardar Cambios
+
+  else
+    .container.mt-3
+      .alert.alert-warning No se encontró el paciente.
+
+  script.
+    function openEditModal(id, tipo, diag) {
+      document.getElementById('editId').value = id;
+      document.getElementById('editTipo').value = tipo;
+      document.getElementById('editDiagnostico').value = diag;
+      new bootstrap.Modal(document.getElementById('editModal')).show();
+    }

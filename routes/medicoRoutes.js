@@ -14,6 +14,22 @@ const {
   eliminarPrescripcion,
 } = require("../controllers/medico/prescripcionController");
 const { getMisPacientes } = require("../controllers/medico/misPacientes");
+const {
+  getEvaluacion,
+  postEvaluacion,
+  postDeleteEvaluacion,
+} = require("../controllers/medico/evaluacionController");
+const {
+  getDiagnostico,
+  postDiagnostico,
+  postDeleteDiagnostico,
+} = require("../controllers/medico/diagnosticoController");
+const {
+  getEstudios,
+  postEstudios,
+  postDeleteEstudios,
+} = require("../controllers/medico/estudiosController");
+const { getAlta, postAlta } = require("../controllers/medico/altaController");
 
 router.get("/sinAsignar", getSinAsignar);
 router.post("/asignarPaciente", postAsignacion);
@@ -26,6 +42,21 @@ router.post("/modificarPrescripcion", modificarPrescripcion);
 router.post("/eliminarPrescripcion", eliminarPrescripcion);
 
 router.get("/misPacientes", getMisPacientes);
+
+router.get("/evaluacion", getEvaluacion);
+router.post("/evaluacion", postEvaluacion);
+router.post("/evaluacion/delete", postDeleteEvaluacion);
+
+router.get("/diagnostico", getDiagnostico);
+router.post("/diagnostico", postDiagnostico);
+router.post("/diagnostico/delete", postDeleteDiagnostico);
+
+router.get("/estudios", getEstudios);
+router.post("/estudios", postEstudios);
+router.post("/estudios/delete", postDeleteEstudios);
+
+router.get("/alta", getAlta);
+router.post("/alta", postAlta);
 
 router.get("/inicio", (req, res) => {
   res.render("medico/inicio");
