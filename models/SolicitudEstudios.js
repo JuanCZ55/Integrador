@@ -24,10 +24,6 @@ SolicitudEstudios.init(
     justificacion: {
       type: DataTypes.TEXT,
     },
-    estado: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
   },
   {
     sequelize,
