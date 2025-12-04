@@ -1,0 +1,41 @@
+extends ../layout.pug
+include ../mixins.pug
+block navbar
+  include ../mixinsNavbar.pug
+  +navbarMedico()
+block main
+  +alert(mensajeAlert, alertClass)
+  .container
+    +navbarM(6, admision.id_admision)
+  div.container.mt-3.p-3.panel-blur.rounded-5
+    .d-flex.align-items-center.mb-3
+      h1.me-auto Evaluaciones de Enfermería
+      h2.me-3 Paciente: #{paciente.persona.nombre} #{paciente.persona.apellido} (DNI: #{paciente.persona.dni})
+
+    if evaluaciones && evaluaciones.length > 0
+      h3.mb-3 Evaluaciones de Enfermería
+      .table-responsive
+        table.table.table-striped
+          thead
+            tr
+              th Fecha y Hora
+              th Enfermero
+              th Sistólica
+              th Diastólica
+              th Frecuencia Cardíaca
+              th Frecuencia Respiratoria
+              th Temperatura
+              th Observaciones
+          tbody
+            each eval in evaluaciones
+              tr
+                td= new Date(eval.fecha_eval).toLocaleString('es-ES')
+                td= `${eval.enfermero.empleado.persona.nombre} ${eval.enfermero.empleado.persona.apellido}`
+                td= eval.sistolica
+                td= eval.diastolica
+                td= eval.frecuenciaCardiaca
+                td= eval.frecuenciaRespiratoria
+                td= eval.temperatura
+                td(data-bs-toggle="tooltip" data-bs-placement="top" title=eval.observaciones)= eval.observaciones && eval.observaciones.length > 30 ? eval.observaciones.substring(0, 30) + '...' : eval.observaciones
+    else
+      p.text-muted No hay evaluaciones de enfermería para este paciente.
