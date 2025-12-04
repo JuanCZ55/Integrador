@@ -1,0 +1,325 @@
+extends ../layout.pug
+include ../mixins.pug
+block navbar
+  include ../mixinsNavbar.pug
+  +navbarMedico()
+block main
+  +alert(mensajeAlert, alertClass)
+  .container
+    +navbarM(5, id_admision)
+  div.container.mt-3.p-3.panel-blur.rounded-5
+    .d-flex.align-items-center.mb-3
+      h1.me-auto Historia Médica
+      h2.me-3 Paciente: #{paciente.persona.nombre} #{paciente.persona.apellido} (DNI: #{paciente.persona.dni})
+
+    form(action=`/medico/historia?id_admision=${id_admision}` method="POST")
+        // Pestañas para Alergias, Enfermedades, Medicación, Cirugías y Antecedentes
+        ul.nav.nav-tabs.mb-3(id="myTab" role="tablist")
+          li.nav-item(role="presentation")
+            button.nav-link.active(id="alergias-tab" data-bs-toggle="tab" data-bs-target="#alergias" type="button" role="tab" aria-controls="alergias" aria-selected="true") Alergias
+          li.nav-item(role="presentation")
+            button.nav-link(id="enfermedades-tab" data-bs-toggle="tab" data-bs-target="#enfermedades" type="button" role="tab" aria-controls="enfermedades" aria-selected="false") Enfermedades
+          li.nav-item(role="presentation")
+            button.nav-link(id="medicacion-tab" data-bs-toggle="tab" data-bs-target="#medicacion" type="button" role="tab" aria-controls="medicacion" aria-selected="false") Medicación Actual
+          li.nav-item(role="presentation")
+            button.nav-link(id="cirugias-tab" data-bs-toggle="tab" data-bs-target="#cirugias" type="button" role="tab" aria-controls="cirugias" aria-selected="false") Cirugías Previas
+          li.nav-item(role="presentation")
+            button.nav-link(id="antecedentes-tab" data-bs-toggle="tab" data-bs-target="#antecedentes" type="button" role="tab" aria-controls="antecedentes" aria-selected="false") Antecedentes Familiares
+
+        .tab-content(id="myTabContent")
+          // Contenido de Alergias
+          .tab-pane.fade.show.active(id="alergias" role="tabpanel" aria-labelledby="alergias-tab")
+            .d-flex.justify-content-between.align-items-center.mb-3
+              h4.m-0 Gestión de Alergias
+              button.btn.btn-primary.btn-sm(type="button" id="btn-agregar-alergia") + Agregar Alergia
+            .overflow-auto.pb-3
+              .d-flex.flex-nowrap.gap-3(id="contenedor-alergias" data-id-historial=historial.id_historial data-existing-alergias=historial.alergias.length)
+                each alergia, index in historial.alergias
+                  div.card.flex-shrink-0.shadow-sm.position-relative(style="width: 280px; border-radius: 15px;")
+                    button.btn.btn-outline-danger.btn-sm.position-absolute.top-0.end-0.m-1(type="button" onclick="this.closest('.card').remove()") &times;
+                    .card-body
+                      input(type="hidden" name=`alergias[${index}][id_alergia]` value=alergia.id_alergia)
+                      input(type="hidden" name=`alergias[${index}][id_historial]` value=historial.id_historial)
+                      .mb-2
+                        label.form-label.fw-bold.small Tipo de Alergia *
+                        input.form-control.form-control-sm(type="text" name=`alergias[${index}][tipo]` placeholder="Ej: Penicilina" value=alergia.tipo required)
+                      .mb-2
+                        label.form-label.small Gravedad
+                        select.form-select.form-select-sm(name=`alergias[${index}][gravedad]`)
+                          option(value="Leve" selected=alergia.gravedad === 'Leve') Leve
+                          option(value="Moderada" selected=alergia.gravedad === 'Moderada') Moderada
+                          option(value="Grave" selected=alergia.gravedad === 'Grave') Grave
+                          option(value="Muy Grave" selected=alergia.gravedad === 'Muy Grave') Muy Grave
+                      .mb-0
+                        label.form-label.small Observaciones
+                        textarea.form-control.form-control-sm(name=`alergias[${index}][observaciones]` rows="2" placeholder="Observaciones adicionales")= alergia.observaciones
+
+          // Contenido de Enfermedades
+          .tab-pane.fade(id="enfermedades" role="tabpanel" aria-labelledby="enfermedades-tab")
+            .d-flex.justify-content-between.align-items-center.mb-3
+              h4.m-0 Gestión de Enfermedades
+              button.btn.btn-primary.btn-sm(type="button" id="btn-agregar-enfermedad") + Agregar Enfermedad
+            .overflow-auto.pb-3
+              .d-flex.flex-nowrap.gap-3(id="contenedor-enfermedades" data-id-historial=historial.id_historial data-existing-enfermedades=historial.enfermedades.length)
+                each enfermedad, index in historial.enfermedades
+                  div.card.flex-shrink-0.shadow-sm.position-relative(style="width: 280px; border-radius: 15px;")
+                    button.btn.btn-outline-danger.btn-sm.position-absolute.top-0.end-0.m-1(type="button" onclick="this.closest('.card').remove()") &times;
+                    .card-body
+                      input(type="hidden" name=`enfermedades[${index}][id_enfermedad]` value=enfermedad.id_enfermedad)
+                      input(type="hidden" name=`enfermedades[${index}][id_historial]` value=historial.id_historial)
+                      .mb-2
+                        label.form-label.fw-bold.small Nombre de la Enfermedad *
+                        input.form-control.form-control-sm(type="text" name=`enfermedades[${index}][nombre]` placeholder="Ej: Diabetes" value=enfermedad.nombre required)
+                      .mb-2
+                        label.form-label.small Crónica
+                        select.form-select.form-select-sm(name=`enfermedades[${index}][cronica]`)
+                          option(value="false" selected=!enfermedad.cronica) No
+                          option(value="true" selected=enfermedad.cronica) Sí
+                      .mb-2
+                        label.form-label.small Fecha de Diagnóstico
+                        input.form-control.form-control-sm(type="date" name=`enfermedades[${index}][fecha_diagnostico]` value=enfermedad.fecha_diagnostico ? enfermedad.fecha_diagnostico.toISOString().split('T')[0] : '')
+                      .mb-0
+                        label.form-label.small Observaciones
+                        textarea.form-control.form-control-sm(name=`enfermedades[${index}][observaciones]` rows="2" placeholder="Observaciones adicionales")= enfermedad.observaciones
+
+          // Contenido de Medicación
+          .tab-pane.fade(id="medicacion" role="tabpanel" aria-labelledby="medicacion-tab")
+            .d-flex.justify-content-between.align-items-center.mb-3
+              h4.m-0 Gestión de Medicación Actual
+              button.btn.btn-primary.btn-sm(type="button" id="btn-agregar-medicacion") + Agregar Medicación
+            .overflow-auto.pb-3
+              .d-flex.flex-nowrap.gap-3(id="contenedor-medicacion" data-id-historial=historial.id_historial data-existing-medicacion=historial.medicaciones.length)
+                each medicacion, index in historial.medicaciones
+                  div.card.flex-shrink-0.shadow-sm.position-relative(style="width: 280px; border-radius: 15px;")
+                    button.btn.btn-outline-danger.btn-sm.position-absolute.top-0.end-0.m-1(type="button" onclick="this.closest('.card').remove()") &times;
+                    .card-body
+                      input(type="hidden" name=`medicacion[${index}][id_medicacion]` value=medicacion.id_medicacion)
+                      input(type="hidden" name=`medicacion[${index}][id_historial]` value=historial.id_historial)
+                      .mb-2
+                        label.form-label.fw-bold.small Nombre del Medicamento *
+                        input.form-control.form-control-sm(type="text" name=`medicacion[${index}][nombre]` placeholder="Ej: Ibuprofeno" value=medicacion.nombre required)
+                      .mb-2
+                        label.form-label.small Dosis
+                        input.form-control.form-control-sm(type="text" name=`medicacion[${index}][dosis]` placeholder="Ej: 500mg" value=medicacion.dosis)
+                      .mb-2
+                        label.form-label.small Frecuencia
+                        input.form-control.form-control-sm(type="text" name=`medicacion[${index}][frecuencia]` placeholder="Ej: Cada 8 horas" value=medicacion.frecuencia)
+                      .mb-0
+                        label.form-label.small Observaciones
+                        textarea.form-control.form-control-sm(name=`medicacion[${index}][observaciones]` rows="2" placeholder="Observaciones adicionales")= medicacion.observaciones
+
+          // Contenido de Cirugías
+          .tab-pane.fade(id="cirugias" role="tabpanel" aria-labelledby="cirugias-tab")
+            .d-flex.justify-content-between.align-items-center.mb-3
+              h4.m-0 Gestión de Cirugías Previas
+              button.btn.btn-primary.btn-sm(type="button" id="btn-agregar-cirugia") + Agregar Cirugía
+            .overflow-auto.pb-3
+              .d-flex.flex-nowrap.gap-3(id="contenedor-cirugias" data-id-historial=historial.id_historial data-existing-cirugias=historial.cirugias.length)
+                each cirugia, index in historial.cirugias
+                  div.card.flex-shrink-0.shadow-sm.position-relative(style="width: 280px; border-radius: 15px;")
+                    button.btn.btn-outline-danger.btn-sm.position-absolute.top-0.end-0.m-1(type="button" onclick="this.closest('.card').remove()") &times;
+                    .card-body
+                      input(type="hidden" name=`cirugias[${index}][id_cirugia]` value=cirugia.id_cirugia)
+                      input(type="hidden" name=`cirugias[${index}][id_historial]` value=historial.id_historial)
+                      .mb-2
+                        label.form-label.fw-bold.small Nombre de la Cirugía *
+                        input.form-control.form-control-sm(type="text" name=`cirugias[${index}][nombre]` placeholder="Ej: Apendicectomía" value=cirugia.nombre required)
+                      .mb-2
+                        label.form-label.small Fecha
+                        input.form-control.form-control-sm(type="date" name=`cirugias[${index}][fecha]` value=cirugia.fecha ? cirugia.fecha.toISOString().split('T')[0] : '')
+                      .mb-0
+                        label.form-label.small Observaciones
+                        textarea.form-control.form-control-sm(name=`cirugias[${index}][observaciones]` rows="2" placeholder="Observaciones adicionales")= cirugia.observaciones
+
+          // Contenido de Antecedentes
+          .tab-pane.fade(id="antecedentes" role="tabpanel" aria-labelledby="antecedentes-tab")
+            .d-flex.justify-content-between.align-items-center.mb-3
+              h4.m-0 Gestión de Antecedentes Familiares
+              button.btn.btn-primary.btn-sm(type="button" id="btn-agregar-antecedente") + Agregar Antecedente
+            .overflow-auto.pb-3
+              .d-flex.flex-nowrap.gap-3(id="contenedor-antecedentes" data-id-historial=historial.id_historial data-existing-antecedentes=historial.antecedentesFamiliares.length)
+                each antecedente, index in historial.antecedentesFamiliares
+                  div.card.flex-shrink-0.shadow-sm.position-relative(style="width: 280px; border-radius: 15px;")
+                    button.btn.btn-outline-danger.btn-sm.position-absolute.top-0.end-0.m-1(type="button" onclick="this.closest('.card').remove()") &times;
+                    .card-body
+                      input(type="hidden" name=`antecedentes[${index}][id_antecedente]` value=antecedente.id_antecedente)
+                      input(type="hidden" name=`antecedentes[${index}][id_historial]` value=historial.id_historial)
+                      .mb-2
+                        label.form-label.fw-bold.small Familiar *
+                        input.form-control.form-control-sm(type="text" name=`antecedentes[${index}][familiar]` placeholder="Ej: Padre" value=antecedente.familiar required)
+                      .mb-2
+                        label.form-label.fw-bold.small Enfermedad *
+                        input.form-control.form-control-sm(type="text" name=`antecedentes[${index}][enfermedad]` placeholder="Ej: Cáncer" value=antecedente.enfermedad required)
+                      .mb-0
+                        label.form-label.small Observaciones
+                        textarea.form-control.form-control-sm(name=`antecedentes[${index}][observaciones]` rows="2" placeholder="Observaciones adicionales")= antecedente.observaciones
+
+        .d-flex.justify-content-end.mt-3
+          button.btn.btn-success(type="submit") Guardar Cambios
+
+  script.
+    // Función para agregar alergia
+    document.getElementById('btn-agregar-alergia').addEventListener('click', function() {
+      const contenedor = document.getElementById('contenedor-alergias');
+      const index = contenedor.children.length;
+      const idHistorial = contenedor.getAttribute('data-id-historial');
+      const card = document.createElement('div');
+      card.className = 'card flex-shrink-0 shadow-sm position-relative';
+      card.style.width = '280px';
+      card.style.borderRadius = '15px';
+      card.innerHTML = `
+        <button class="btn btn-outline-danger btn-sm position-absolute top-0 end-0 m-1" type="button" onclick="this.closest('.card').remove()">&times;</button>
+        <div class="card-body">
+          <input type="hidden" name="alergias[${index}][id_historial]" value="${idHistorial}">
+          <div class="mb-2">
+            <label class="form-label fw-bold small">Tipo de Alergia *</label>
+            <input class="form-control form-control-sm" type="text" name="alergias[${index}][tipo]" placeholder="Ej: Penicilina" required>
+          </div>
+          <div class="mb-2">
+            <label class="form-label small">Gravedad</label>
+            <select class="form-select form-select-sm" name="alergias[${index}][gravedad]">
+              <option value="Leve">Leve</option>
+              <option value="Moderada">Moderada</option>
+              <option value="Grave">Grave</option>
+              <option value="Muy Grave">Muy Grave</option>
+            </select>
+          </div>
+          <div class="mb-0">
+            <label class="form-label small">Observaciones</label>
+            <textarea class="form-control form-control-sm" name="alergias[${index}][observaciones]" rows="2" placeholder="Observaciones adicionales"></textarea>
+          </div>
+        </div>
+      `;
+      contenedor.appendChild(card);
+    });
+
+    // Función para agregar enfermedad
+    document.getElementById('btn-agregar-enfermedad').addEventListener('click', function() {
+      const contenedor = document.getElementById('contenedor-enfermedades');
+      const index = contenedor.children.length;
+      const idHistorial = contenedor.getAttribute('data-id-historial');
+      const card = document.createElement('div');
+      card.className = 'card flex-shrink-0 shadow-sm position-relative';
+      card.style.width = '280px';
+      card.style.borderRadius = '15px';
+      card.innerHTML = `
+        <button class="btn btn-outline-danger btn-sm position-absolute top-0 end-0 m-1" type="button" onclick="this.closest('.card').remove()">&times;</button>
+        <div class="card-body">
+          <input type="hidden" name="enfermedades[${index}][id_historial]" value="${idHistorial}">
+          <div class="mb-2">
+            <label class="form-label fw-bold small">Nombre de la Enfermedad *</label>
+            <input class="form-control form-control-sm" type="text" name="enfermedades[${index}][nombre]" placeholder="Ej: Diabetes" required>
+          </div>
+          <div class="mb-2">
+            <label class="form-label small">Crónica</label>
+            <select class="form-select form-select-sm" name="enfermedades[${index}][cronica]">
+              <option value="false">No</option>
+              <option value="true">Sí</option>
+            </select>
+          </div>
+          <div class="mb-2">
+            <label class="form-label small">Fecha de Diagnóstico</label>
+            <input class="form-control form-control-sm" type="date" name="enfermedades[${index}][fecha_diagnostico]">
+          </div>
+          <div class="mb-0">
+            <label class="form-label small">Observaciones</label>
+            <textarea class="form-control form-control-sm" name="enfermedades[${index}][observaciones]" rows="2" placeholder="Observaciones adicionales"></textarea>
+          </div>
+        </div>
+      `;
+      contenedor.appendChild(card);
+    });
+
+    // Función para agregar medicación
+    document.getElementById('btn-agregar-medicacion').addEventListener('click', function() {
+      const contenedor = document.getElementById('contenedor-medicacion');
+      const index = contenedor.children.length;
+      const idHistorial = contenedor.getAttribute('data-id-historial');
+      const card = document.createElement('div');
+      card.className = 'card flex-shrink-0 shadow-sm position-relative';
+      card.style.width = '280px';
+      card.style.borderRadius = '15px';
+      card.innerHTML = `
+        <button class="btn btn-outline-danger btn-sm position-absolute top-0 end-0 m-1" type="button" onclick="this.closest('.card').remove()">&times;</button>
+        <div class="card-body">
+          <input type="hidden" name="medicacion[${index}][id_historial]" value="${idHistorial}">
+          <div class="mb-2">
+            <label class="form-label fw-bold small">Nombre del Medicamento *</label>
+            <input class="form-control form-control-sm" type="text" name="medicacion[${index}][nombre]" placeholder="Ej: Ibuprofeno" required>
+          </div>
+          <div class="mb-2">
+            <label class="form-label small">Dosis</label>
+            <input class="form-control form-control-sm" type="text" name="medicacion[${index}][dosis]" placeholder="Ej: 500mg">
+          </div>
+          <div class="mb-2">
+            <label class="form-label small">Frecuencia</label>
+            <input class="form-control form-control-sm" type="text" name="medicacion[${index}][frecuencia]" placeholder="Ej: Cada 8 horas">
+          </div>
+          <div class="mb-0">
+            <label class="form-label small">Observaciones</label>
+            <textarea class="form-control form-control-sm" name="medicacion[${index}][observaciones]" rows="2" placeholder="Observaciones adicionales"></textarea>
+          </div>
+        </div>
+      `;
+      contenedor.appendChild(card);
+    });
+
+    // Función para agregar cirugía
+    document.getElementById('btn-agregar-cirugia').addEventListener('click', function() {
+      const contenedor = document.getElementById('contenedor-cirugias');
+      const index = contenedor.children.length;
+      const idHistorial = contenedor.getAttribute('data-id-historial');
+      const card = document.createElement('div');
+      card.className = 'card flex-shrink-0 shadow-sm position-relative';
+      card.style.width = '280px';
+      card.style.borderRadius = '15px';
+      card.innerHTML = `
+        <button class="btn btn-outline-danger btn-sm position-absolute top-0 end-0 m-1" type="button" onclick="this.closest('.card').remove()">&times;</button>
+        <div class="card-body">
+          <input type="hidden" name="cirugias[${index}][id_historial]" value="${idHistorial}">
+          <div class="mb-2">
+            <label class="form-label fw-bold small">Nombre de la Cirugía *</label>
+            <input class="form-control form-control-sm" type="text" name="cirugias[${index}][nombre]" placeholder="Ej: Apendicectomía" required>
+          </div>
+          <div class="mb-2">
+            <label class="form-label small">Fecha</label>
+            <input class="form-control form-control-sm" type="date" name="cirugias[${index}][fecha]">
+          </div>
+          <div class="mb-0">
+            <label class="form-label small">Observaciones</label>
+            <textarea class="form-control form-control-sm" name="cirugias[${index}][observaciones]" rows="2" placeholder="Observaciones adicionales"></textarea>
+          </div>
+        </div>
+      `;
+      contenedor.appendChild(card);
+    });
+
+    // Función para agregar antecedente
+    document.getElementById('btn-agregar-antecedente').addEventListener('click', function() {
+      const contenedor = document.getElementById('contenedor-antecedentes');
+      const index = contenedor.children.length;
+      const idHistorial = contenedor.getAttribute('data-id-historial');
+      const card = document.createElement('div');
+      card.className = 'card flex-shrink-0 shadow-sm position-relative';
+      card.style.width = '280px';
+      card.style.borderRadius = '15px';
+      card.innerHTML = `
+        <button class="btn btn-outline-danger btn-sm position-absolute top-0 end-0 m-1" type="button" onclick="this.closest('.card').remove()">&times;</button>
+        <div class="card-body">
+          <input type="hidden" name="antecedentes[${index}][id_historial]" value="${idHistorial}">
+          <div class="mb-2">
+            <label class="form-label fw-bold small">Familiar *</label>
+            <input class="form-control form-control-sm" type="text" name="antecedentes[${index}][familiar]" placeholder="Ej: Padre" required>
+          </div>
+          <div class="mb-2">
+            <label class="form-label fw-bold small">Enfermedad *</label>
+            <input class="form-control form-control-sm" type="text" name="antecedentes[${index}][enfermedad]" placeholder="Ej: Cáncer" required>
+          </div>
+          <div class="mb-0">
+            <label class="form-label small">Observaciones</label>
+            <textarea class="form-control form-control-sm" name="antecedentes[${index}][observaciones]" rows="2" placeholder="Observaciones adicionales"></textarea>
+          </div>
+        </div>
+      `;
+      contenedor.appendChild(card);
+    });
