@@ -30,6 +30,13 @@ const {
   postDeleteEstudios,
 } = require("../controllers/medico/estudiosController");
 const { getAlta, postAlta } = require("../controllers/medico/altaController");
+const {
+  getHistoria,
+  postHistoria,
+} = require("../controllers/historialController");
+const {
+  getEvaluacionEnfermeria,
+} = require("../controllers/medico/evaluacionEnfermeriaController");
 
 router.get("/sinAsignar", getSinAsignar);
 router.post("/asignarPaciente", postAsignacion);
@@ -57,6 +64,11 @@ router.post("/estudios/delete", postDeleteEstudios);
 
 router.get("/alta", getAlta);
 router.post("/alta", postAlta);
+
+router.get("/historia", getHistoria);
+router.post("/historia", postHistoria);
+
+router.get("/evaluacion-enfermeria", getEvaluacionEnfermeria);
 
 router.get("/inicio", (req, res) => {
   res.render("medico/inicio");

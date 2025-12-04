@@ -15,6 +15,14 @@ async function getRoleId(req) {
   return null;
 }
 
+async function getRole(req) {
+  const { id_rol } = req.user;
+  if (id_rol === 3) return "medico";
+  if (id_rol === 4) return "enfermera";
+  return null;
+}
+
 module.exports = {
   getRoleId,
+  getRole,
 };

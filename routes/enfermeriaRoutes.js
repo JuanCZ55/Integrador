@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const enfermeriaController = require("../controllers/enfermeria/enfermeriaController");
 const evaluacionController = require("../controllers/enfermeria/evaluacionController");
-const historialController = require("../controllers/enfermeria/historialController");
+const historialController = require("../controllers/historialController");
 const medicacionController = require("../controllers/enfermeria/medicacionController");
 
 router.get("/", (req, res) => {
