@@ -24,4 +24,4 @@ block main
               td #{paciente.dni}
               td #{paciente.edad}
               td 
-                a.btn.btn-primary(href=`/medico/historia/${paciente.id_admision}`) Ver paciente
+                a.btn.btn-primary(href=`/medico/historia?id_admision=${paciente.id_admision}`) Ver paciente
