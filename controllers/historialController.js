@@ -75,6 +75,16 @@ async function postHistoria(req, res) {
     const id_paciente = admision.id_paciente;
     const id_historial = await upsertHistorial(id_paciente);
 
+    // Validación de datos
+    if (validarHistorial(req.body)) {
+      const role = await helper.getRole(req);
+      const redirectUrl =
+        role === "medico" ? "/medico/historia" : "/enfermeria/historial";
+      return res.redirect(
+        `${redirectUrl}?id_admision=${id_admision}&mensajeAlert=Complete todos los campos obligatorios (*)&alertClass=alert-danger`
+      );
+    }
+
     // Procesar alergias
     await sequelize.transaction(async (t) => {
       await Alergia.destroy({ where: { id_historial }, transaction: t });
@@ -87,7 +97,6 @@ async function postHistoria(req, res) {
         }));
         for (const alergia of alergiasData) {
           if (!alergia || !alergia.tipo || alergia.tipo.trim() === "") continue;
-          console.log(alergia + " creada");
           await Alergia.create(alergia, { transaction: t });
         }
       }
@@ -214,6 +223,63 @@ async function upsertHistorial(id_paciente) {
     historial = await HistorialMedico.create({ id_paciente });
   }
   return historial.id_historial;
+}
+
+function validarHistorial(body) {
+  // Validar alergias
+  if (body.alergias) {
+    for (const a of body.alergias) {
+      if (a.tipo && String(a.tipo).trim() === "") {
+        return true; // error
+      }
+    }
+  }
+  // Validar enfermedades
+  if (body.enfermedades) {
+    for (const e of body.enfermedades) {
+      if (
+        (e.nombre && String(e.nombre).trim() === "") ||
+        (e.fecha_diagnostico && String(e.fecha_diagnostico).trim() === "")
+      ) {
+        return true;
+      }
+    }
+  }
+  // Validar medicación
+  if (body.medicacion) {
+    for (const m of body.medicacion) {
+      if (
+        (m.nombre && String(m.nombre).trim() === "") ||
+        (m.dosis && String(m.dosis).trim() === "") ||
+        (m.frecuencia && String(m.frecuencia).trim() === "")
+      ) {
+        return true;
+      }
+    }
+  }
+  // Validar cirugías
+  if (body.cirugias) {
+    for (const c of body.cirugias) {
+      if (
+        (c.nombre && String(c.nombre).trim() === "") ||
+        (c.fecha && String(c.fecha).trim() === "")
+      ) {
+        return true;
+      }
+    }
+  }
+  // Validar antecedentes
+  if (body.antecedentes) {
+    for (const ant of body.antecedentes) {
+      if (
+        (ant.familiar && String(ant.familiar).trim() === "") ||
+        (ant.enfermedad && String(ant.enfermedad).trim() === "")
+      ) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 module.exports = {
