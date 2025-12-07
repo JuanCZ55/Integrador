@@ -206,9 +206,13 @@ const postAsignacion = async (req, res) => {
   try {
     const { id_admision, id_medico } = req.body;
 
-    if (!id_admision || !id_medico || id_admision === "" || id_medico === "") {
+    const errores = validarDatos(["id_admision", "id_medico"], {
+      id_admision,
+      id_medico,
+    });
+    if (errores.length > 0) {
       return res.redirect(
-        "/medico/sinAsignar?mensaje=Seleccione un médico válido&alertClass=alert-danger"
+        "/medico/sinAsignar?mensaje=Complete todos los campos obligatorios (*)&alertClass=alert-danger"
       );
     }
 
@@ -224,6 +228,16 @@ const postAsignacion = async (req, res) => {
     );
   }
 };
+
+function validarDatos(camposObligatorios, datos) {
+  const errores = [];
+  for (const campo of camposObligatorios) {
+    if (!datos[campo] || datos[campo].toString().trim() === "") {
+      errores.push(`${campo} es obligatorio`);
+    }
+  }
+  return errores;
+}
 
 module.exports = {
   getSinAsignar,

@@ -85,6 +85,13 @@ async function getEvaluacion(req, res) {
 async function postEvaluacion(req, res) {
   const { id_evaluacion, id_admision, observaciones } = req.body;
   try {
+    const errores = validarDatos(["observaciones"], { observaciones });
+    if (errores.length > 0) {
+      return res.redirect(
+        `/medico/evaluacion?id_admision=${id_admision}&mensaje=Complete todos los campos obligatorios (*)&alertClass=alert-danger`
+      );
+    }
+
     const id_medico = await helper.getRoleId(req);
 
     const data = {
@@ -117,6 +124,16 @@ async function postDeleteEvaluacion(req, res) {
       `/medico/evaluacion?id_admision=${id_admision}&mensaje=Error al eliminar la evaluación&alertClass=alert-danger`
     );
   }
+}
+
+function validarDatos(camposObligatorios, datos) {
+  const errores = [];
+  for (const campo of camposObligatorios) {
+    if (!datos[campo] || datos[campo].toString().trim() === "") {
+      errores.push(`${campo} es obligatorio`);
+    }
+  }
+  return errores;
 }
 
 module.exports = {

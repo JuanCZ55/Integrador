@@ -42,17 +42,17 @@ block main
       input(type="hidden" name="id_admision" value=`${paciente.id_admision}`)
       #prescripciones-container
         .mb-3
-          label.form-label(for="medicamento") Medicamento
+          label.form-label(for="medicamento") Medicamento*
           input.form-control(type="text" name="prescripciones[0][medicamento]" required)
         .row
           .mb-3.col-md-4
-            label.form-label(for="dosis") Dosis
+            label.form-label(for="dosis") Dosis*
             input.form-control(type="text" name="prescripciones[0][dosis]" required)
           .mb-3.col-md-4
             label.form-label(for="frecuencia") Frecuencia
             input.form-control(type="text" name="prescripciones[0][frecuencia]" required)
           .mb-3.col-md-4
-            label.form-label(for="duracion") Vía de Administración
+            label.form-label(for="duracion") Vía de Administración*
             input.form-control(type="text" name="prescripciones[0][via_administracion]" required)
         button.btn.btn-danger.btn-sm(type="button" onclick="removerPrescripcion(this)") Remover
       .d-flex.justify-content-between.mt-3
@@ -71,17 +71,17 @@ block main
             input(type="hidden" name="id_prescripcion" id="mod_id_prescripcion")
             input(type="hidden" name="id_admision" value=`${paciente.id_admision}`)
             .mb-3
-              label.form-label(for="mod_medicamento") Medicamento
+              label.form-label(for="mod_medicamento") Medicamento*
               input.form-control(type="text" name="medicamento" id="mod_medicamento" required)
             .row
               .mb-3.col-md-4
-                label.form-label(for="mod_dosis") Dosis
+                label.form-label(for="mod_dosis") Dosis*
                 input.form-control(type="text" name="dosis" id="mod_dosis" required)
               .mb-3.col-md-4
                 label.form-label(for="mod_frecuencia") Frecuencia
                 input.form-control(type="text" name="frecuencia" id="mod_frecuencia" required)
               .mb-3.col-md-4
-                label.form-label(for="mod_duracion") Vía de Administración
+                label.form-label(for="mod_duracion") Vía de Administración*
                 input.form-control(type="text" name="via_administracion" id="mod_duracion" required)
             .modal-footer
               button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Cancelar
@@ -90,16 +90,16 @@ block main
   script.
     document.getElementById('agregarPrescripcion').addEventListener('click', function() {
       const container = document.getElementById('prescripciones-container');
-      const index = container.querySelectorAll('.prescripcion-item').length;
+      const index = container.querySelectorAll('.prescripcion-item').length+1;
       const html = `
         <div class="prescripcion-item mb-4 p-3 border rounded">
           <div class="mb-3">
-            <label class="form-label">Medicamento</label>
+            <label class="form-label">Medicamento*</label>
             <input class="form-control" type="text" name="prescripciones[${index}][medicamento]" required>
           </div>
           <div class="row">
             <div class="mb-3 col-md-4">
-              <label class="form-label">Dosis</label>
+              <label class="form-label">Dosis*</label>
               <input class="form-control" type="text" name="prescripciones[${index}][dosis]" required>
             </div>
             <div class="mb-3 col-md-4">
@@ -107,7 +107,7 @@ block main
               <input class="form-control" type="text" name="prescripciones[${index}][frecuencia]" required>
             </div>
             <div class="mb-3 col-md-4">
-              <label class="form-label">Vía de Administración</label>
+              <label class="form-label">Vía de Administración*</label>
               <input class="form-control" type="text" name="prescripciones[${index}][via_administracion]" required>
             </div>
           </div>

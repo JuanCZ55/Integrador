@@ -84,6 +84,16 @@ async function getAlta(req, res) {
 async function postAlta(req, res) {
   const { id_admision, motivo_alta, instrucciones, medicacion } = req.body;
   try {
+    const errores = validarDatos(
+      ["motivo_alta", "instrucciones", "medicacion"],
+      { motivo_alta, instrucciones, medicacion }
+    );
+    if (errores.length > 0) {
+      return res.redirect(
+        `/medico/alta?id_admision=${id_admision}&mensaje=Complete todos los campos obligatorios (*)&alertClass=alert-danger`
+      );
+    }
+
     const id_medico = await helper.getRoleId(req);
 
     const existingAlta = await AltaHospitalaria.findOne({
@@ -112,6 +122,16 @@ async function postAlta(req, res) {
       `/medico/alta?id_admision=${id_admision}&mensaje=Error al guardar el alta&alertClass=alert-danger`
     );
   }
+}
+
+function validarDatos(camposObligatorios, datos) {
+  const errores = [];
+  for (const campo of camposObligatorios) {
+    if (!datos[campo] || datos[campo].toString().trim() === "") {
+      errores.push(`${campo} es obligatorio`);
+    }
+  }
+  return errores;
 }
 
 module.exports = {

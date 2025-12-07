@@ -41,7 +41,7 @@ block main
     form(action="/medico/evaluacion", method="POST")
       input(type="hidden", name="id_admision", value=paciente.id_admision)
       .mb-3
-        label.form-label(for="observaciones") Observaciones
+        label.form-label(for="observaciones") Observaciones*
         textarea.form-control#observaciones(name="observaciones", rows="4", required) 
       button.btn.btn-primary(type="submit") Guardar Evaluación
 
@@ -59,7 +59,7 @@ block main
             button.btn-close(type="button", data-bs-dismiss="modal")
           .modal-body
             .mb-3
-              label.form-label(for="editObservaciones") Observaciones
+              label.form-label(for="editObservaciones") Observaciones*
               textarea.form-control#editObservaciones(name="observaciones", rows="4", required)
           .modal-footer
             button.btn.btn-secondary(type="button", data-bs-dismiss="modal") Cancelar

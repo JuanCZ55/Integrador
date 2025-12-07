@@ -55,6 +55,13 @@ const guardarPrescripcion = async (req, res) => {
   try {
     let { prescripciones, id_admision } = req.body;
 
+    const errores = validarDatosPrescripciones(prescripciones);
+    if (errores.length > 0) {
+      return res.redirect(
+        `/medico/prescripcion?id_admision=${id_admision}&mensaje=Complete todos los campos obligatorios (*)&alertClass=alert-danger`
+      );
+    }
+
     const id_medico = await getRoleId(req);
 
     if (
@@ -105,6 +112,19 @@ const modificarPrescripcion = async (req, res) => {
       via_administracion,
       id_admision,
     } = req.body;
+
+    const errores = validarDatosPrescripcionIndividual({
+      medicamento,
+      dosis,
+      frecuencia,
+      via_administracion,
+    });
+    if (errores.length > 0) {
+      return res.redirect(
+        `/medico/prescripcion?id_admision=${id_admision}&mensaje=Complete todos los campos obligatorios (*)&alertClass=alert-danger`
+      );
+    }
+
     await Prescripciones.update(
       { medicamento, dosis, frecuencia, via_administracion },
       { where: { id_prescripcion } }
@@ -137,6 +157,59 @@ const eliminarPrescripcion = async (req, res) => {
     );
   }
 };
+
+function validarDatosPrescripciones(prescripciones) {
+  const errores = [];
+  if (
+    !prescripciones ||
+    !Array.isArray(prescripciones) ||
+    prescripciones.length === 0
+  ) {
+    errores.push("Debe agregar al menos una prescripción");
+    return errores;
+  }
+  prescripciones.forEach((p, index) => {
+    if (!p.medicamento || String(p.medicamento).trim() === "") {
+      errores.push(
+        `El medicamento es requerido en la prescripción ${index + 1}`
+      );
+    }
+    if (!p.dosis || String(p.dosis).trim() === "") {
+      errores.push(`La dosis es requerida en la prescripción ${index + 1}`);
+    }
+    if (!p.frecuencia || String(p.frecuencia).trim() === "") {
+      errores.push(
+        `La frecuencia es requerida en la prescripción ${index + 1}`
+      );
+    }
+    if (!p.via_administracion || String(p.via_administracion).trim() === "") {
+      errores.push(
+        `La vía de administración es requerida en la prescripción ${index + 1}`
+      );
+    }
+  });
+  return errores;
+}
+
+function validarDatosPrescripcionIndividual(datos) {
+  const errores = [];
+  if (!datos.medicamento || String(datos.medicamento).trim() === "") {
+    errores.push("El medicamento es requerido");
+  }
+  if (!datos.dosis || String(datos.dosis).trim() === "") {
+    errores.push("La dosis es requerida");
+  }
+  if (!datos.frecuencia || String(datos.frecuencia).trim() === "") {
+    errores.push("La frecuencia es requerida");
+  }
+  if (
+    !datos.via_administracion ||
+    String(datos.via_administracion).trim() === ""
+  ) {
+    errores.push("La vía de administración es requerida");
+  }
+  return errores;
+}
 
 module.exports = {
   getPrescripcion,

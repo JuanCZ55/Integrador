@@ -49,12 +49,12 @@ block main
                 p Edad: <span id="modal-edad"></span>
               .col-md-6
                 h6 Seleccionar Médico
-                label.form-label(for="especialidad") Especialidad
+                label.form-label(for="especialidad") Especialidad*
                 select.form-select(id="especialidad" name="especialidad")
                   option(value="") Seleccione una especialidad
                   each especialidad in especialidades
                     option(value=`${especialidad.id_especialidad}`)= especialidad.nombre
-                label.form-label(for="medico") Médico
+                label.form-label(for="medico") Médico*
                 select.form-select(id="medico" name="id_medico" required)
                   option(value="") Seleccione un médico
             input(type="hidden" name="id_admision" id="modal-id_admision")
@@ -128,12 +128,12 @@ block main
               p Edad: <span id="reasignar-edad"></span>
             .col-md-6
               h6 Seleccionar Médico
-              label.form-label(for="reasignar-especialidad") Especialidad
+              label.form-label(for="reasignar-especialidad") Especialidad*
               select.form-select(id="reasignar-especialidad" name="especialidad")
                 option(value="") Seleccione una especialidad
                 each especialidad in especialidades
                   option(value=`${especialidad.id_especialidad}`)= especialidad.nombre
-              label.form-label(for="reasignar-medico") Médico
+              label.form-label(for="reasignar-medico") Médico*
               select.form-select(id="reasignar-medico" name="id_medico" required)
                 option(value="") Seleccione un médico
           input(type="hidden" name="id_admision" id="reasignar-id_admision")

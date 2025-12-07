@@ -28,17 +28,17 @@ block main
       form(action="/medico/alta", method="POST")
         input(type="hidden", name="id_admision", value=paciente.id_admision)
         .mb-3
-          label.form-label(for="motivo_alta") Motivo del Alta
+          label.form-label(for="motivo_alta") Motivo del Alta*
           input.form-control#motivo_alta(name="motivo_alta", list="motivos", value=alta ? alta.motivo_alta : '', required)
           datalist#motivos
             option(value="Curación")
             option(value="Traslado")
             option(value="Muerte")
         .mb-3
-          label.form-label(for="instrucciones") Instrucciones
+          label.form-label(for="instrucciones") Instrucciones*
           textarea.form-control#instrucciones(name="instrucciones", rows="4", required)= alta ? alta.instrucciones : ''
         .mb-3
-          label.form-label(for="medicacion") Medicación
+          label.form-label(for="medicacion") Medicación*
           input.form-control#medicacion(name="medicacion", value=alta ? alta.medicacion : '', required)
         button.btn.btn-primary(type="submit") #{alta ? 'Actualizar' : 'Guardar'} Alta
 
@@ -54,17 +54,17 @@ block main
               button.btn-close(type="button", data-bs-dismiss="modal")
             .modal-body
               .mb-3
-                label.form-label(for="editMotivo") Motivo del Alta
+                label.form-label(for="editMotivo") Motivo del Alta*
                 input.form-control#editMotivo(name="motivo_alta", list="motivos", required)
                 datalist#motivos
                   option(value="Curación")
                   option(value="Traslado")
                   option(value="Muerte")
               .mb-3
-                label.form-label(for="editInstrucciones") Instrucciones
+                label.form-label(for="editInstrucciones") Instrucciones*
                 textarea.form-control#editInstrucciones(name="instrucciones", rows="4", required)
               .mb-3
-                label.form-label(for="editMedicacion") Medicación
+                label.form-label(for="editMedicacion") Medicación*
                 input.form-control#editMedicacion(name="medicacion", required)
             .modal-footer
               button.btn.btn-secondary(type="button", data-bs-dismiss="modal") Cancelar

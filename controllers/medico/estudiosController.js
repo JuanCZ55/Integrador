@@ -85,6 +85,16 @@ async function getEstudios(req, res) {
 async function postEstudios(req, res) {
   const { id_solicitud, id_admision, estudio, justificacion } = req.body;
   try {
+    const errores = validarDatos(["estudio", "justificacion"], {
+      estudio,
+      justificacion,
+    });
+    if (errores.length > 0) {
+      return res.redirect(
+        `/medico/estudios?id_admision=${id_admision}&mensaje=Complete todos los campos obligatorios (*)&alertClass=alert-danger`
+      );
+    }
+
     const id_medico = await helper.getRoleId(req);
 
     const data = {
@@ -117,6 +127,16 @@ async function postDeleteEstudios(req, res) {
       `/medico/estudios?id_admision=${id_admision}&mensaje=Error al eliminar la solicitud&alertClass=alert-danger`
     );
   }
+}
+
+function validarDatos(camposObligatorios, datos) {
+  const errores = [];
+  for (const campo of camposObligatorios) {
+    if (!datos[campo] || datos[campo].toString().trim() === "") {
+      errores.push(`${campo} es obligatorio`);
+    }
+  }
+  return errores;
 }
 
 module.exports = {

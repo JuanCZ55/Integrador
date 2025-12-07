@@ -44,10 +44,10 @@ block main
       form(action="/medico/estudios", method="POST")
         input(type="hidden", name="id_admision", value=paciente.id_admision)
         .mb-3
-          label.form-label(for="estudio") Estudio
+          label.form-label(for="estudio") Estudio*
           textarea.form-control#estudio(name="estudio", rows="2", required)
         .mb-3
-          label.form-label(for="justificacion") Justificación
+          label.form-label(for="justificacion") Justificación*
           textarea.form-control#justificacion(name="justificacion", rows="4", required)
         button.btn.btn-primary(type="submit") Guardar Solicitud
 
@@ -64,10 +64,10 @@ block main
               button.btn-close(type="button", data-bs-dismiss="modal")
             .modal-body
               .mb-3
-                label.form-label(for="editEstudio") Estudio
+                label.form-label(for="editEstudio") Estudio*
                 textarea.form-control#editEstudio(name="estudio", rows="2", required)
               .mb-3
-                label.form-label(for="editJustificacion") Justificación
+                label.form-label(for="editJustificacion") Justificación*
                 textarea.form-control#editJustificacion(name="justificacion", rows="4", required)
             .modal-footer
               button.btn.btn-secondary(type="button", data-bs-dismiss="modal") Cancelar

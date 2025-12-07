@@ -85,6 +85,16 @@ async function getDiagnostico(req, res) {
 async function postDiagnostico(req, res) {
   const { id_diag_episodio, id_admision, diagnostico, tipo } = req.body;
   try {
+    const errores = validarDatos(["diagnostico", "tipo"], {
+      diagnostico,
+      tipo,
+    });
+    if (errores.length > 0) {
+      return res.redirect(
+        `/medico/diagnostico?id_admision=${id_admision}&mensaje=Complete todos los campos obligatorios (*)&alertClass=alert-danger`
+      );
+    }
+
     const id_medico = await helper.getRoleId(req);
 
     const data = {
@@ -118,6 +128,16 @@ async function postDeleteDiagnostico(req, res) {
       `/medico/diagnostico?id_admision=${id_admision}&mensaje=Error al eliminar el diagnóstico&alertClass=alert-danger`
     );
   }
+}
+
+function validarDatos(camposObligatorios, datos) {
+  const errores = [];
+  for (const campo of camposObligatorios) {
+    if (!datos[campo] || datos[campo].toString().trim() === "") {
+      errores.push(`${campo} es obligatorio`);
+    }
+  }
+  return errores;
 }
 
 module.exports = {
