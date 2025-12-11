@@ -11,6 +11,12 @@ const {
   Habitacion,
   Medico,
   Empleado,
+  HistorialMedico,
+  Alergia,
+  Enfermedad,
+  MedicacionActual,
+  CirugiaPrevia,
+  AntecedenteFamiliar,
 } = require("../models/init");
 const sequelize = require("../models/db");
 const { Op } = require("sequelize");
@@ -689,34 +695,45 @@ async function gCambiarPacienteAdmisiones(req, res) {
   return res.render("admision/cambiarPacienteAdmisiones");
 }
 
+async function obtenerNombrePaciente(req, res) {
+  const { dni } = req.query;
+  try {
+    if (!dni || !/^[0-9]{1,8}$/.test(dni)) {
+      return res.status(400).json({ error: "DNI inválido" });
+    }
+    const persona = await Persona.findOne({
+      where: { dni },
+      include: [{ model: Paciente, as: "paciente" }],
+    });
+    if (!persona || !persona.paciente) {
+      return res.status(404).json({ error: "Paciente no encontrado" });
+    }
+    res.json({
+      nombre: `${persona.nombre} ${persona.apellido}`,
+      fecha_nacimiento: persona.f_nacimiento,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+}
+
 async function cambiarPacienteAdmisiones(req, res) {
-  const { dni_antiguo, dni_nuevo, esEmergencia } = req.body;
+  const { dni_emergencia, dni_existente } = req.body;
   let mensajeAlert = "";
   let alertClass = "alert-danger";
-  const regexDniEmergencia = /^[2-9][0-9]{0,7}$/;
-  const regexDniReal = /^[0-9]{7,8}$/;
 
-  if (esEmergencia) {
-    if (!dni_antiguo || !regexDniEmergencia.test(dni_antiguo)) {
-      mensajeAlert =
-        "El DNI antiguo de emergencia debe ser numerico, de 1 a 8 digitos";
-      return res.render("admision/cambiarPacienteAdmisiones", {
-        mensajeAlert,
-        alertClass,
-      });
-    }
-  } else {
-    if (!dni_antiguo || !regexDniReal.test(dni_antiguo)) {
-      mensajeAlert = "El DNI antiguo debe ser numerico y tener 7 u 8 digitos.";
-      return res.render("admision/cambiarPacienteAdmisiones", {
-        mensajeAlert,
-        alertClass,
-      });
-    }
+  if (!dni_emergencia || !/^[0-9]{1,8}$/.test(dni_emergencia)) {
+    mensajeAlert =
+      "El DNI de emergencia debe ser numérico y tener entre 1 y 8 dígitos.";
+    return res.render("admision/cambiarPacienteAdmisiones", {
+      mensajeAlert,
+      alertClass,
+    });
   }
 
-  if (!dni_nuevo || !regexDniReal.test(dni_nuevo)) {
-    mensajeAlert = "El DNI nuevo debe ser numerico y tener 7 u 8 digitos.";
+  if (!dni_existente || !/^[0-9]{1,8}$/.test(dni_existente)) {
+    mensajeAlert =
+      "El DNI existente debe ser numérico y tener entre 1 y 8 dígitos.";
     return res.render("admision/cambiarPacienteAdmisiones", {
       mensajeAlert,
       alertClass,
@@ -725,64 +742,104 @@ async function cambiarPacienteAdmisiones(req, res) {
 
   const t = await sequelize.transaction();
   try {
-    const personaAntigua = await Persona.findOne({
-      where: { dni: dni_antiguo },
+    // 1. Identificar paciente existente
+    const personaExistente = await Persona.findOne({
+      where: { dni: dni_existente },
       include: [{ model: Paciente, as: "paciente" }],
       transaction: t,
     });
-    if (!personaAntigua || !personaAntigua.paciente) {
+    if (!personaExistente || !personaExistente.paciente) {
       await t.rollback();
-      mensajeAlert = "No se encontro paciente con ese DNI para antiguo";
+      mensajeAlert = "No se encontró paciente existente con ese DNI";
       return res.render("admision/cambiarPacienteAdmisiones", {
         mensajeAlert,
         alertClass,
       });
     }
-    const pacienteAntiguo = personaAntigua.paciente;
+    const pacienteExistente = personaExistente.paciente;
+    const id_paciente_existente = pacienteExistente.id_paciente;
 
-    const admision = await Admision.findOne({
-      where: { id_paciente: pacienteAntiguo.id_paciente, estado: 1 },
-      transaction: t,
-    });
-    if (!admision) {
-      await t.rollback();
-      mensajeAlert = "No se encontro una admision activa para ese paciente";
-      return res.render("admision/cambiarPacienteAdmisiones", {
-        mensajeAlert,
-        alertClass,
-      });
-    }
-
-    const personaReal = await Persona.findOne({
-      where: { dni: dni_nuevo },
+    // 2. Obtener paciente de emergencia
+    const personaEmergencia = await Persona.findOne({
+      where: { dni: dni_emergencia },
       include: [{ model: Paciente, as: "paciente" }],
       transaction: t,
     });
-    if (!personaReal || !personaReal.paciente) {
+    if (!personaEmergencia || !personaEmergencia.paciente) {
       await t.rollback();
-      mensajeAlert = "No se encontro un paciente real con ese DNI para nuevo";
+      mensajeAlert = "No se encontró paciente de emergencia con ese DNI";
       return res.render("admision/cambiarPacienteAdmisiones", {
         mensajeAlert,
         alertClass,
       });
     }
-    const pacienteReal = personaReal.paciente;
+    const pacienteEmergencia = personaEmergencia.paciente;
 
-    await Admision.update(
-      { id_paciente: pacienteReal.id_paciente },
-      { where: { id_admision: admision.id_admision }, transaction: t }
-    );
-
-    if (esEmergencia) {
-      await Paciente.update(
-        { estado: 2 },
-        { where: { id_paciente: pacienteAntiguo.id_paciente }, transaction: t }
+    // 3. Obtener historiales
+    const historialEmergencia = await HistorialMedico.findOne({
+      where: { id_paciente: pacienteEmergencia.id_paciente },
+      transaction: t,
+    });
+    let historialExistente = await HistorialMedico.findOne({
+      where: { id_paciente: id_paciente_existente },
+      transaction: t,
+    });
+    if (!historialExistente) {
+      historialExistente = await HistorialMedico.create(
+        { id_paciente: id_paciente_existente },
+        { transaction: t }
       );
     }
+    const id_historial_emergencia = historialEmergencia
+      ? historialEmergencia.id_historial
+      : null;
+    const id_historial_existente = historialExistente.id_historial;
+
+    // 4. Transferir datos de historial
+    if (id_historial_emergencia) {
+      await Alergia.update(
+        { id_historial: id_historial_existente },
+        { where: { id_historial: id_historial_emergencia }, transaction: t }
+      );
+      await Enfermedad.update(
+        { id_historial: id_historial_existente },
+        { where: { id_historial: id_historial_emergencia }, transaction: t }
+      );
+      await MedicacionActual.update(
+        { id_historial: id_historial_existente },
+        { where: { id_historial: id_historial_emergencia }, transaction: t }
+      );
+      await CirugiaPrevia.update(
+        { id_historial: id_historial_existente },
+        { where: { id_historial: id_historial_emergencia }, transaction: t }
+      );
+      await AntecedenteFamiliar.update(
+        { id_historial: id_historial_existente },
+        { where: { id_historial: id_historial_emergencia }, transaction: t }
+      );
+
+      // Eliminar historial_emergencia
+      await HistorialMedico.destroy({
+        where: { id_historial: id_historial_emergencia },
+        transaction: t,
+      });
+    }
+
+    // 5. Transferir admisiones
+    await Admision.update(
+      { id_paciente: id_paciente_existente },
+      { where: { id_paciente: pacienteEmergencia.id_paciente }, transaction: t }
+    );
+
+    // 6. Marcar paciente de emergencia
+    await Paciente.update(
+      { estado: false },
+      { where: { id_paciente: pacienteEmergencia.id_paciente }, transaction: t }
+    );
 
     await t.commit();
     mensajeAlert =
-      "La admisión fue actualizada correctamente y el paciente temporal fue deleteado";
+      "Los datos clínicos y admisiones fueron transferidos correctamente.";
     alertClass = "alert-success";
     return res.render("admision/cambiarPacienteAdmisiones", {
       mensajeAlert,
@@ -790,8 +847,7 @@ async function cambiarPacienteAdmisiones(req, res) {
     });
   } catch (error) {
     await t.rollback();
-
-    mensajeAlert = "Error al actualizar la admisión.";
+    mensajeAlert = "Error al transferir datos.";
     return res.render("admision/cambiarPacienteAdmisiones", {
       mensajeAlert,
       alertClass,
@@ -808,4 +864,5 @@ module.exports = {
   cancelarAdmision,
   cambiarPacienteAdmisiones,
   gCambiarPacienteAdmisiones,
+  obtenerNombrePaciente,
 };

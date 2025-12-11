@@ -44,6 +44,11 @@ router.post(
   admisionController.cambiarPacienteAdmisiones
 );
 
+router.get(
+  "/api/obtenerNombrePaciente",
+  admisionController.obtenerNombrePaciente
+);
+
 //+Infrestructura--------------------------------------
 router.get("/listaCamas", infraestructuraController.listaCamas);
 router.get(

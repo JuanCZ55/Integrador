@@ -7,20 +7,37 @@ block navbar
 block main
   .container-md.border.border-2.border-dark.rounded-3.d-flex.justify-content-center.align-items-center.form-box.mt-4
     form.p-4.w-100(method="POST", action="/admision/cambiarPacienteAdmisiones", novalidate)
-      h2.text-center.mt-3 Actualizar DNI de Admisión
+      h2.text-center.mt-3 Transferir Datos Paciente de Emergencia
       if mensajeAlert
         +alert(mensajeAlert, alertClass)
-      .mb-3.d-flex.align-items-center.gap-2
-        input.form-check-input(type="checkbox", name="esEmergencia", id="esEmergencia", value="1")
-        label.form-check-label(for="esEmergencia") ¿DNI de Emergencia?
       .mb-3
-        label.form-label(for="dni_antiguo") DNI antiguo:
-        input.form-control(type="number", name="dni_antiguo", id="dni_antiguo", placeholder="Ej: 2345678", required)
+        label.form-label(for="dni_emergencia") DNI de Emergencia:
+        input.form-control(type="number", name="dni_emergencia", id="dni_emergencia", placeholder="Ej: 15", required)
       
       .mb-3
-        label.form-label(for="dni_nuevo") DNI nuevo:
-        input.form-control(type="number", name="dni_nuevo", id="dni_nuevo", placeholder="Ej: 48789651", required)
-       
+        label.form-label(for="dni_existente") DNI Existente:
+        input.form-control(type="number", name="dni_existente", id="dni_existente", placeholder="Ej: 48789651", required, oninput="buscarPaciente()")
+        small#nombrePaciente.text-muted
+      
       .d-flex.justify-content-end
-        button.btn.btn-primary(type="submit") Cambiar Paciente
-      small Con el dni antiguo se buscar la admision y se le cambia el dni a esa admision
+        button.btn.btn-primary(type="submit") Fusionar Pacientes
+      small Se transferirán los datos clínicos y admisiones del paciente de emergencia al paciente existente.
+
+  script.
+    async function buscarPaciente() {
+      const dni = document.getElementById('dni_existente').value;
+      const nombreDiv = document.getElementById('nombrePaciente');
+      if (dni && /^[0-9]{1,8}$/.test(dni)) {
+        try {
+          const response = await fetch(`/admision/api/obtenerNombrePaciente?dni=${dni}`);
+          const data = await response.json();
+          
+            nombreDiv.textContent = `Paciente: ${data.nombre}, Fecha de Nacimiento: ${data.fecha_nacimiento}`;
+          
+        } catch (error) {
+          nombreDiv.textContent = 'Error al obtener el nombre';
+        }
+      } else {
+        nombreDiv.textContent = '';
+      }
+    }
