@@ -70,6 +70,10 @@ router.post("/historia", postHistoria);
 
 router.get("/evaluacion-enfermeria", getEvaluacionEnfermeria);
 
+router.get("/", (req, res) => {
+  res.render("medico/inicio");
+});
+
 router.get("/inicio", (req, res) => {
   res.render("medico/inicio");
 });

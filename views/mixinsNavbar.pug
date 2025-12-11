@@ -95,6 +95,17 @@ mixin usuarioDropdown()
     ul.dropdown-menu.dropdown-menu-end
       li
         a.dropdown-item(href="/perfil") Perfil
+      if user.id_rol === 1
+        li
+          hr.dropdown-divider
+        li
+          a.dropdown-item(href="/admin/inicio") Admin
+        li
+          a.dropdown-item(href="/medico") Médico
+        li
+          a.dropdown-item(href="/enfermeria") Enfermería
+        li
+          a.dropdown-item(href="/admision") Admisión
       li
         hr.dropdown-divider
       li
