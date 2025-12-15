@@ -583,9 +583,36 @@ async function pAdmision(req, res) {
       );
 
       await Cama.update({ estado: 2 }, { where: { id_cama }, transaction: t });
+
+      // Actualizar genero
+      if (!cama.habitacion.genero) {
+        await Habitacion.update(
+          { genero: persona.genero },
+          {
+            where: { id_habitacion: cama.habitacion.id_habitacion },
+            transaction: t,
+          }
+        );
+      }
     }
     if (egreso && id_cama) {
       await Cama.update({ estado: 3 }, { where: { id_cama }, transaction: t });
+
+      //para resetear genero
+      const habitacion = await Habitacion.findByPk(
+        cama.habitacion.id_habitacion,
+        { transaction: t }
+      );
+      const camasOcupadas = await Cama.count({
+        where: { id_habitacion: habitacion.id_habitacion, estado: 2 },
+        transaction: t,
+      });
+      if (camasOcupadas === 0) {
+        await Habitacion.update(
+          { genero: null },
+          { where: { id_habitacion: habitacion.id_habitacion }, transaction: t }
+        );
+      }
     }
     await t.commit();
 
