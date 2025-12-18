@@ -6,22 +6,10 @@ block navbar
 block main 
   +alert(mensajeAlert, alertClass)
   div.container.mt-3.p-3.bg-body-secondary.rounded-5
-    h1 Bienvenido al inicio este es progreso
-    p Encontraras 4 secciones: Pacientes, Admision, Habitaciones y Turnos.
+    h1 Bienvenido al panel médico
+    p Encontrarás las siguientes secciones: Sin asignar, Mis pacientes.
     dl
-      dt Pacientes:
-      dd Gestion: Permite registrar/modificar un paciente en el sistema.
-      dd Lista: Enlista todos los pacientes registrado en el sistema.
-      
-
-      dt Admision
-      dd Admision: Se registra/modifica la admision de un paciente, tambien crea pacientes de emergencia.
-      dd Cambiar Paciente de Admision: : Cambia el paciente de una admision existente.
-      dd Lista de Admisiones: Enlista todas las admisiones registradas en el sistema.
-
-      dt Habitaciones
-      dd Ver Camas: Muestra todas las camas por habitaciones con estado.
-
-      dt Turnos
-      dd Ver Turnos: Muestra los turnos existentes.
-      dd Gestion Turnos: Permite crear/modificar turnos de un paciente.
+      dt Sin asignar:
+      dd Sin asignar: Gestiona pacientes que no han sido asignados a un médico. También permite reasignar pacientes a otros médicos.
+      dt Mis pacientes:
+      dd Mis pacientes: Gestiona los pacientes asignados al médico actual. Dentro de cada paciente puedes realizar Diagnósticos, solicitar Estudios y prescribir Tratamientos.

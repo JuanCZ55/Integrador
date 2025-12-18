@@ -42,7 +42,7 @@ mixin debug(vars)
   pre= JSON.stringify(vars, null, 2)
 
 mixin navbar(op, paciente,id_admision)
-    nav
+    nav.panel-blur
       ul.nav.nav-pills(role="tablist")
         if op === 0
           li.nav-item
@@ -72,7 +72,7 @@ mixin navbar(op, paciente,id_admision)
 mixin navbarM(op, id_admision)
   - const active = i => (op === i ? "active" : "")
 
-  nav
+  nav.panel-blur
     ul.nav.nav-pills(role="tablist")
 
       // Historia
