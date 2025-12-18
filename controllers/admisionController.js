@@ -25,26 +25,27 @@ async function inicio(req, res) {
   const { error } = req.query;
   //admision,/emergencia/camas/modificar
   if (error) {
-    let horror = "";
-    if (admision) {
-      horror = "Error al gestionar la admisión";
-    } else if (emergencia) {
-      horror = "Error al gestionar la emergencia";
+    let horror = [];
+    if ("admision" === error) {
+      horror.push("Error al gestionar la admisión");
+    } else if ("emergencia" === error) {
+      horror.push("Error al gestionar la emergencia");
     }
-    if (camas) {
-      horror = "Error al gestionar las camas";
+    if ("camas" === error) {
+      horror.push("Error al gestionar las camas");
     }
-    if (modificar) {
-      horror = "Error al modificar el paciente";
+    if ("modificar" === error) {
+      horror.push("Error al modificar el paciente");
     }
-    if (modificar) {
-      horror = "Error al crear el paciente";
+    if ("crear" === error) {
+      horror.push("Error al crear el paciente");
     }
-    if (error) {
-      horror = "Error desconocido";
+    if (horror.length === 0 && error) {
+      horror.push("Error desconocido");
     }
+    const mensajeAlert = horror.join(" ");
     return res.render("admision/inicio", {
-      mensajeAlert: horror,
+      mensajeAlert: mensajeAlert,
       alertClass: "alert-danger",
     });
   }
@@ -415,8 +416,9 @@ async function pAdmision(req, res) {
       });
     }
 
+    let cama = null;
     if (id_cama) {
-      const cama = await Cama.findByPk(id_cama, {
+      cama = await Cama.findByPk(id_cama, {
         include: [{ model: Habitacion, as: "habitacion" }],
       });
       if (!cama) {
@@ -622,6 +624,7 @@ async function pAdmision(req, res) {
       return res.redirect("/admision/gestionarAdmision?estado=modificado");
     }
   } catch (error) {
+    console.error(error);
     return res.redirect("/admision/inicio?error=admision");
   }
 }

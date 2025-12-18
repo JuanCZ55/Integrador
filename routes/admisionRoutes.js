@@ -25,7 +25,8 @@ router.get("/listaTurnos", pacienteC.listaTurnos);
 router.post("/emergencia", admisionController.emergencia);
 //*inicio de admision
 //?cambiar "" por "/inicio"
-router.get("", admisionController.inicio);
+router.get("/inicio", admisionController.inicio);
+router.get("/", admisionController.inicio);
 //**renderiza la vista de admision
 router.get("/gestionarAdmision", admisionController.admision);
 //**crea la admision */
