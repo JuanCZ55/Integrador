@@ -22,7 +22,7 @@ function validator(datos) {
     fecha_ingreso: datos.fecha_ingreso,
     id_rol: datos.id_rol,
     nro_licencia: datos.nro_licencia,
-    especialidades: Array.isArray(datos.especialidad) ? datos.especialidad : [],
+    // especialidades: Array.isArray(datos.especialidad) ? datos.especialidad : [],
     estado: datos.estado,
   };
 
